@@ -35,22 +35,40 @@ import productData from '@/data/Product.json'
 export const dynamic = 'force-static'
 
 export default function HomeEleven() {
-    return (
+  return (
         <>
             <TopNavOne props="style-one bg-black" slogan='New customers save 10% with the code GET10' />
             <div id="header" className='relative w-full'>
                 <MenuEleven />
                 <SliderEleven />
             </div>
-            <TrendingNow />
-            <MenFashion data={productData} start={0} limit={3} />
-            <Banner />
-            <WomenFashion data={productData} start={0} limit={3} />
-            <Benefit props="md:mt-20 mt-10 py-10 px-2.5 bg-surface rounded-[32px]" />
-            <NewsInsight data={blogData} start={0} limit={3} />
-            <Brand />
-            <Newsletter />
-            <Footer />
+            <section className="cv-auto">
+              <TrendingNow />
+            </section>
+            <section className="cv-auto">
+              <MenFashion data={productData} start={0} limit={3} />
+            </section>
+            <section className="cv-auto">
+              <Banner />
+            </section>
+            <section className="cv-auto">
+              <WomenFashion data={productData} start={0} limit={3} />
+            </section>
+            <section className="cv-auto">
+              <Benefit props="md:mt-20 mt-10 py-10 px-2.5 bg-surface rounded-[32px]" />
+            </section>
+            <section className="cv-auto">
+              <NewsInsight data={blogData} start={0} limit={3} />
+            </section>
+            <section className="cv-auto">
+              <Brand />
+            </section>
+            <section className="cv-auto">
+              <Newsletter />
+            </section>
+            <section className="cv-auto">
+              <Footer />
+            </section>
             {/* ModalNewsletter hidden */}
         </>
     )
