@@ -1,0 +1,189 @@
+<div style="background: linear-gradient(180deg, #FFE8EC 0%, #FFF5F7 100%);position: relative;overflow: hidden;padding: 80px 20px">
+    <!-- 鍙埍瑁呴グ鍏冪礌 --></p>
+<div style="position: absolute;top: 50px;left: 5%;width: 120px;height: 120px;background: #FFB5C5;border-radius: 50%;opacity: 0.3"></div>
+<div style="position: absolute;top: 200px;right: 8%;width: 80px;height: 80px;background: #A8E6FF;border-radius: 50%;opacity: 0.3"></div>
+<div style="position: absolute;bottom: 100px;left: 10%;width: 60px;height: 60px;background: #FFE17B;border-radius: 50%;opacity: 0.3"></div>
+<p>    <!-- 鏄熸槦瑁呴グ --></p>
+<div style="position: absolute;top: 100px;right: 20%;font-size: 40px;opacity: 0.6">猸?/div>
+<div style="position: absolute;top: 250px;left: 15%;font-size: 30px;opacity: 0.6">鉁?/div>
+<div style="position: absolute;bottom: 150px;right: 15%;font-size: 35px;opacity: 0.6">馃挮</div>
+<div style="max-width: 1200px;margin: 0 auto;position: relative;z-index: 1">
+        <!-- 鍙埍璐寸焊寰界珷 --></p>
+<div style="text-align: center;margin-bottom: 30px">
+<div style="background: linear-gradient(135deg, #FF6B9D 0%, #FFA6C9 100%);color: #fff;padding: 12px 35px;border-radius: 50px;font-size: 16px;font-weight: 700;border: 4px solid #fff">馃帾 YIWU CHINA</div>
+</p></div>
+<p>        <!-- 涓绘爣棰?--></p>
+<h1 style="font-family: Arial, sans-serif;font-size: 90px;font-weight: 800;text-align: center;margin: 0 0 20px 0;color: #FF6B9D;line-height: 1.1;letter-spacing: -2px">BABY THREE</h1>
+<div style="text-align: center;margin-bottom: 40px">
+<div style="align-items: center;gap: 15px">
+<div style="width: 50px;height: 6px;background: linear-gradient(90deg, #FF6B9D, #FFA6C9);border-radius: 10px"></div>
+<p>                <span style="font-size: 28px;font-weight: 700;color: #FF6B9D;font-family: Arial, sans-serif">COLLECTION</span></p>
+<div style="width: 50px;height: 6px;background: linear-gradient(90deg, #FFA6C9, #FF6B9D);border-radius: 10px"></div>
+</p></div>
+</p></div>
+<p style="text-align: center;font-size: 22px;line-height: 1.8;max-width: 750px;margin: 0 auto 50px;color: #666;font-weight: 500">Discover the adorable world of <span style="color: #FF6B9D;font-weight: 700">Baby Three Macchiato Mini Rabbit Bag Series</span> 馃幁 Each blind box holds a cute surprise! <span style="color: #A8E6FF;font-weight: 700">Collect them all</span> and elevate your fashion game! 鉁?/p>
+<p>        <!-- 鐗硅壊鍗＄墖鍖?--></p>
+<div style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));gap: 25px">
+            <!-- 鍗＄墖1 --></p>
+<div style="background: #fff;border-radius: 30px;padding: 40px 30px;text-align: center;border: 4px solid #FFE8EC;position: relative">
+<div style="position: absolute;top: -15px;right: 20px;background: #FF6B9D;color: #fff;width: 45px;height: 45px;border-radius: 50%;align-items: center;justify-content: center;font-size: 24px;border: 4px solid #fff">馃巵</div>
+<div style="width: 90px;height: 90px;background: linear-gradient(135deg, #FFE8EC 0%, #FFF5F7 100%);border-radius: 50%;margin: 0 auto 25px;align-items: center;justify-content: center;font-size: 45px;border: 5px solid #FFB5C5">馃帹</div>
+<h3 style="font-family: Arial, sans-serif;font-size: 24px;color: #FF6B9D;margin: 0 0 15px 0;font-weight: 700">Super Cute Designs</h3>
+<p style="font-size: 16px;line-height: 1.7;color: #666;margin: 0;font-weight: 500">Premium materials and intricate craftsmanship from Yiwu factory for maximum cuteness and fashion appeal!</p>
+</p></div>
+<p>            <!-- 鍗＄墖2 --></p>
+<div style="background: #fff;border-radius: 30px;padding: 40px 30px;text-align: center;border: 4px solid #E8F7FF;position: relative">
+<div style="position: absolute;top: -15px;right: 20px;background: #A8E6FF;color: #fff;width: 45px;height: 45px;border-radius: 50%;align-items: center;justify-content: center;font-size: 24px;border: 4px solid #fff">馃挐</div>
+<div style="width: 90px;height: 90px;background: linear-gradient(135deg, #E8F7FF 0%, #FFF5F7 100%);border-radius: 50%;margin: 0 auto 25px;align-items: center;justify-content: center;font-size: 45px;border: 5px solid #A8E6FF">馃幉</div>
+<h3 style="font-family: Arial, sans-serif;font-size: 24px;color: #A8E6FF;margin: 0 0 15px 0;font-weight: 700">Blind Box Excitement</h3>
+<p style="font-size: 16px;line-height: 1.7;color: #666;margin: 0;font-weight: 500">Each box is a mystery! Collect rare variants and hidden editions from our Yiwu source factory for unbeatable market appeal.</p>
+</p></div>
+<p>            <!-- 鍗＄墖3 --></p>
+<div style="background: #fff;border-radius: 30px;padding: 40px 30px;text-align: center;border: 4px solid #FFF8E1;position: relative">
+<div style="position: absolute;top: -15px;right: 20px;background: #FFD93D;color: #fff;width: 45px;height: 45px;border-radius: 50%;align-items: center;justify-content: center;font-size: 24px;border: 4px solid #fff">馃専</div>
+<div style="width: 90px;height: 90px;background: linear-gradient(135deg, #FFF8E1 0%, #FFF5F7 100%);border-radius: 50%;margin: 0 auto 25px;align-items: center;justify-content: center;font-size: 45px;border: 5px solid #FFD93D">馃憸</div>
+<h3 style="font-family: Arial, sans-serif;font-size: 24px;color: #FFD93D;margin: 0 0 15px 0;font-weight: 700">Fashion Forward</h3>
+<p style="font-size: 16px;line-height: 1.7;color: #666;margin: 0;font-weight: 500">Trendy mini rabbit bag designs perfect for B2B buyers seeking unique, street-style accessories with high resale potential.</p>
+</p></div>
+</p></div>
+</p></div>
+</div>
+<div style="background: #fff;padding: 100px 20px 0;position: relative;overflow: hidden">
+    <!-- 鑳屾櫙瑁呴グ --></p>
+<div style="position: absolute;top: 0;left: 0;width: 100%;height: 100%;background-image: radial-gradient(circle, #FFB5C5 1px, transparent 1px);background-size: 40px 40px;opacity: 0.1"></div>
+<div style="max-width: 1200px;margin: 0 auto;position: relative;z-index: 1">
+        <!-- 鏍囬鍖?--></p>
+<div style="text-align: center;margin-bottom: 70px">
+<div style="background: linear-gradient(135deg, #FFD93D 0%, #FFB627 100%);color: #fff;padding: 10px 30px;border-radius: 50px;font-size: 16px;font-weight: 700;margin-bottom: 25px;border: 3px solid #fff">馃摳 GALLERY</div>
+<h2 style="font-family: Arial, sans-serif;font-size: 65px;font-weight: 800;margin: 0;color: #2d2d2d;letter-spacing: -1px">CUTE MOMENTS</h2>
+<div style="margin-top: 20px">
+                <span style="font-size: 20px;color: #FF6B9D;font-weight: 700">鉁?Explore Our Collection 鉁?/span>
+            </div>
+</p></div>
+<div style="grid-template-columns: repeat(2, 1fr);gap: 28px;align-items: stretch">
+<div style="position: relative;border-radius: 35px;overflow: hidden;border: 6px solid #fff;aspect-ratio: 1 / 1">
+                <img src="https://image.nv315.top/baby3 (1)_1763215695558.webp" alt="Baby Three Macchiato 1" style="width: 100%;height: 100%;object-fit: cover"></p>
+<div style="position: absolute;top: 20px;left: 20px;padding: 10px 20px;border-radius: 20px;font-weight: 700;color: #FF6B9D;font-size: 14px">馃挅 BEST</div>
+<div style="position: absolute;bottom: 22px;right: 22px;width: 70px;height: 70px;background: linear-gradient(135deg, #FFD93D, #FFB627);border-radius: 50%;align-items: center;justify-content: center;font-size: 32px;border: 5px solid #fff">馃槉</div>
+</p></div>
+<div style="position: relative;border-radius: 35px;overflow: hidden;border: 6px solid #fff;aspect-ratio: 1 / 1">
+                <img src="https://image.nv315.top/baby3 (2)_1763215695865.webp" alt="Baby Three Macchiato 2" style="width: 100%;height: 100%;object-fit: cover"></p>
+<div style="position: absolute;top: 15px;right: 15px;background: linear-gradient(135deg, #A8E6FF, #6BC5FF);color: #fff;padding: 8px 18px;border-radius: 20px;font-weight: 700;font-size: 13px;border: 3px solid #fff">馃幁 NEW</div>
+<div style="position: absolute;bottom: 18px;left: 18px;width: 60px;height: 60px;background: linear-gradient(135deg, #A8E6FF, #6BC5FF);border-radius: 50%;align-items: center;justify-content: center;font-size: 28px;border: 5px solid #fff">馃挔</div>
+</p></div>
+<div style="position: relative;border-radius: 35px;overflow: hidden;border: 6px solid #fff;aspect-ratio: 1 / 1">
+                <img src="https://image.nv315.top/baby3 (3)_1763215696122.webp" alt="Baby Three Macchiato 3" style="width: 100%;height: 100%;object-fit: cover"></p>
+<div style="position: absolute;bottom: 20px;left: 20px;padding: 12px 22px;border-radius: 25px;font-weight: 700;color: #FFB627;font-size: 15px">猸?LIMITED</div>
+<div style="position: absolute;top: 18px;right: 18px;width: 58px;height: 58px;background: linear-gradient(135deg, #FFD93D, #FFB627);border-radius: 50%;align-items: center;justify-content: center;font-size: 26px;border: 5px solid #fff">鉁?/div>
+</p></div>
+<div style="position: relative;border-radius: 35px;overflow: hidden;border: 6px solid #fff;aspect-ratio: 1 / 1">
+                <img src="https://image.nv315.top/baby3 (4)_1763215696374.webp" alt="Baby Three Macchiato 4" style="width: 100%;height: 100%;object-fit: cover"></p>
+<div style="position: absolute;top: 18px;left: 18px;padding: 10px 20px;border-radius: 20px;font-weight: 700;color: #FF6B9D;font-size: 14px">馃挅 C</p>
+<div style="background: linear-gradient(180deg, #FFF5F7 0%, #FFE8EC 100%);padding: 0 20px 100px;margin-top: 30px;position: relative;overflow: hidden">
+    <!-- 浜戞湹瑁呴グ --></p>
+<div style="position: absolute;top: 80px;left: 10%;width: 150px;height: 80px;background: #fff;border-radius: 100px;opacity: 0.4"></div>
+<div style="position: absolute;top: 120px;left: 12%;width: 100px;height: 50px;background: #fff;border-radius: 100px;opacity: 0.4"></div>
+<div style="position: absolute;bottom: 100px;right: 15%;width: 130px;height: 70px;background: #fff;border-radius: 100px;opacity: 0.4"></div>
+<div style="max-width: 1200px;margin: 0 auto;position: relative;z-index: 1">
+        <!-- 鏍囬鍖哄煙 --></p>
+<div style="text-align: center;margin-bottom: 70px">
+            <!-- 鍙€夊窘绔犳爣绛?--></p>
+<div style="background: #fff;color: #FF6B9D;padding: 12px 35px;border-radius: 50px;font-size: 16px;font-weight: 700;margin-bottom: 25px;border: 4px solid #FFE8EC">馃彮 FACTORY DIRECT</div>
+<h2 style="font-family: 'Poppins', sans-serif;font-size: 65px;font-weight: 800;margin: 0 0 20px 0;color: #FF6B9D;letter-spacing: -1px">WHY US?</h2>
+<div style="align-items: center;justify-content: center;gap: 15px">
+<div style="width: 40px;height: 8px;background: linear-gradient(90deg, #FF6B9D, #FFA6C9);border-radius: 10px"></div>
+<p>                <span style="font-size: 22px">馃専</span></p>
+<div style="width: 40px;height: 8px;background: linear-gradient(90deg, #FFA6C9, #FF6B9D);border-radius: 10px"></div>
+</p></div>
+</p></div>
+<p>        <!-- 浼樺娍鍗＄墖鍖哄煙 --></p>
+<div style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));gap: 30px;margin-bottom: 70px">
+            <!-- 浼樺娍鍗＄墖1 - 涔変箤宸ュ巶鐩翠緵 --></p>
+<div style="background: #fff;border-radius: 35px;padding: 45px 35px;border: 5px solid #FFE8EC;position: relative">
+                <!-- 瑙掓爣 --></p>
+<div style="position: absolute;top: -15px;right: 30px;width: 60px;height: 60px;background: linear-gradient(135deg, #FF6B9D, #FFA6C9);border-radius: 50%;align-items: center;justify-content: center;font-size: 30px;border: 5px solid #fff">馃彮</div>
+<div style="margin-bottom: 25px">
+<div style="width: 100px;height: 100px;background: linear-gradient(135deg, #FFE8EC, #FFF5F7);border-radius: 50%;margin: 0 auto;align-items: center;justify-content: center;font-size: 50px;border: 6px solid #FFB5C5">馃彮</div>
+</p></div>
+<h3 style="font-family: 'Poppins', sans-serif;font-size: 28px;color: #FF6B9D;margin: 0 0 20px 0;font-weight: 700;text-align: center">Direct from Yiwu Factory</h3>
+<p style="font-size: 17px;line-height: 1.8;color: #666;margin: 0;text-align: center;font-weight: 500">As the original source manufacturer in Yiwu, we cut out middlemen for authentic, factory-fresh products.</p>
+</p></div>
+<p>            <!-- 浼樺娍鍗＄墖2 - 娼祦璁捐涓庡垱鏂?--></p>
+<div style="background: #fff;border-radius: 35px;padding: 45px 35px;border: 5px solid #E8F7FF;position: relative">
+<div style="position: absolute;top: -15px;right: 30px;width: 60px;height: 60px;background: linear-gradient(135deg, #A8E6FF, #6BC5FF);border-radius: 50%;align-items: center;justify-content: center;font-size: 30px;border: 5px solid #fff">鉁?/div>
+<div style="margin-bottom: 25px">
+<div style="width: 100px;height: 100px;background: linear-gradient(135deg, #E8F7FF, #FFF5F7);border-radius: 50%;margin: 0 auto;align-items: center;justify-content: center;font-size: 50px;border: 6px solid #A8E6FF">馃帹</div>
+</p></div>
+<h3 style="font-family: 'Poppins', sans-serif;font-size: 28px;color: #6BC5FF;margin: 0 0 20px 0;font-weight: 700;text-align: center">Trend-Driven Designs & Innovation</h3>
+<p style="font-size: 17px;line-height: 1.8;color: #666;margin: 0;text-align: center;font-weight: 500">Stay ahead with cutting-edge, trendy accessories inspired by global fashion trends.</p>
+</p></div>
+<p>            <!-- 浼樺娍鍗＄墖3 - 浼樿川鍝佽川涓庡伐鑹?--></p>
+<div style="background: #fff;border-radius: 35px;padding: 45px 35px;border: 5px solid #FFF9E6;position: relative">
+<div style="position: absolute;top: -15px;right: 30px;width: 60px;height: 60px;background: linear-gradient(135deg, #FFD93D, #FFB627);border-radius: 50%;align-items: center;justify-content: center;font-size: 30px;border: 5px solid #fff">馃拵</div>
+<div style="margin-bottom: 25px">
+<div style="width: 100px;height: 100px;background: linear-gradient(135deg, #FFF9E6, #FFF5F7);border-radius: 50%;margin: 0 auto;align-items: center;justify-content: center;font-size: 50px;border: 6px solid #FFD93D">猸?/div>
+</p></div>
+<h3 style="font-family: 'Poppins', sans-serif;font-size: 28px;color: #FFB627;margin: 0 0 20px 0;font-weight: 700;text-align: center">Premium Quality & Craftsmanship</h3>
+<p style="font-size: 17px;line-height: 1.8;color: #666;margin: 0;text-align: center;font-weight: 500">Expertly crafted with durable materials for long-lasting appeal and customer satisfaction.</p>
+</p></div>
+<p>            <!-- 浼樺娍鍗＄墖4 - 绔炰簤鎬ф壒鍙戜环鏍?--></p>
+<div style="background: #fff;border-radius: 35px;padding: 45px 35px;border: 5px solid #FFE8EC;position: relative">
+<div style="position: absolute;top: -15px;right: 30px;width: 60px;height: 60px;background: linear-gradient(135deg, #FF6B9D, #FFA6C9);border-radius: 50%;align-items: center;justify-content: center;font-size: 30px;border: 5px solid #fff">馃挵</div>
+<div style="margin-bottom: 25px">
+<div style="width: 100px;height: 100px;background: linear-gradient(135deg, #FFE8EC, #FFF5F7);border-radius: 50%;margin: 0 auto;align-items: center;justify-content: center;font-size: 50px;border: 6px solid #FFB5C5">馃挵</div>
+</p></div>
+<h3 style="font-family: 'Poppins', sans-serif;font-size: 28px;color: #FF6B9D;margin: 0 0 20px 0;font-weight: 700;text-align: center">Competitive Wholesale Pricing</h3>
+<p style="font-size: 17px;line-height: 1.8;color: #666;margin: 0;text-align: center;font-weight: 500">Unbeatable bulk rates to maximize your profit margins without compromising quality.</p>
+</p></div>
+<p>            <!-- 浼樺娍鍗＄墖5 - 鍝佺墝瀹氬埗 --></p>
+<div style="background: #fff;border-radius: 35px;padding: 45px 35px;border: 5px solid #E8F7FF;position: relative">
+<div style="position: absolute;top: -15px;right: 30px;width: 60px;height: 60px;background: linear-gradient(135deg, #A8E6FF, #6BC5FF);border-radius: 50%;align-items: center;justify-content: center;font-size: 30px;border: 5px solid #fff">馃敡</div>
+<div style="margin-bottom: 25px">
+<div style="width: 100px;height: 100px;background: linear-gradient(135deg, #E8F7FF, #FFF5F7);border-radius: 50%;margin: 0 auto;align-items: center;justify-content: center;font-size: 50px;border: 6px solid #A8E6FF">馃敡</div>
+</p></div>
+<h3 style="font-family: 'Poppins', sans-serif;font-size: 28px;color: #6BC5FF;margin: 0 0 20px 0;font-weight: 700;text-align: center">Customization for Your Brand</h3>
+<p style="font-size: 17px;line-height: 1.8;color: #666;margin: 0;text-align: center;font-weight: 500">Personalize designs, colors, and packaging to align perfectly with your brand vision.</p>
+</p></div>
+<p>            <!-- 浼樺娍鍗＄墖6 - 楂樻晥渚涘簲閾句笌鍏ㄧ悆閰嶉€?--></p>
+<div style="background: #fff;border-radius: 35px;padding: 45px 35px;border: 5px solid #FFF9E6;position: relative">
+<div style="position: absolute;top: -15px;right: 30px;width: 60px;height: 60px;background: linear-gradient(135deg, #FFD93D, #FFB627);border-radius: 50%;align-items: center;justify-content: center;font-size: 30px;border: 5px solid #fff">馃殌</div>
+<div style="margin-bottom: 25px">
+<div style="width: 100px;height: 100px;background: linear-gradient(135deg, #FFF9E6, #FFF5F7);border-radius: 50%;margin: 0 auto;align-items: center;justify-content: center;font-size: 50px;border: 6px solid #FFD93D">馃殌</div>
+</p></div>
+<h3 style="font-family: 'Poppins', sans-serif;font-size: 28px;color: #FFB627;margin: 0 0 20px 0;font-weight: 700;text-align: center">Efficient Supply Chain & Global Delivery</h3>
+<p style="font-size: 17px;line-height: 1.8;color: #666;margin: 0;text-align: center;font-weight: 500">Reliable logistics ensure timely delivery worldwide, supporting your business growth.</p>
+</p></div>
+</p></div>
+</p></div>
+</div>
+<div style="background: linear-gradient(180deg, #FFE8EC 0%, #FFF5F7 100%);padding: 0 20px 100px;position: relative;overflow: hidden">
+    <!-- 瑁呴グ浜戞湹 --></p>
+<div style="position: absolute;top: 50px;left: 8%;width: 120px;height: 60px;background: #fff;border-radius: 100px;opacity: 0.3"></div>
+<div style="position: absolute;top: 80px;left: 10%;width: 80px;height: 40px;background: #fff;border-radius: 100px;opacity: 0.3"></div>
+<div style="position: absolute;bottom: 80px;right: 12%;width: 100px;height: 50px;background: #fff;border-radius: 100px;opacity: 0.3"></div>
+<div style="max-width: 1200px;margin: 0 auto;position: relative;z-index: 1">
+        <!-- CTA涓诲鍣?--></p>
+<div style="background: #fff;border-radius: 40px;padding: 60px 40px;text-align: center;border: 6px solid #FFE8EC;position: relative;overflow: hidden">
+            <!-- 瑁呴グ鍏冪礌 --></p>
+<div style="position: absolute;top: -30px;left: -30px;width: 120px;height: 120px;background: #FFB5C5;border-radius: 50%;opacity: 0.2"></div>
+<div style="position: absolute;bottom: -40px;right: -40px;width: 150px;height: 150px;background: #A8E6FF;border-radius: 50%;opacity: 0.2"></div>
+<div style="position: absolute;top: 50%;right: 10%;width: 80px;height: 80px;background: #FFE17B;border-radius: 50%;opacity: 0.15"></div>
+<div style="position: relative;z-index: 1">
+                <!-- 澶ц〃鎯呯鍙?--></p>
+<div style="font-size: 60px;margin-bottom: 20px">馃帀</div>
+<p>                <!-- 涓绘爣棰?--></p>
+<h3 style="font-family: 'Poppins', sans-serif;font-size: 48px;font-weight: 800;margin: 0 0 20px 0;color: #FF6B9D;letter-spacing: -1px">Interested in wholesale pricing?</h3>
+<p>                <!-- 鍓爣棰?--></p>
+<p style="font-size: 22px;color: #666;margin: 0 0 35px 0;font-weight: 600">Start your Art toys collection today! 馃寛</p>
+<p>                <!-- CTA鎸夐挳 --><br />
+                <a href="https://wa.me/8613821385220" target="_blank" style="text-decoration: none"></p>
+<div style="background: linear-gradient(135deg, #FF6B9D 0%, #FFA6C9 100%);color: #fff;padding: 20px 55px;border-radius: 50px;font-family: 'Poppins', sans-serif;font-weight: 700;font-size: 20px;cursor: pointer;border: 5px solid #fff;position: relative">
+                        <span style="position: relative;z-index: 1">Contact us today!</span>
+                    </div>
+<p>                </a></p>
+<p>                <!-- 搴曢儴鎻愮ず鏂囧瓧 --></p>
+<div style="margin-top: 25px;font-size: 16px;color: #999;font-weight: 600">鉁?drop us a line for a quote.鉁?/div>
+</p></div>
+</p></div>
+</p></div>
+</div>
