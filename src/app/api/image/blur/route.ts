@@ -3,6 +3,9 @@ import { getPlaiceholder } from 'plaiceholder'
 import * as https from 'https'
 import * as http from 'http'
 
+// Force this route to be dynamic
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest) {
   try {
     // Use searchParams directly instead of creating a new URL

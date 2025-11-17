@@ -1,10 +1,7 @@
 {
   "version": 2,
   "name": "chaowan17",
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/next"
-    }
-  ]
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "framework": "nextjs"
 }
