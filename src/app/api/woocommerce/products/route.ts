@@ -388,7 +388,12 @@ export async function GET(req: Request) {
         console.log('[API DEBUG] Converted meta_data length:', firstProduct.meta_data?.length || 0)
       }
     }
-    const allowedDomains = ['pixypic.net', 'image.nv315.top', 'localhost', '127.0.0.1']
+    const envHostsRaw = [process.env.WOOCOMMERCE_URL, process.env.NEXT_PUBLIC_WOOCOMMERCE_URL].filter(Boolean) as string[]
+    const envHosts = envHostsRaw.map((v) => {
+      try { return new URL(v).hostname } catch { return null }
+    }).filter(Boolean) as string[]
+    const extraDomains = (process.env.IMAGE_ALLOWED_DOMAINS || '').split(',').map(s => s.trim()).filter(Boolean)
+    const allowedDomains = Array.from(new Set(['pixypic.net', 'image.nv315.top', 'localhost', '127.0.0.1', ...envHosts, ...extraDomains]))
     const byAllowedDomain = (url: string | undefined) => {
       if (!url || typeof url !== 'string') return false
       try {
