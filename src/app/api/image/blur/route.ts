@@ -5,8 +5,8 @@ import * as http from 'http'
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const url = searchParams.get('url')
+    // Use searchParams directly instead of creating a new URL
+    const url = request.nextUrl.searchParams.get('url')
     if (!url) {
       return new Response(JSON.stringify({ error: 'url is required' }), {
         status: 400,

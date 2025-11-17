@@ -8,7 +8,12 @@ import { countdownTime } from '@/store/countdownTime'
 
 const serverTimeLeft: CountdownTimeType = countdownTime();
 
-const instrument = Instrument_Sans({ subsets: ['latin'], adjustFontFallback: true, variable: '--font-instrument' })
+const instrument = Instrument_Sans({ 
+  subsets: ['latin'], 
+  adjustFontFallback: false, // Disable font fallback to avoid the error
+  variable: '--font-instrument',
+  display: 'swap',
+})
 
 // Load icomoon icon font via next/font/local with display swap
 const icomoon = localFont({

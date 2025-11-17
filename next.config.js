@@ -4,6 +4,11 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  // Add experimental options to handle potential issues
+  experimental: {
+    // Disable server components externalization to prevent potential issues
+    serverComponentsExternalPackages: [],
+  },
   images: {
     unoptimized: false,
     formats: ['image/avif', 'image/webp'],
