@@ -44,7 +44,7 @@ export default async function ShopIndex({
       price_max: price_max ?? null,
       orderby: null,
       order: null,
-      merge: false,
+      merge: true,
       no304: true,
       require_images: true,
     })
@@ -128,7 +128,7 @@ export default async function ShopIndex({
       </div>
       <ShopBreadCrumb1 
         data={products} 
-        productPerPage={9} 
+        productPerPage={parseInt(perPage) || 9} 
         dataType={type} 
         gender={gender} 
         category={category} 

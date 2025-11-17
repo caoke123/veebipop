@@ -73,7 +73,32 @@ export async function POST(request: NextRequest) {
       if (!verifyResponse.ok) {
         return timedJson({ error: 'Invalid token' })
       }
-      const ok = { success: true, valid: true }
+
+      let user: any = null
+      try {
+        // Prefer extracting user id from the JWT payload for stability across plugins
+        const parts = token.split('.')
+        if (parts.length >= 2) {
+          const payloadRaw = Buffer.from(parts[1], 'base64').toString('utf-8')
+          const payload = JSON.parse(payloadRaw)
+          const id = Number(payload?.data?.user?.id)
+          if (id && Number.isFinite(id)) {
+            user = { id }
+          }
+        }
+      } catch {}
+
+      if (!user) {
+        try {
+          const body = await verifyResponse.json().catch(() => null)
+          const idCandidate = Number(body?.data?.user?.id ?? body?.user?.id ?? body?.data?.id)
+          if (idCandidate && Number.isFinite(idCandidate)) {
+            user = { id: idCandidate }
+          }
+        } catch {}
+      }
+
+      const ok = user ? { success: true, valid: true, user } : { success: true, valid: true }
       await client.set(key, ok, 300)
       return timedJson(ok)
     })()
