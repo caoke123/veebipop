@@ -5,5 +5,10 @@
     "dev": "cd frontend && npm run dev",
     "build": "cd frontend && npm run build",
     "start": "cd frontend && npm start"
+  },
+  "dependencies": {
+    "next": "14.0.3",
+    "react": "^18",
+    "react-dom": "^18"
   }
 }
