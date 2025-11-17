@@ -8,7 +8,7 @@ export async function GET() {
     return new Response(json, {
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=60',
+        'Cache-Control': 'public, max-age=300, s-maxage=300, stale-while-revalidate=600',
       },
     })
   } catch (err) {

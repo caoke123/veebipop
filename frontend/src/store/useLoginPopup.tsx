@@ -18,6 +18,9 @@ const useLoginPopup = () => {
     }, [openLoginPopup])
 
     useEffect(() => {
+        // 检查是否在浏览器环境中
+        if (typeof window === 'undefined') return;
+        
         // Add a global click event to track clicks outside the popup.
         document.addEventListener('click', handleClickOutsideLoginPopup);
 

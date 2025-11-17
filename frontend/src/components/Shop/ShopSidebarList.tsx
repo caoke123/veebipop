@@ -1,21 +1,29 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
+import dynamic from 'next/dynamic'
+const ReactWindowList = dynamic(() => import('react-window').then(m => m.FixedSizeList), { ssr: false })
 import Link from 'next/link'
+import CategoryTabs from './CategoryTabs'
 import * as Icon from "@phosphor-icons/react/dist/ssr";
 import { ProductType } from '@/type/ProductType'
 import Product from '../Product/Product';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css'
 import HandlePagination from '../Other/HandlePagination';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import ActiveFiltersBar from './ActiveFiltersBar'
 
 interface Props {
     data: Array<ProductType>;
     productPerPage: number
     dataType: string | null
+    // 可配置的虚拟滚动阈值：当当前页渲染条目数大于该值时启用虚拟滚动
+    virtualThreshold?: number
+    initialCategories?: any[]
 }
 
-const ShopSidebarList: React.FC<Props> = ({ data, productPerPage, dataType }) => {
+const ShopSidebarList: React.FC<Props> = ({ data, productPerPage, dataType, virtualThreshold = 40, initialCategories }) => {
     const [type, setType] = useState<string | null>(dataType)
     const [showOnlySale, setShowOnlySale] = useState(false)
     const [sortOption, setSortOption] = useState('');
@@ -24,16 +32,94 @@ const ShopSidebarList: React.FC<Props> = ({ data, productPerPage, dataType }) =>
     const [brand, setBrand] = useState<string | null>()
     const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 100 });
     const [currentPage, setCurrentPage] = useState(0);
+    const [priorityCount, setPriorityCount] = useState<number>(() => {
+        // 始终返回默认值避免水合错误，在useEffect中再动态设置
+        return 9;
+    });
     const productsPerPage = productPerPage;
+    const router = useRouter()
+    const pathname = usePathname()
+    const searchParams = useSearchParams()
     const offset = currentPage * productsPerPage;
 
-    const handleType = (type: string) => {
-        setType((prevType) => (prevType === type ? null : type))
+    useEffect(() => {
+        // 检查是否在浏览器环境中
+        if (typeof window === 'undefined') return;
+        
+        const mq = window.matchMedia('(min-width: 1024px)')
+        const compute = () => setPriorityCount(mq.matches ? 9 : 6)
+        compute()
+        mq.addEventListener('change', compute)
+        return () => { mq.removeEventListener('change', compute) }
+    }, [])
+
+    const handleType = (nextType: string) => {
+        setType(prevType => {
+            const next = prevType === nextType ? null : nextType
+            updateUrlParams(qs => {
+                if (next) qs.set('type', String(next))
+                else qs.delete('type')
+            })
+            return next
+        })
         setCurrentPage(0);
     }
 
+    // Sync local state from URL params on mount
+    // Dynamic price bounds based on data
+    const priceBounds = useMemo(() => {
+        const prices = (data || [])
+            .map(p => Number(p.price))
+            .filter(n => Number.isFinite(n) && n >= 0)
+        let min = prices.length ? Math.floor(Math.min(...prices)) : 0
+        let max = prices.length ? Math.ceil(Math.max(...prices)) : 100
+        if (min === max) max = min + 1
+        return { min, max }
+    }, [data])
+
+    // Sync on_sale to local state whenever URL changes
+    useEffect(() => {
+        const onSaleParam = (searchParams.get('on_sale') ?? '').toLowerCase()
+        setShowOnlySale(onSaleParam === 'true')
+    }, [searchParams])
+
+    // Sync price range from URL whenever URL or bounds change
+    useEffect(() => {
+        const pm = searchParams.get('price_min')
+        const px = searchParams.get('price_max')
+        if (pm || px) {
+            const min = pm ? Math.max(priceBounds.min, parseInt(pm, 10) || priceBounds.min) : priceBounds.min
+            const max = px ? Math.min(priceBounds.max, Math.max(min, parseInt(px, 10) || min)) : priceBounds.max
+            setPriceRange({ min, max })
+        } else {
+            setPriceRange(priceBounds)
+        }
+    }, [searchParams, priceBounds])
+
+    // Keep local type/brand in sync with URL
+    useEffect(() => {
+        const urlType = searchParams.get('type')
+        const urlBrand = searchParams.get('brand')
+        setType(urlType || null)
+        setBrand(urlBrand || null)
+    }, [searchParams])
+
+    const updateUrlParams = (mutate: (qs: URLSearchParams) => void) => {
+        const qs = new URLSearchParams(searchParams.toString())
+        mutate(qs)
+        const q = qs.toString()
+        router.replace(q ? `${pathname}?${q}` : pathname, { scroll: false })
+    }
+
     const handleShowOnlySale = () => {
-        setShowOnlySale(toggleSelect => !toggleSelect)
+        setShowOnlySale(prev => {
+            const next = !prev
+            updateUrlParams(qs => {
+                if (next) qs.set('on_sale', 'true')
+                else qs.delete('on_sale')
+            })
+            return next
+        })
         setCurrentPage(0);
     }
 
@@ -49,8 +135,19 @@ const ShopSidebarList: React.FC<Props> = ({ data, productPerPage, dataType }) =>
 
     const handlePriceChange = (values: number | number[]) => {
         if (Array.isArray(values)) {
-            setPriceRange({ min: values[0], max: values[1] });
-            setCurrentPage(0);
+            const next = { min: values[0], max: values[1] }
+            setPriceRange(next)
+        }
+    };
+
+    const handlePriceAfterChange = (values: number | number[]) => {
+        if (Array.isArray(values)) {
+            const next = { min: values[0], max: values[1] }
+            setCurrentPage(0)
+            updateUrlParams(qs => {
+                qs.set('price_min', String(next.min))
+                qs.set('price_max', String(next.max))
+            })
         }
     };
 
@@ -59,75 +156,52 @@ const ShopSidebarList: React.FC<Props> = ({ data, productPerPage, dataType }) =>
         setCurrentPage(0);
     }
 
-    const handleBrand = (brand: string) => {
-        setBrand((prevBrand) => (prevBrand === brand ? null : brand));
+    const handleBrand = (nextBrand: string) => {
+        setBrand(prevBrand => {
+            const next = prevBrand === nextBrand ? null : nextBrand
+            updateUrlParams(qs => {
+                if (next) qs.set('brand', String(next))
+                else qs.delete('brand')
+            })
+            return next
+        })
         setCurrentPage(0);
     }
 
 
-    // Filter product data by dataType
-    let filteredData = data.filter(product => {
-        let isShowOnlySaleMatched = true;
-        if (showOnlySale) {
-            isShowOnlySaleMatched = product.sale
-        }
-
-        let isDataTypeMatched = true;
-        if (dataType) {
-            isDataTypeMatched = product.type === dataType
-        }
-
-        let isTypeMatched = true;
-        if (type) {
-            dataType = type
-            isTypeMatched = product.type === type;
-        }
-
-        let isSizeMatched = true;
-        if (size) {
-            isSizeMatched = product.sizes.includes(size)
-        }
-
-        let isPriceRangeMatched = true;
-        if (priceRange.min !== 0 || priceRange.max !== 100) {
-            isPriceRangeMatched = product.price >= priceRange.min && product.price <= priceRange.max;
-        }
-
-        let isColorMatched = true;
-        if (color) {
-            isColorMatched = product.variation.some(item => item.color === color)
-        }
-
-        let isBrandMatched = true;
-        if (brand) {
-            isBrandMatched = product.brand === brand;
-        }
-
-        return isShowOnlySaleMatched && isDataTypeMatched && isTypeMatched && isSizeMatched && isColorMatched && isBrandMatched && isPriceRangeMatched && product.category === 'fashion'
+    // 本地筛选：按类型、是否促销、尺寸、颜色、品牌与价格范围过滤
+    let filteredData = data.filter((item) => {
+        const matchesType = !type || ((item.type || '').toLowerCase() === type.toLowerCase());
+        const matchesSale = !showOnlySale || !!item.sale;
+        const matchesSize = !size || (Array.isArray(item.sizes) && item.sizes.includes(size));
+        const matchesColor = !color || (Array.isArray(item.variation) && item.variation.some(v => (v.color || '').toLowerCase() === color.toLowerCase()));
+        const matchesBrand = !brand || ((item.brand || '').toLowerCase() === brand.toLowerCase());
+        const matchesPrice = typeof item.price === 'number' && item.price >= priceRange.min && item.price <= priceRange.max;
+        return matchesType && matchesSale && matchesSize && matchesColor && matchesBrand && matchesPrice;
     })
 
-    // Create a copy array filtered to sort
+    // 排序：在过滤后的结果上进行排序
     let sortedData = [...filteredData];
 
     if (sortOption === 'soldQuantityHighToLow') {
-        filteredData = sortedData.sort((a, b) => b.sold - a.sold)
+        sortedData.sort((a, b) => b.sold - a.sold)
     }
 
     if (sortOption === 'discountHighToLow') {
-        filteredData = sortedData
-            .sort((a, b) => (
-                (Math.floor(100 - ((b.price / b.originPrice) * 100))) - (Math.floor(100 - ((a.price / a.originPrice) * 100)))
-            ))
-
+        sortedData.sort((a, b) => (
+            (Math.floor(100 - ((b.price / b.originPrice) * 100))) - (Math.floor(100 - ((a.price / a.originPrice) * 100)))
+        ))
     }
 
     if (sortOption === 'priceHighToLow') {
-        filteredData = sortedData.sort((a, b) => b.price - a.price)
+        sortedData.sort((a, b) => b.price - a.price)
     }
 
     if (sortOption === 'priceLowToHigh') {
-        filteredData = sortedData.sort((a, b) => a.price - b.price)
+        sortedData.sort((a, b) => a.price - b.price)
     }
+
+    filteredData = sortedData
 
     const totalProducts = filteredData.length
     const selectedType = type
@@ -193,6 +267,13 @@ const ShopSidebarList: React.FC<Props> = ({ data, productPerPage, dataType }) =>
         setCurrentPage(0);
         dataType = null
         setType(dataType);
+        // Also clear URL-based filters for consistency
+        updateUrlParams(qs => {
+            qs.delete('category')
+            qs.delete('on_sale')
+            qs.delete('price_min')
+            qs.delete('price_max')
+        })
     };
 
     return (
@@ -203,23 +284,20 @@ const ShopSidebarList: React.FC<Props> = ({ data, productPerPage, dataType }) =>
                         <div className="main-content w-full h-full flex flex-col items-center justify-center relative z-[1]">
                             <div className="text-content">
                                 <div className="heading2 text-center">{dataType === null ? 'Shop' : dataType}</div>
-                                <div className="link flex items-center justify-center gap-1 caption1 mt-3">
-                                    <Link href={'/'}>Homepage</Link>
-                                    <Icon.CaretRight size={14} className='text-secondary2' />
-                                    <div className='text-secondary2 capitalize'>{dataType === null ? 'Shop' : dataType}</div>
-                                </div>
+                                {(() => {
+                                    const currentCategorySlug = searchParams.get('category') || null
+                                    return currentCategorySlug ? (
+                                        <div className="link flex items-center justify-center gap-1 caption1 mt-3">
+                                            <Link href={'/'}>Homepage</Link>
+                                            <Icon.CaretRight size={14} className='text-secondary2' />
+                                            <Link href={'/shop'}>Shop</Link>
+                                            <Icon.CaretRight size={14} className='text-secondary2' />
+                                            <div className='text-secondary2 capitalize'>{dataType === null ? 'Shop' : dataType}</div>
+                                        </div>
+                                    ) : null
+                                })()}
                             </div>
-                            <div className="list-tab flex flex-wrap items-center justify-center gap-y-5 gap-8 lg:mt-[70px] mt-12 overflow-hidden">
-                                {['t-shirt', 'dress', 'top', 'swimwear', 'shirt'].map((item, index) => (
-                                    <div
-                                        key={index}
-                                        className={`tab-item text-button-uppercase cursor-pointer has-line-before line-2px ${dataType === item ? 'active' : ''}`}
-                                        onClick={() => handleType(item)}
-                                    >
-                                        {item}
-                                    </div>
-                                ))}
-                            </div>
+                            <CategoryTabs initialCategories={initialCategories as any} />
                         </div>
                     </div>
                 </div>
@@ -240,42 +318,21 @@ const ShopSidebarList: React.FC<Props> = ({ data, productPerPage, dataType }) =>
                                         >
                                             <div className='text-secondary has-line-before hover:text-black capitalize'>{item}</div>
                                             <div className='text-secondary2'>
-                                                ({data.filter(dataItem => dataItem.type === item && dataItem.category === 'fashion').length})
+                                                ({data.filter(dataItem => (dataItem.type || '').toLowerCase() === item.toLowerCase()).length})
                                             </div>
                                         </div>
                                     ))}
-                                </div>
-                            </div>
-                            <div className="filter-size pb-8 border-b border-line mt-8">
-                                <div className="heading6">Size</div>
-                                <div className="list-size flex items-center flex-wrap gap-3 gap-y-4 mt-4">
-                                    {
-                                        ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'].map((item, index) => (
-                                            <div
-                                                key={index}
-                                                className={`size-item text-button w-[44px] h-[44px] flex items-center justify-center rounded-full border border-line ${size === item ? 'active' : ''}`}
-                                                onClick={() => handleSize(item)}
-                                            >
-                                                {item}
-                                            </div>
-                                        ))
-                                    }
-                                    <div
-                                        className={`size-item text-button px-4 py-2 flex items-center justify-center rounded-full border border-line ${size === 'freesize' ? 'active' : ''}`}
-                                        onClick={() => handleSize('freesize')}
-                                    >
-                                        Freesize
-                                    </div>
                                 </div>
                             </div>
                             <div className="filter-price pb-8 border-b border-line mt-8">
                                 <div className="heading6">Price Range</div>
                                 <Slider
                                     range
-                                    defaultValue={[0, 100]}
-                                    min={0}
-                                    max={100}
+                                    value={[priceRange.min, priceRange.max]}
+                                    min={priceBounds.min}
+                                    max={priceBounds.max}
                                     onChange={handlePriceChange}
+                                    onAfterChange={handlePriceAfterChange}
                                     className='mt-5'
                                 />
                                 <div className="price-block flex items-center justify-between flex-wrap mt-4">
@@ -293,90 +350,12 @@ const ShopSidebarList: React.FC<Props> = ({ data, productPerPage, dataType }) =>
                                     </div>
                                 </div>
                             </div>
-                            <div className="filter-color pb-8 border-b border-line mt-8">
-                                <div className="heading6">colors</div>
-                                <div className="list-color flex items-center flex-wrap gap-3 gap-y-4 mt-4">
-                                    <div
-                                        className={`color-item px-3 py-[5px] flex items-center justify-center gap-2 rounded-full border border-line ${color === 'pink' ? 'active' : ''}`}
-                                        onClick={() => handleColor('pink')}
-                                    >
-                                        <div className="color bg-[#F4C5BF] w-5 h-5 rounded-full"></div>
-                                        <div className="caption1 capitalize">pink</div>
-                                    </div>
-                                    <div
-                                        className={`color-item px-3 py-[5px] flex items-center justify-center gap-2 rounded-full border border-line ${color === 'red' ? 'active' : ''}`}
-                                        onClick={() => handleColor('red')}
-                                    >
-                                        <div className="color bg-red w-5 h-5 rounded-full"></div>
-                                        <div className="caption1 capitalize">red</div>
-                                    </div>
-                                    <div
-                                        className={`color-item px-3 py-[5px] flex items-center justify-center gap-2 rounded-full border border-line ${color === 'green' ? 'active' : ''}`}
-                                        onClick={() => handleColor('green')}
-                                    >
-                                        <div className="color bg-green w-5 h-5 rounded-full"></div>
-                                        <div className="caption1 capitalize">green</div>
-                                    </div>
-                                    <div
-                                        className={`color-item px-3 py-[5px] flex items-center justify-center gap-2 rounded-full border border-line ${color === 'yellow' ? 'active' : ''}`}
-                                        onClick={() => handleColor('yellow')}
-                                    >
-                                        <div className="color bg-yellow w-5 h-5 rounded-full"></div>
-                                        <div className="caption1 capitalize">yellow</div>
-                                    </div>
-                                    <div
-                                        className={`color-item px-3 py-[5px] flex items-center justify-center gap-2 rounded-full border border-line ${color === 'purple' ? 'active' : ''}`}
-                                        onClick={() => handleColor('purple')}
-                                    >
-                                        <div className="color bg-purple w-5 h-5 rounded-full"></div>
-                                        <div className="caption1 capitalize">purple</div>
-                                    </div>
-                                    <div
-                                        className={`color-item px-3 py-[5px] flex items-center justify-center gap-2 rounded-full border border-line ${color === 'black' ? 'active' : ''}`}
-                                        onClick={() => handleColor('black')}
-                                    >
-                                        <div className="color bg-black w-5 h-5 rounded-full"></div>
-                                        <div className="caption1 capitalize">black</div>
-                                    </div>
-                                    <div
-                                        className={`color-item px-3 py-[5px] flex items-center justify-center gap-2 rounded-full border border-line ${color === 'white' ? 'active' : ''}`}
-                                        onClick={() => handleColor('white')}
-                                    >
-                                        <div className="color bg-[#F6EFDD] w-5 h-5 rounded-full"></div>
-                                        <div className="caption1 capitalize">white</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="filter-brand mt-8">
-                                <div className="heading6">Brands</div>
-                                <div className="list-brand mt-4">
-                                    {['adidas', 'hermes', 'zara', 'nike', 'gucci'].map((item, index) => (
-                                        <div key={index} className="brand-item flex items-center justify-between">
-                                            <div className="left flex items-center cursor-pointer">
-                                                <div className="block-input">
-                                                    <input
-                                                        type="checkbox"
-                                                        name={item}
-                                                        id={item}
-                                                        checked={brand === item}
-                                                        onChange={() => handleBrand(item)} />
-                                                    <Icon.CheckSquare size={20} weight='fill' className='icon-checkbox' />
-                                                </div>
-                                                <label htmlFor={item} className="brand-name capitalize pl-2 cursor-pointer">{item}</label>
-                                            </div>
-                                            <div className='text-secondary2'>
-                                                ({data.filter(dataItem => dataItem.brand === item && dataItem.category === 'fashion').length})
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
                         </div>
                         <div className="list-product-block lg:w-3/4 md:w-2/3 w-full md:pl-3">
                             <div className="filter-heading flex items-center justify-between gap-5 flex-wrap">
                                 <div className="left flex has-line items-center flex-wrap gap-5">
                                     <div className="choose-layout flex items-center gap-2">
-                                        <Link href={'/shop/breadcrumb1'} className="item three-col w-8 h-8 border border-line rounded flex items-center justify-center cursor-pointer">
+<Link href={'/shop'} className="item three-col w-8 h-8 border border-line rounded flex items-center justify-center cursor-pointer">
                                             <div className='flex items-center gap-0.5'>
                                                 <span className='w-[3px] h-4 bg-secondary2 rounded-sm'></span>
                                                 <span className='w-[3px] h-4 bg-secondary2 rounded-sm'></span>
@@ -398,6 +377,7 @@ const ShopSidebarList: React.FC<Props> = ({ data, productPerPage, dataType }) =>
                                             id="filter-sale"
                                             className='border-line'
                                             onChange={handleShowOnlySale}
+                                            checked={showOnlySale}
                                         />
                                         <label htmlFor="filter-sale" className='cation1 cursor-pointer'>Show only products on sale</label>
                                     </div>
@@ -428,17 +408,20 @@ const ShopSidebarList: React.FC<Props> = ({ data, productPerPage, dataType }) =>
                                     {totalProducts}
                                     <span className='text-secondary pl-1'>Products Found</span>
                                 </div>
+                                {/* URL-driven active filter tags (category, on_sale, price, type, brand) */}
+                                <ActiveFiltersBar
+                                    includeKeys={["category","on_sale","price_min","price_max","type","brand"]}
+                                    onClearAll={() => {
+                                        // clear local non-URL filters
+                                        setSize(null)
+                                        setColor(null)
+                                    }}
+                                />
                                 {
-                                    (selectedType || selectedSize || selectedColor || selectedBrand) && (
+                                    (selectedSize || selectedColor) && (
                                         <>
                                             <div className="list flex items-center gap-3">
                                                 <div className='w-px h-4 bg-line'></div>
-                                                {selectedType && (
-                                                    <div className="item flex items-center px-2 py-1 gap-1 bg-linear rounded-full capitalize" onClick={() => { setType(null) }}>
-                                                        <Icon.X className='cursor-pointer' />
-                                                        <span>{selectedType}</span>
-                                                    </div>
-                                                )}
                                                 {selectedSize && (
                                                     <div className="item flex items-center px-2 py-1 gap-1 bg-linear rounded-full capitalize" onClick={() => { setSize(null) }}>
                                                         <Icon.X className='cursor-pointer' />
@@ -451,33 +434,49 @@ const ShopSidebarList: React.FC<Props> = ({ data, productPerPage, dataType }) =>
                                                         <span>{selectedColor}</span>
                                                     </div>
                                                 )}
-                                                {selectedBrand && (
-                                                    <div className="item flex items-center px-2 py-1 gap-1 bg-linear rounded-full capitalize" onClick={() => { setBrand(null) }}>
-                                                        <Icon.X className='cursor-pointer' />
-                                                        <span>{selectedBrand}</span>
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <div
-                                                className="clear-btn flex items-center px-2 py-1 gap-1 rounded-full border border-red cursor-pointer"
-                                                onClick={handleClearAll}
-                                            >
-                                                <Icon.X color='rgb(219, 68, 68)' className='cursor-pointer' />
-                                                <span className='text-button-uppercase text-red'>Clear All</span>
                                             </div>
                                         </>
                                     )
                                 }
                             </div>
 
-                            <div className="list-product hide-product-sold flex flex-col gap-8 mt-7">
-                                {currentProducts.map((item) => (
-                                    item.id === 'no-data' ? (
-                                        <div key={item.id} className="no-data-product">No products match the selected criteria.</div>
+                            <div className="list-product hide-product-sold mt-7">
+                                {currentProducts.length === 0 ? (
+                                    <div className="no-data-product">No products match the selected criteria.</div>
+                                ) : (
+                                    // 仅在条目数较大时启用虚拟滚动（阈值可配置），否则保持原有渲染以避免样式裁剪与双滚动条问题
+                                    (currentProducts.length > virtualThreshold ? (
+                                        <ReactWindowList
+                                            height={800}
+                                            width={'100%'}
+                                            itemCount={currentProducts.length}
+                                            itemSize={360}
+                                        >
+                                            {({ index, style }: { index: number; style: React.CSSProperties }) => {
+                                                const item = currentProducts[index] as ProductType & { id: string }
+                                                return (
+                                                    <div style={style} key={item.id}>
+                                                        {item.id === 'no-data' ? (
+                                                            <div className="no-data-product">No products match the selected criteria.</div>
+                                                        ) : (
+                                                            <Product data={item} type='list' priority={index < priorityCount} disableBlur disablePrefetchDetail />
+                                                        )}
+                                                    </div>
+                                                )
+                                            }}
+                                        </ReactWindowList>
                                     ) : (
-                                        <Product key={item.id} data={item} type='list' />
-                                    )
-                                ))}
+                                        <div className="flex flex-col gap-8">
+                                            {currentProducts.map((item, index) => (
+                                                item.id === 'no-data' ? (
+                                                    <div key={item.id} className="no-data-product">No products match the selected criteria.</div>
+                                                ) : (
+                                                    <Product key={item.id} data={item} type='list' priority={index < priorityCount} disableBlur disablePrefetchDetail />
+                                                )
+                                            ))}
+                                        </div>
+                                    ))
+                                )}
                             </div>
 
                             {pageCount > 1 && (

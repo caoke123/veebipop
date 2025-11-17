@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react'
 import * as Icon from "@phosphor-icons/react/dist/ssr";
 import { ProductType } from '@/type/ProductType'
 import { useModalQuickviewContext } from '@/context/ModalQuickviewContext';
+import { formatPrice } from '@/utils/priceFormat'
 import Image from 'next/image';
 
 const ModalNewsletter = () => {
@@ -13,9 +14,8 @@ const ModalNewsletter = () => {
     const { openQuickview } = useModalQuickviewContext()
     const [products, setProducts] = useState<ProductType[]>([])
 
-    const handleDetailProduct = (productId: string) => {
-        // redirect to shop with category selected
-    router.push(`/product/thumbnail-bottom?id=${productId}`);
+    const handleDetailProduct = (productSlug: string) => {
+        router.push(`/product/${productSlug}`)
     };
 
     useEffect(() => {
@@ -69,7 +69,7 @@ const ModalNewsletter = () => {
                                     >
                                         <div
                                             className="infor flex items-center gap-5 cursor-pointer"
-                                            onClick={() => handleDetailProduct(item.id)}
+                                            onClick={() => handleDetailProduct(item.slug || String(item.id))}
                                         >
                                             <div className="bg-img flex-shrink-0">
                                                 <Image width={5000} height={5000} src={item.thumbImage[0]} alt={item.name}
@@ -78,9 +78,9 @@ const ModalNewsletter = () => {
                                             <div className=''>
                                                 <div className="name text-button">{item.name}</div>
                                                 <div className="flex items-center gap-2 mt-2">
-                                                    <div className="product-price text-title">${item.price}.00</div>
+                                                    <div className="product-price text-title">{formatPrice(item.price)}</div>
                                                     <div className="product-origin-price text-title text-secondary2">
-                                                        <del>${item.originPrice}.00</del>
+                                                        <del>{formatPrice(item.originPrice)}</del>
                                                     </div>
                                                 </div>
                                             </div>

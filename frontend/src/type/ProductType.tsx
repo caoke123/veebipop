@@ -5,6 +5,18 @@ interface Variation {
     image: string;
 }
 
+// ACF fields interface for WordPress custom fields
+export interface ProductACF {
+    product_markdown_description?: string;
+    product_image_gallery?: Array<{
+        id?: number;
+        url?: string;
+        alt?: string;
+        caption?: string;
+    }>;
+    [key: string]: any; // Allow for additional ACF fields
+}
+
 export interface ProductType {
     id: string,
     category: string,
@@ -24,7 +36,15 @@ export interface ProductType {
     variation: Variation[],
     thumbImage: Array<string>,
     images: Array<string>,
+    imageStatus?: 'mapped' | 'fallback' | 'empty',
+    imageDiagnostics?: { srcCount?: number; metaCount?: number; defaultApplied?: string },
+    selectedSize?: string,
+    selectedColor?: string,
     description: string,
     action: string,
-    slug: string
+    slug: string,
+    tags?: Array<{id: number, name: string, slug: string}>,
+    categories?: Array<{id: number, name: string, slug: string}>,
+    acf?: ProductACF,
+    meta_data?: Array<{key?: string, value?: any}>
 }

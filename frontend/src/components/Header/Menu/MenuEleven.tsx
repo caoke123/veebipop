@@ -7,7 +7,8 @@ import { useRouter } from 'next/navigation'
 import * as Icon from "@phosphor-icons/react/dist/ssr";
 import { usePathname } from 'next/navigation';
 import Product from '@/components/Product/Product';
-import useLoginPopup from '@/store/useLoginPopup';
+import productData from '@/data/Product.json'
+import { useAuth } from '@/contexts/AuthContext';
 import useShopDepartmentPopup from '@/store/useShopDepartmentPopup';
 import useMenuMobile from '@/store/useMenuMobile';
 import { useModalCartContext } from '@/context/ModalCartContext';
@@ -19,7 +20,7 @@ import MobileMenu from './MobileMenu'
 
 const MenuEleven = () => {
     const pathname = usePathname()
-    const { openLoginPopup, handleLoginPopup } = useLoginPopup()
+    const { user, logout } = useAuth()
     const { openShopDepartmentPopup, handleShopDepartmentPopup } = useShopDepartmentPopup()
     const { openMenuMobile, handleMenuMobile } = useMenuMobile()
     const { openModalCart } = useModalCartContext()
@@ -41,18 +42,24 @@ const MenuEleven = () => {
 
     useEffect(() => {
         const handleScroll = () => {
+            // 检查是否在浏览器环境中
+            if (typeof window === 'undefined') return;
+            
             const scrollPosition = window.scrollY;
             setFixedHeader(scrollPosition > 0 && scrollPosition < lastScrollPosition);
             setLastScrollPosition(scrollPosition);
         };
 
-        // Gắn sự kiện cuộn khi component được mount
-        window.addEventListener('scroll', handleScroll);
+        // 只有在浏览器环境中才添加事件监听器
+        if (typeof window !== 'undefined') {
+            // Gắn sự kiện cuộn khi component được mount
+            window.addEventListener('scroll', handleScroll);
 
-        // Hủy sự kiện khi component bị unmount
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-        };
+            // Hủy sự kiện khi component bị unmount
+            return () => {
+                window.removeEventListener('scroll', handleScroll);
+            };
+        }
     }, [lastScrollPosition]);
 
     // Removed legacy filter navigation handlers in favor of semantic <Link> usage
@@ -89,14 +96,13 @@ const MenuEleven = () => {
                                 <nav className="h-full" aria-label="Primary navigation">
                                     <ul className="flex items-center gap-8">
                                         {navigationData.map((item) => (
+                                            
                                             item.children && item.children.length > 0 ? (
                                                 <li key={item.key} className="group relative">
                                                     <Link
                                                         href={item.children[0].href}
-                                                        className={`relative inline-flex items-center py-2.5 text-lg uppercase tracking-wide ${
-                                                            isActiveItem(item)
-                                                                ? 'text-black font-normal after:content-[""] after:absolute after:left-0 after:w-full after:h-[2px] after:bg-black after:-bottom-0.5'
-                                                                : 'text-black font-normal after:content-[""] after:absolute after:left-0 after:w-0 after:h-[2px] after:bg-black after:-bottom-0.5'
+                                                        className={`inline-flex items-center py-2 text-sm ${
+                                                            isActiveItem(item) ? 'text-black font-semibold' : 'text-secondary'
                                                         }`}
                                                     >
                                                         {item.label}
@@ -123,10 +129,8 @@ const MenuEleven = () => {
                                                 <li key={item.key}>
                                                     <Link
                                                         href={item.href || '#'}
-                                                        className={`relative inline-flex items-center py-2.5 text-lg uppercase tracking-wide ${
-                                                            isActiveItem(item)
-                                                                ? 'text-black font-normal after:content-[""] after:absolute after:left-0 after:w-full after:h-[2px] after:bg-black after:-bottom-0.5'
-                                                                : 'text-black font-normal after:content-[""] after:absolute after:left-0 after:w-0 after:h-[2px] after:bg-black after:-bottom-0.5'
+                                                        className={`inline-flex items-center py-2 text-sm ${
+                                                            isActiveItem(item) ? 'text-black font-semibold' : 'text-secondary'
                                                         }`}
                                                     >
                                                         {item.label}
@@ -139,19 +143,36 @@ const MenuEleven = () => {
                             </div>
                             <div className="right flex gap-12">
                                 <div className="list-action flex items-center gap-4">
-                                    <div className="user-icon flex items-center justify-center cursor-pointer">
-                                        <Icon.User size={24} color='black' onClick={handleLoginPopup} />
-                                        <div
-                                            className={`login-popup absolute top-[74px] w-[320px] p-7 rounded-xl bg-white box-shadow-sm 
-                                                ${openLoginPopup ? 'open' : ''}`}
-                                        >
-                                            <Link href={'/login'} className="button-main w-full text-center">Login</Link>
-                                            <div className="text-secondary text-center mt-3 pb-4">Don’t have an account?
-                                                <Link href={'/register'} className='text-black pl-1 hover:underline'>Register</Link>
-                                            </div>
-                                            <Link href={'/my-account'} className="button-main bg-white text-black border border-black w-full text-center">Dashboard</Link>
-                                            <div className="bottom mt-4 pt-4 border-t border-line"></div>
-                                            <Link href={'#!'} className='body1 hover:underline'>Support</Link>
+                                    <div className="user-icon flex items-center justify-center cursor-pointer relative group">
+                                        <Icon.User size={24} color='black' />
+                                        <div className="login-popup absolute top-[74px] right-0 w-[320px] p-7 rounded-xl bg-white box-shadow-sm opacity-0 invisible group-hover:opacity-100 group-hover:visible z-50 transition-all duration-300">
+                                            {user ? (
+                                                <div>
+                                                    <div className="text-center mb-4">
+                                                        <p className="text-sm text-secondary">Welcome back,</p>
+                                                        <p className="font-semibold text-lg">{user.first_name || user.username || user.email}</p>
+                                                    </div>
+                                                    <Link href={'/my-account'} className="button-main bg-white text-black border border-black w-full text-center block mb-3">My Account</Link>
+                                                    <button 
+                                                        onClick={logout}
+                                                        className="button-main w-full"
+                                                    >
+                                                        Logout
+                                                    </button>
+                                                    <div className="bottom mt-4 pt-4 border-t border-line"></div>
+                                                    <Link href={'#!'} className='body1 hover:underline block text-center'>Support</Link>
+                                                </div>
+                                            ) : (
+                                                <div>
+                                                    <Link href={'/login'} className="button-main w-full text-center">Login</Link>
+                                                    <div className="text-secondary text-center mt-3 pb-4">Don't have an account?
+                                                        <Link href={'/register'} className='text-black pl-1 hover:underline'>Register</Link>
+                                                    </div>
+                                                    <Link href={'/my-account'} className="button-main bg-white text-black border border-black w-full text-center">Dashboard</Link>
+                                                    <div className="bottom mt-4 pt-4 border-t border-line"></div>
+                                                    <Link href={'#!'} className='body1 hover:underline'>Support</Link>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                     <div className="max-md:hidden wishlist-icon flex items-center cursor-pointer" onClick={openModalWishlist}>
@@ -166,8 +187,8 @@ const MenuEleven = () => {
                         </div>
                     </div>
                 </div>
-                <div className="w-full h-px bg-line mt-2" aria-hidden="true"></div>
 
+               
             </div>
 
             <MobileMenu open={openMenuMobile} onClose={handleMenuMobile} pathname={pathname || '/'} />

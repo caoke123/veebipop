@@ -1,14 +1,18 @@
 'use client'
 
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect, useMemo } from 'react'
 import Image from 'next/image'
+import BlurImage from '@/components/common/BlurImage'
+import { getBlurDataURL } from '@/utils/imagePlaceholders'
 import Link from 'next/link'
 import { ProductType } from '@/type/ProductType'
 import Product from '../Product'
 import Rate from '@/components/Other/Rate'
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Thumbs, Scrollbar } from 'swiper/modules';
-import 'swiper/css/bundle';
+import { Navigation, Thumbs } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/thumbs';
 import * as Icon from "@phosphor-icons/react/dist/ssr";
 import SwiperCore from 'swiper/core';
 import { useCart } from '@/context/CartContext'
@@ -18,15 +22,112 @@ import { useModalWishlistContext } from '@/context/ModalWishlistContext'
 import { useCompare } from '@/context/CompareContext'
 import { useModalCompareContext } from '@/context/ModalCompareContext'
 import ModalSizeguide from '@/components/Modal/ModalSizeguide'
+import { formatPrice } from '@/utils/priceFormat'
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import './ProductDetail.css'; // 导入新的样式文件
+
+// Dynamic import for DOMPurify to avoid server-side issues
+let DOMPurify: any = null;
+const loadDOMPurify = async () => {
+  if (typeof window !== 'undefined' && !DOMPurify) {
+    const module = await import('isomorphic-dompurify');
+    DOMPurify = module.default;
+    
+    // Apply hooks only once and only on client side
+    if (DOMPurify && !DOMPurify.hooksApplied) {
+      const ALLOWED_IFRAME_HOSTS = [
+        'www.youtube.com', 'youtube.com', 'youtu.be', 'player.vimeo.com'
+      ];
+
+      DOMPurify.addHook('afterSanitizeAttributes', (node: Element) => {
+        const name = node.nodeName;
+        // External links: ensure rel and target are safe
+        if (name === 'A') {
+          const href = node.getAttribute('href') || '';
+          if (/^(https?:)?\/\//i.test(href)) {
+            if (!node.getAttribute('rel')) node.setAttribute('rel', 'noopener noreferrer');
+            if (!node.getAttribute('target')) node.setAttribute('target', '_blank');
+          }
+        }
+
+        // Restrict iframe sources to known hosts; add sandbox and referrer policy
+        if (name === 'IFRAME') {
+          const src = node.getAttribute('src') || '';
+          try {
+            const url = new URL(src, window.location.origin);
+            const host = url.hostname.toLowerCase();
+            if (!ALLOWED_IFRAME_HOSTS.includes(host)) {
+              node.parentNode && node.parentNode.removeChild(node);
+            } else {
+              if (!node.getAttribute('sandbox')) node.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation');
+              if (!node.getAttribute('referrerpolicy')) node.setAttribute('referrerpolicy', 'no-referrer');
+            }
+          } catch (e) {
+            node.parentNode && node.parentNode.removeChild(node);
+          }
+        }
+
+        // Ensure media/image src protocols are http(s) or data; strip others
+        if (name === 'IMG' || name === 'VIDEO' || name === 'AUDIO' || name === 'SOURCE') {
+          const src = node.getAttribute('src') || node.getAttribute('srcset') || '';
+          if (src && !/^(https?:|data:)/i.test(src)) {
+            node.removeAttribute('src');
+            node.removeAttribute('srcset');
+          }
+        }
+      });
+      
+      DOMPurify.hooksApplied = true;
+    }
+  }
+  return DOMPurify;
+};
 
 SwiperCore.use([Navigation, Thumbs]);
 
+// Centralized DOMPurify options for rich HTML while keeping safety
+const SANITIZE_OPTIONS = {
+    ADD_TAGS: [
+        // media
+        'img', 'picture', 'source', 'iframe', 'video', 'audio', 'track',
+        // tables
+        'table', 'thead', 'tbody', 'tr', 'td', 'th', 'caption', 'colgroup', 'col',
+        // content
+        'figure', 'figcaption', 'blockquote', 'hr', 'pre', 'code',
+        'ul', 'ol', 'li', 'span', 'small', 'strong', 'em', 'u', 's', 'sup', 'sub',
+        'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+        // image map
+        'map', 'area'
+    ],
+    ADD_ATTR: [
+        // common
+        'class', 'style', 'id',
+        // links
+        'href', 'target', 'rel', 'download', 'name',
+        // images
+        'src', 'srcset', 'sizes', 'alt', 'title', 'width', 'height', 'loading', 'decoding', 'referrerpolicy', 'usemap',
+        // picture/source
+        'media', 'type',
+        // iframe
+        'allow', 'allowfullscreen', 'frameborder', 'sandbox', 'referrerpolicy',
+        // video/audio
+        'controls', 'autoplay', 'muted', 'loop', 'playsinline', 'poster', 'preload', 'controlsList', 'crossorigin',
+        // track
+        'kind', 'srclang', 'label', 'default',
+        // area
+        'coords', 'shape'
+    ],
+    ALLOW_DATA_ATTR: true
+};
+
 interface Props {
     data: Array<ProductType>
-    productId: string | number | null
+    // Accept either slug or id as the product selector
+    productKey: string | number | null
 }
 
-const Sale: React.FC<Props> = ({ data, productId }) => {
+const Sale: React.FC<Props> = ({ data, productKey }) => {
     const swiperRef: any = useRef();
     const [photoIndex, setPhotoIndex] = useState(0)
     const [openPopupImg, setOpenPopupImg] = useState(false)
@@ -35,18 +136,174 @@ const Sale: React.FC<Props> = ({ data, productId }) => {
     const [activeColor, setActiveColor] = useState<string>('')
     const [activeSize, setActiveSize] = useState<string>('')
     const [activeTab, setActiveTab] = useState<string | undefined>('description')
+    const [domPurifyLoaded, setDomPurifyLoaded] = useState(false)
     const { addToCart, updateCart, cartState } = useCart()
     const { openModalCart } = useModalCartContext()
     const { addToWishlist, removeFromWishlist, wishlistState } = useWishlist()
     const { openModalWishlist } = useModalWishlistContext()
     const { addToCompare, removeFromCompare, compareState } = useCompare();
     const { openModalCompare } = useModalCompareContext()
-    let productMain = data.find(product => product.id === productId) as ProductType
+    
+    // Find the main product based on productKey - consistent on both server and client
+    const key = productKey == null ? '' : String(productKey)
+    let productMain = data.find(p => String(p.slug || '') === key) as ProductType
+    if (productMain === undefined) {
+        productMain = data.find(p => String(p.id) === key) as ProductType
+    }
     if (productMain === undefined) {
         productMain = data[0]
     }
+    
+    // 提取产品数据
+    // 确保 product 对象已在组件作用域内可用，例如通过 props 传入
+    // 假设 product 对象结构为 { id: ..., name: ..., acf: { product_markdown_description: "...", product_image_gallery: [...] } }
+    const markdownContent = productMain?.acf?.product_markdown_description || "";
+    const imageGallery = productMain?.acf?.product_image_gallery || []; // 确保是个数组
+    
+    // Debug markdown content
+    useEffect(() => {
+        console.log('Product Main Object:', productMain);
+        console.log('Product ACF:', productMain?.acf);
+        console.log('Markdown Content:', markdownContent);
+        console.log('Markdown Content Length:', markdownContent.length);
+        console.log('Image Gallery:', imageGallery);
+    }, [productMain, markdownContent, imageGallery]);
+    
+    // Load DOMPurify on client side
+    useEffect(() => {
+        if (!domPurifyLoaded) {
+            loadDOMPurify().then(() => {
+                console.log('DOMPurify loaded successfully');
+                setDomPurifyLoaded(true);
+            }).catch(error => {
+                console.error('Failed to load DOMPurify:', error);
+                // Still set to true to prevent infinite loading attempts
+                setDomPurifyLoaded(true);
+            });
+        }
+    }, [domPurifyLoaded]);
+    
+    // Debug product description
+    useEffect(() => {
+        if (productMain && productMain.description) {
+            console.log('Product description length:', productMain.description.length);
+            console.log('Product description preview:', productMain.description.substring(0, 100));
+        }
+    }, [productMain]);
+    
+    // Helper function to safely render HTML content
+    const getSafeHTML = (htmlContent: string | undefined | null) => {
+        if (!htmlContent) return { __html: '' };
+        
+        // On server side or before DOMPurify loads, return empty string to avoid hydration mismatch
+        if (typeof window === 'undefined' || !domPurifyLoaded || !DOMPurify) {
+            return { __html: '' };
+        }
+        
+        try {
+            return { __html: DOMPurify.sanitize(htmlContent, SANITIZE_OPTIONS) };
+        } catch (error) {
+            console.error('Error sanitizing HTML:', error);
+            return { __html: '' };
+        }
+    };
 
-    const percentSale = Math.floor(100 - ((productMain.price / productMain.originPrice) * 100))
+    // Index of the selected product, used for related products section (legacy)
+    const selectedIndex = productMain ? Math.max(0, data.findIndex(p => p.id === productMain.id)) : 0
+    // Related products: same category, exclude current; fill with others to reach minimum 4, maximum grid capacity
+    const sameCategory = productMain ? data.filter(p => p.category === productMain.category && p.id !== productMain.id) : []
+    const needed = productMain ? Math.max(0, 8 - sameCategory.length) : 0 // Increase target to 8 for better fill rate
+    const others = productMain && needed > 0
+        ? data.filter(p => p.id !== productMain.id && !sameCategory.some(s => s.id === p.id)).slice(0, needed)
+        : []
+    let relatedProducts = productMain ? [...sameCategory.slice(0, 8), ...others] : []
+    
+    // Debug related products calculation
+    useEffect(() => {
+        console.log('=== Related Products Debug ===')
+        console.log('productMain:', productMain?.name, 'ID:', productMain?.id, 'Category:', productMain?.category)
+        console.log('data.length:', data.length)
+        console.log('sameCategory.length:', sameCategory.length)
+        console.log('sameCategory:', sameCategory.map(p => ({name: p.name, id: p.id, category: p.category})))
+        console.log('needed:', needed)
+        console.log('others:', others.map(p => ({name: p.name, id: p.id, category: p.category})))
+        console.log('final relatedProducts:', relatedProducts.length)
+        console.log('relatedProducts:', relatedProducts.map(p => ({name: p.name, id: p.id, category: p.category})))
+    }, [productMain, data, sameCategory, others, relatedProducts])
+    
+    // Enhanced fallback strategy: If still no products, use any available products
+    if (productMain && relatedProducts.length === 0 && data.length > 1) {
+        // Get first 4 products that are not the current product
+        relatedProducts = data.filter(p => p.id !== productMain.id).slice(0, 4)
+    }
+    
+    // Final safety check: If still no products, create placeholder products
+    if (productMain && relatedProducts.length === 0) {
+        // Create placeholder products based on current product's category/type
+        const placeholderCount = Math.min(4, Math.max(1, data.length - 1))
+        const availableProducts = data.filter(p => p.id !== productMain.id)
+        if (availableProducts.length > 0) {
+            // Repeat available products to fill the grid
+            const repeatedProducts = []
+            for (let i = 0; i < placeholderCount; i++) {
+                repeatedProducts.push(availableProducts[i % availableProducts.length])
+            }
+            relatedProducts = repeatedProducts
+        }
+    }
+
+    // Calculate percentSale on both server and client to avoid hydration mismatch
+    const [percentSale, setPercentSale] = useState(0)
+    const [hydrated, setHydrated] = useState(false)
+    
+    // 使用useMemo确保服务器端和客户端的计算结果一致
+    const viewCount = useMemo(() => {
+        // 使用产品ID的哈希值生成确定的值，确保服务器端和客户端结果一致
+        if (!productMain?.id) return 64;
+        
+        const productId = String(productMain.id);
+        let hash = 0;
+        for (let i = 0; i < productId.length; i++) {
+            const char = productId.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash; // 转换为32位整数
+        }
+        
+        // 确保值在1-100范围内
+        return Math.abs(hash % 100) + 1;
+    }, [productMain?.id]); // 使用productMain?.id作为依赖确保一致
+
+    const categoryDisplay = useMemo(() => {
+        // 确保服务器端和客户端使用相同的计算逻辑
+        if (!productMain?.category && !productMain?.gender) {
+            return 'art-toys, unisex'; // 完全无数据时的默认值
+        }
+        
+        // 基于productMain数据计算，但提供一致的默认值
+        const category = productMain?.category || 'art-toys';
+        const gender = productMain?.gender || 'unisex';
+        
+        return `${category}, ${gender}`;
+    }, [productMain?.category, productMain?.gender]);
+    
+    // Calculate percentSale on server-side first
+    useMemo(() => {
+        if (productMain && productMain.originPrice && productMain.price && productMain.price > 0 && productMain.originPrice > 0) {
+            const calculatedPercent = Math.floor(100 - ((productMain.price / productMain.originPrice) * 100))
+            setPercentSale(Math.max(0, calculatedPercent))
+        }
+    }, [productMain])
+    
+    useEffect(() => {
+        // Set hydrated to true after client-side hydration
+        setHydrated(true);
+        
+        // Recalculate on client to ensure accuracy
+        if (productMain && productMain.originPrice && productMain.price && productMain.price > 0 && productMain.originPrice > 0) {
+            const calculatedPercent = Math.floor(100 - ((productMain.price / productMain.originPrice) * 100))
+            setPercentSale(Math.max(0, calculatedPercent))
+        }
+    }, [productMain])
 
     const handleOpenSizeGuide = () => {
         setOpenSizeGuide(true);
@@ -57,8 +314,9 @@ const Sale: React.FC<Props> = ({ data, productId }) => {
     };
 
     const handleSwiper = (swiper: SwiperCore) => {
-        // Do something with the thumbsSwiper instance
-        setThumbsSwiper(swiper);
+        // Defer state update to avoid React warning in dev overlay about
+        // updating state during render of a different component.
+        setTimeout(() => setThumbsSwiper(swiper), 0);
     };
 
     const handleActiveColor = (item: string) => {
@@ -70,31 +328,65 @@ const Sale: React.FC<Props> = ({ data, productId }) => {
     }
 
     const handleIncreaseQuantity = () => {
-        productMain.quantityPurchase += 1
-        updateCart(productMain.id, productMain.quantityPurchase + 1, activeSize, activeColor);
+        if (productMain) {
+            productMain.quantityPurchase = (productMain.quantityPurchase || 0) + 1;
+            updateCart(String(productMain.id), productMain.quantityPurchase, activeSize || '', activeColor || '');
+        }
     };
 
     const handleDecreaseQuantity = () => {
-        if (productMain.quantityPurchase > 1) {
+        if (productMain && productMain.quantityPurchase > 1) {
             productMain.quantityPurchase -= 1
-            updateCart(productMain.id, productMain.quantityPurchase - 1, activeSize, activeColor);
+            updateCart(String(productMain.id), productMain.quantityPurchase, activeSize || '', activeColor || '');
         }
     };
 
     const handleAddToCart = () => {
-        if (!cartState.cartArray.find(item => item.id === productMain.id)) {
-            addToCart({ ...productMain });
-            updateCart(productMain.id, productMain.quantityPurchase, activeSize, activeColor)
-        } else {
-            updateCart(productMain.id, productMain.quantityPurchase, activeSize, activeColor)
+        try {
+            // Ensure we have product data
+            if (!productMain) {
+                console.error('Product data is not available');
+                return;
+            }
+
+            // Create a safe product object to add to cart
+            const productToAdd = {
+                ...productMain,
+                quantityPurchase: productMain.quantityPurchase > 0 ? productMain.quantityPurchase : 1,
+                selectedSize: activeSize || '',
+                selectedColor: activeColor || ''
+            };
+
+            // Check if item already exists in cart
+            const existingItem = productMain 
+                ? cartState?.cartArray?.find(item => String(item.id) === String(productMain.id)) 
+                : null;
+            
+            // Add or update in cart
+            if (!existingItem) {
+                // Add new item to cart
+                addToCart(productToAdd);
+            } else {
+                // Update existing item with current quantity and selections
+                updateCart(
+                    String(productMain.id), 
+                    productToAdd.quantityPurchase, 
+                    activeSize || '', 
+                    activeColor || ''
+                );
+            }
+            
+            // Open cart modal
+            openModalCart();
+        } catch (error) {
+            console.error('Error adding product to cart:', error);
         }
-        openModalCart()
     };
     const handleAddToWishlist = () => {
         // if product existed in wishlit, remove from wishlist and set state to false
-        if (wishlistState.wishlistArray.some(item => item.id === productMain.id)) {
+        if (productMain && wishlistState.wishlistArray.some(item => item.id === productMain.id)) {
             removeFromWishlist(productMain.id);
-        } else {
+        } else if (productMain) {
             // else, add to wishlist and set state to true
             addToWishlist(productMain);
         }
@@ -103,7 +395,7 @@ const Sale: React.FC<Props> = ({ data, productId }) => {
 
     const handleAddToCompare = () => {
         // if product existed in wishlit, remove from wishlist and set state to false
-        if (compareState.compareArray.length < 3) {
+        if (productMain && compareState.compareArray.length < 3) {
             if (compareState.compareArray.some(item => item.id === productMain.id)) {
                 removeFromCompare(productMain.id);
             } else {
@@ -115,6 +407,81 @@ const Sale: React.FC<Props> = ({ data, productId }) => {
         }
 
         openModalCompare();
+    };
+
+    const handleBuyNow = async () => {
+        try {
+            if (!productMain) {
+                console.error('Product data is not available');
+                return;
+            }
+            const quantity = productMain.quantityPurchase && productMain.quantityPurchase > 0
+                ? productMain.quantityPurchase
+                : 1
+
+            // Prefer real WooCommerce product id via slug lookup
+            let wcProductId: string | number = String(productMain?.id)
+            let variationId: string | undefined = undefined
+            
+            const slug = String(productMain?.slug || '').trim()
+            if (slug) {
+                try {
+                    const res = await fetch(`/api/woocommerce/products?slug=${encodeURIComponent(slug)}`, { cache: 'no-store' })
+                    if (res.ok) {
+                        const list = await res.json()
+                        const first = Array.isArray(list) && list.length > 0 ? list[0] : null
+                        if (first?.id) wcProductId = String(first.id)
+                        
+                        // Try to find matching variation if product has variations
+                        if (first?.type === 'variable' && (activeSize || activeColor)) {
+                            const varRes = await fetch(`/api/woocommerce/products/${encodeURIComponent(String(first.id))}/variations`, { cache: 'no-store' })
+                            if (varRes.ok) {
+                                const variations = await varRes.json()
+                                if (Array.isArray(variations)) {
+                                    const norm = (s: string) => s.toLowerCase().replace(/^pa_/, '').trim()
+                                    const wantSize = activeSize ? norm(activeSize) : null
+                                    const wantColor = activeColor ? norm(activeColor) : null
+
+                                    const match = variations.find((v: any) => {
+                                        const attrs = Array.isArray(v?.attributes) ? v.attributes : []
+                                        let ok = true
+                                        if (wantSize) {
+                                            const aSize = attrs.find((a: any) => norm(String(a?.name || '')) === 'size')
+                                            ok = ok && !!aSize && norm(String(aSize.option || '')) === wantSize
+                                        }
+                                        if (wantColor) {
+                                            const aColor = attrs.find((a: any) => {
+                                                const n = norm(String(a?.name || ''))
+                                                return n === 'color' || n === 'colour'
+                                            })
+                                            ok = ok && !!aColor && norm(String(aColor.option || '')) === wantColor
+                                        }
+                                        return ok
+                                    })
+                                    if (match?.id) variationId = String(match.id)
+                                }
+                            }
+                        }
+                    }
+                } catch (err) {
+                    // ignore; fallback to local id
+                }
+            }
+
+            const params = new URLSearchParams()
+            params.set('productId', String(wcProductId))
+            params.set('quantity', String(quantity))
+            if (variationId) params.set('variationId', variationId)
+            if (activeSize) params.set('size', activeSize)
+            if (activeColor) params.set('color', activeColor)
+            
+            // 检查是否在浏览器环境中
+            if (typeof window !== 'undefined') {
+                window.location.href = `/checkout?${params.toString()}`
+            }
+        } catch (error) {
+            console.error('Error processing buy now:', error);
+        }
     };
 
     const handleActiveTab = (tab: string) => {
@@ -134,7 +501,7 @@ const Sale: React.FC<Props> = ({ data, productId }) => {
                                 modules={[Thumbs]}
                                 className="mySwiper2 rounded-2xl overflow-hidden"
                             >
-                                {productMain.images.map((item, index) => (
+                                {productMain && productMain.images && productMain.images.map((item, index) => (
                                     <SwiperSlide
                                         key={index}
                                         onClick={() => {
@@ -142,12 +509,14 @@ const Sale: React.FC<Props> = ({ data, productId }) => {
                                             setOpenPopupImg(true)
                                         }}
                                     >
-                                        <Image
+                                        <BlurImage
                                             src={item}
                                             width={1000}
                                             height={1000}
                                             alt='prd-img'
                                             className='w-full aspect-[3/4] object-cover'
+                                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 720px"
+                                            quality={75}
                                         />
                                     </SwiperSlide>
                                 ))}
@@ -161,14 +530,16 @@ const Sale: React.FC<Props> = ({ data, productId }) => {
                                 modules={[Navigation, Thumbs]}
                                 className="mySwiper style-rectangle"
                             >
-                                {productMain.images.map((item, index) => (
+                                {productMain && productMain.images && productMain.images.map((item, index) => (
                                     <SwiperSlide key={index}>
-                                        <Image
+                                        <BlurImage
                                             src={item}
                                             width={1000}
                                             height={1300}
                                             alt='prd-img'
                                             className='w-full aspect-[3/4] object-cover rounded-xl'
+                                            sizes="(max-width: 640px) 25vw, (max-width: 1024px) 20vw, 160px"
+                                            quality={70}
                                         />
                                     </SwiperSlide>
                                 ))}
@@ -193,14 +564,14 @@ const Sale: React.FC<Props> = ({ data, productId }) => {
                                         swiperRef.current = swiper
                                     }}
                                 >
-                                    {productMain.images.map((item, index) => (
+                                    {productMain && productMain.images && productMain.images.map((item, index) => (
                                         <SwiperSlide
                                             key={index}
                                             onClick={() => {
                                                 setOpenPopupImg(false)
                                             }}
                                         >
-                                            <Image
+                                            <BlurImage
                                                 src={item}
                                                 width={1000}
                                                 height={1000}
@@ -209,6 +580,8 @@ const Sale: React.FC<Props> = ({ data, productId }) => {
                                                 onClick={(e) => {
                                                     e.stopPropagation(); // prevent
                                                 }}
+                                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 60vw, 800px"
+                                                quality={75}
                                             />
                                         </SwiperSlide>
                                     ))}
@@ -218,14 +591,14 @@ const Sale: React.FC<Props> = ({ data, productId }) => {
                         <div className="product-infor md:w-1/2 w-full lg:pl-[15px] md:pl-2">
                             <div className="flex justify-between">
                                 <div>
-                                    <div className="caption2 text-secondary font-semibold uppercase">{productMain.type}</div>
-                                    <div className="heading4 mt-1">{productMain.name}</div>
+                                    <div className="caption2 text-secondary font-semibold uppercase">{productMain ? (hydrated ? productMain.type : 'general') : ''}</div>
+                                    <div className="heading4 mt-1">{productMain ? productMain.name : ''}</div>
                                 </div>
                                 <div
-                                    className={`add-wishlist-btn w-12 h-12 flex items-center justify-center border border-line cursor-pointer rounded-xl duration-300 hover:bg-black hover:text-white ${wishlistState.wishlistArray.some(item => item.id === productMain.id) ? 'active' : ''}`}
+                                    className={`add-wishlist-btn w-12 h-12 flex items-center justify-center border border-line cursor-pointer rounded-xl duration-300 hover:bg-black hover:text-white ${productMain && wishlistState.wishlistArray.some(item => item.id === productMain.id) ? 'active' : ''}`}
                                     onClick={handleAddToWishlist}
                                 >
-                                    {wishlistState.wishlistArray.some(item => item.id === productMain.id) ? (
+                                    {productMain && wishlistState.wishlistArray.some(item => item.id === productMain.id) ? (
                                         <>
                                             <Icon.Heart size={24} weight='fill' className='text-white' />
                                         </>
@@ -236,92 +609,31 @@ const Sale: React.FC<Props> = ({ data, productId }) => {
                                     )}
                                 </div>
                             </div>
-                            <div className="flex items-center mt-3">
-                                <Rate currentRate={productMain.rate} size={14} />
-                                <span className='caption1 text-secondary'>(1.234 reviews)</span>
-                            </div>
                             <div className="flex items-center gap-3 flex-wrap mt-5 pb-6 border-b border-line">
-                                <div className="product-price heading5">${productMain.price}.00</div>
+                                <div className="product-price heading5">{productMain ? formatPrice(productMain.price) : ''}</div>
                                 <div className='w-px h-4 bg-line'></div>
-                                <div className="product-origin-price font-normal text-secondary2"><del>${productMain.originPrice}.00</del></div>
-                                {productMain.originPrice && (
+                                <div className="product-origin-price font-normal text-secondary2"><del>{productMain ? formatPrice(productMain.originPrice) : ''}</del></div>
+                                {productMain && productMain.originPrice && hydrated && (
                                     <div className="product-sale caption2 font-semibold bg-green px-3 py-0.5 inline-block rounded-full">
                                         -{percentSale}%
                                     </div>
                                 )}
-                                <div className='desc text-secondary mt-3'>{productMain.description}</div>
+                                <div className='desc text-secondary mt-3 rich-content'>
+                                    <p>Our premium quality products are designed to exceed your expectations. Crafted with attention to detail and using the finest materials, each item in our collection offers exceptional value and durability.</p>
+                                    <p>Experience the difference that quality makes with our carefully curated selection of products that combine style, functionality, and reliability.</p>
+                                </div>
                             </div>
                             <div className="list-action mt-6">
-                                <div className="sold flex justify-between flex-wrap gap-4">
-                                    <div className="text-title">sold It:</div>
-                                    <div className="right w-3/4">
-                                        <div className="progress h-2 rounded-full overflow-hidden bg-line relative">
-                                            <div
-                                                className={`percent-sold absolute top-0 left-0 h-full bg-red`}
-                                                style={{ width: `${Math.floor((productMain.sold / productMain.quantity) * 100)}%` }}
-                                            ></div>
-                                        </div>
-                                        <div className="flex items-center gap-1 mt-2">
-                                            <span>{Math.floor((productMain.sold / productMain.quantity) * 100)}% Sold -</span>
-                                            <span className='text-secondary'>Only {Math.floor(productMain.quantity - productMain.sold)} item(s) left in stock!</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="choose-color mt-5">
-                                    <div className="text-title">Colors: <span className='text-title color'>{activeColor}</span></div>
-                                    <div className="list-color flex items-center gap-2 flex-wrap mt-3">
-                                        {productMain.variation.map((item, index) => (
-                                            <div
-                                                className={`color-item w-12 h-12 rounded-xl duration-300 relative ${activeColor === item.color ? 'active' : ''}`}
-                                                key={index}
-                                                onClick={() => handleActiveColor(item.color)}
-                                            >
-                                                <Image
-                                                    src={item.colorImage}
-                                                    width={100}
-                                                    height={100}
-                                                    alt='color'
-                                                    className='rounded-xl'
-                                                />
-                                                <div className="tag-action bg-black text-white caption2 capitalize px-1.5 py-0.5 rounded-sm">
-                                                    {item.color}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                                <div className="choose-size mt-5">
-                                    <div className="heading flex items-center justify-between">
-                                        <div className="text-title">Size: <span className='text-title size'>{activeSize}</span></div>
-                                        <div
-                                            className="caption1 size-guide text-red underline cursor-pointer"
-                                            onClick={handleOpenSizeGuide}
-                                        >
-                                            Size Guide
-                                        </div>
-                                        <ModalSizeguide data={productMain} isOpen={openSizeGuide} onClose={handleCloseSizeGuide} />
-                                    </div>
-                                    <div className="list-size flex items-center gap-2 flex-wrap mt-3">
-                                        {productMain.sizes.map((item, index) => (
-                                            <div
-                                                className={`size-item ${item === 'freesize' ? 'px-3 py-2' : 'w-12 h-12'} flex items-center justify-center text-button rounded-full bg-white border border-line ${activeSize === item ? 'active' : ''}`}
-                                                key={index}
-                                                onClick={() => handleActiveSize(item)}
-                                            >
-                                                {item}
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
+                                
                                 <div className="text-title mt-5">Quantity:</div>
                                 <div className="choose-quantity flex items-center lg:justify-between gap-5 gap-y-3 mt-3">
                                     <div className="quantity-block md:p-3 max-md:py-1.5 max-md:px-3 flex items-center justify-between rounded-lg border border-line sm:w-[180px] w-[120px] flex-shrink-0">
                                         <Icon.Minus
                                             size={20}
                                             onClick={handleDecreaseQuantity}
-                                            className={`${productMain.quantityPurchase === 1 ? 'disabled' : ''} cursor-pointer`}
+                                            className={`minus ${productMain && productMain.quantityPurchase === 1 ? 'disabled' : ''} cursor-pointer`}
                                         />
-                                        <div className="body1 font-semibold">{productMain.quantityPurchase}</div>
+                                        <div className="body1 font-semibold">{productMain ? (productMain.quantityPurchase || 1) : 1}</div>
                                         <Icon.Plus
                                             size={20}
                                             onClick={handleIncreaseQuantity}
@@ -331,7 +643,7 @@ const Sale: React.FC<Props> = ({ data, productId }) => {
                                     <div onClick={handleAddToCart} className="button-main w-full text-center bg-white text-black border border-black">Add To Cart</div>
                                 </div>
                                 <div className="button-block mt-5">
-                                    <div className="button-main w-full text-center">Buy It Now</div>
+                                    <div className="button-main w-full text-center" onClick={handleBuyNow}>Buy It Now</div>
                                 </div>
                                 <div className="flex items-center lg:gap-20 gap-8 mt-5 pb-6 border-b border-line">
                                     <div className="compare flex items-center gap-3 cursor-pointer" onClick={(e) => { e.stopPropagation(); handleAddToCompare() }}>
@@ -364,7 +676,7 @@ const Sale: React.FC<Props> = ({ data, productId }) => {
                                     </div>
                                     <div className="flex items-center gap-1 mt-3">
                                         <Icon.Eye className='body1' />
-                                        <div className="text-title">38</div>
+                                        <div className="text-title">{viewCount}</div>
                                         <div className="text-secondary">people viewing this product right now!</div>
                                     </div>
                                     <div className="flex items-center gap-1 mt-3">
@@ -373,11 +685,11 @@ const Sale: React.FC<Props> = ({ data, productId }) => {
                                     </div>
                                     <div className="flex items-center gap-1 mt-3">
                                         <div className="text-title">Categories:</div>
-                                        <div className="text-secondary">{productMain.category}, {productMain.gender}</div>
+                                        <div className="text-secondary">{productMain ? categoryDisplay : ''}</div>
                                     </div>
                                     <div className="flex items-center gap-1 mt-3">
                                         <div className="text-title">Tag:</div>
-                                        <div className="text-secondary">{productMain.type}</div>
+                                        <div className="text-secondary">{productMain ? (hydrated ? productMain.type || '' : 'general') : ''}</div>
                                     </div>
                                 </div>
                                 <div className="list-payment mt-7">
@@ -386,7 +698,7 @@ const Sale: React.FC<Props> = ({ data, productId }) => {
                                         <div className="list grid grid-cols-6">
                                             <div className="item flex items-center justify-center lg:px-3 px-1">
                                                 <Image
-                                                    src={'/images/payment/Frame-0.png'}
+                                                    src={'https://image.nv315.top/images/payment (3)-optimized.webp'}
                                                     width={500}
                                                     height={450}
                                                     alt='payment'
@@ -395,7 +707,7 @@ const Sale: React.FC<Props> = ({ data, productId }) => {
                                             </div>
                                             <div className="item flex items-center justify-center lg:px-3 px-1">
                                                 <Image
-                                                    src={'/images/payment/Frame-1.png'}
+                                                    src={'https://image.nv315.top/images/payment (2)-optimized.webp'}
                                                     width={500}
                                                     height={450}
                                                     alt='payment'
@@ -404,7 +716,7 @@ const Sale: React.FC<Props> = ({ data, productId }) => {
                                             </div>
                                             <div className="item flex items-center justify-center lg:px-3 px-1">
                                                 <Image
-                                                    src={'/images/payment/Frame-2.png'}
+                                                    src={'https://image.nv315.top/images/payment (1)-optimized.webp'}
                                                     width={500}
                                                     height={450}
                                                     alt='payment'
@@ -413,7 +725,7 @@ const Sale: React.FC<Props> = ({ data, productId }) => {
                                             </div>
                                             <div className="item flex items-center justify-center lg:px-3 px-1">
                                                 <Image
-                                                    src={'/images/payment/Frame-3.png'}
+                                                    src={'https://image.nv315.top/images/payment (6)-optimized.webp'}
                                                     width={500}
                                                     height={450}
                                                     alt='payment'
@@ -422,7 +734,7 @@ const Sale: React.FC<Props> = ({ data, productId }) => {
                                             </div>
                                             <div className="item flex items-center justify-center lg:px-3 px-1">
                                                 <Image
-                                                    src={'/images/payment/Frame-4.png'}
+                                                    src={'https://image.nv315.top/images/payment (5)-optimized.webp'}
                                                     width={500}
                                                     height={450}
                                                     alt='payment'
@@ -431,7 +743,7 @@ const Sale: React.FC<Props> = ({ data, productId }) => {
                                             </div>
                                             <div className="item flex items-center justify-center lg:px-3 px-1">
                                                 <Image
-                                                    src={'/images/payment/Frame-5.png'}
+                                                    src={'https://image.nv315.top/images/payment (4)-optimized.webp'}
                                                     width={500}
                                                     height={450}
                                                     alt='payment'
@@ -439,30 +751,6 @@ const Sale: React.FC<Props> = ({ data, productId }) => {
                                                 />
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="get-it mt-6">
-                                <div className="heading5">Get it today</div>
-                                <div className="item flex items-center gap-3 mt-4">
-                                    <div className="icon-delivery-truck text-4xl"></div>
-                                    <div>
-                                        <div className="text-title">Free shipping</div>
-                                        <div className="caption1 text-secondary mt-1">Free shipping on orders over $75.</div>
-                                    </div>
-                                </div>
-                                <div className="item flex items-center gap-3 mt-4">
-                                    <div className="icon-phone-call text-4xl"></div>
-                                    <div>
-                                        <div className="text-title">Support everyday</div>
-                                        <div className="caption1 text-secondary mt-1">Support from 8:30 AM to 10:00 PM everyday</div>
-                                    </div>
-                                </div>
-                                <div className="item flex items-center gap-3 mt-4">
-                                    <div className="icon-return text-4xl"></div>
-                                    <div>
-                                        <div className="text-title">100 Day Returns</div>
-                                        <div className="caption1 text-secondary mt-1">Not impressed? Get a refund. You have 100 days to break our hearts.</div>
                                     </div>
                                 </div>
                             </div>
@@ -489,57 +777,79 @@ const Sale: React.FC<Props> = ({ data, productId }) => {
                         </div>
                         <div className="desc-block mt-8">
                             <div className={`desc-item description ${activeTab === 'description' ? 'open' : ''}`}>
-                                <div className='grid md:grid-cols-2 gap-8 gap-y-5'>
-                                    <div className="left">
-                                        <div className="heading6">Description</div>
-                                        <div className="text-secondary mt-2">Keep your home organized, yet elegant with storage cabinets by Onita Patio Furniture. These cabinets not only make a great storage units, but also bring a great decorative accent to your decor. Traditionally designed, they are perfect to be used in the hallway, living room, bedroom, office or any place where you need to store or display things. Made of high quality materials, they are sturdy and durable for years. Bring one-of-a-kind look to your interior with furniture from Onita Furniture!</div>
-                                    </div>
-                                    <div className="right">
-                                        <div className="heading6">About This Products</div>
-                                        <div className="list-feature">
-                                            <div className="item flex gap-1 text-secondary mt-1">
-                                                <Icon.Dot size={28} />
-                                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                                            </div>
-                                            <div className="item flex gap-1 text-secondary mt-1">
-                                                <Icon.Dot size={28} />
-                                                <p>Nulla luctus libero quis mauris vestibulum dapibus.</p>
-                                            </div>
-                                            <div className="item flex gap-1 text-secondary mt-1">
-                                                <Icon.Dot size={28} />
-                                                <p>Maecenas ullamcorper erat mi, vel consequat enim suscipit at.</p>
-                                            </div>
-                                            <div className="item flex gap-1 text-secondary mt-1">
-                                                <Icon.Dot size={28} />
-                                                <p>Quisque consectetur nibh ac urna molestie scelerisque.</p>
-                                            </div>
-                                            <div className="item flex gap-1 text-secondary mt-1">
-                                                <Icon.Dot size={28} />
-                                                <p>Mauris in nisl scelerisque massa consectetur pretium sed et mauris.</p>
-                                            </div>
+                                <div className="product-description-wrapper">
+                                    {/* 第一部分：产品介绍 (由 Markdown 生成) */}
+                                    <div className="product-intro-section">
+                                        <div className="intro-content-container">
+                                            <div className="yiwu-badge">🎪 YIWU CHINA</div>
+                                            {markdownContent && hydrated && ( // 只有当有内容时才渲染
+                                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                                    {markdownContent}
+                                                </ReactMarkdown>
+                                            )}
+                                            {!markdownContent && (
+                                                <div style={{color: 'red', padding: '10px', border: '1px dashed red', margin: '10px 0'}}>
+                                                    Debug: Markdown content is empty or undefined
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
-                                </div>
-                                <div className="grid lg:grid-cols-4 grid-cols-2 gap-[30px] md:mt-10 mt-6">
-                                    <div className="item">
-                                        <div className="icon-delivery-truck text-4xl"></div>
-                                        <div className="heading6 mt-4">Shipping Faster</div>
-                                        <div className="text-secondary mt-2">Use on walls, furniture, doors and many more surfaces. The possibilities are endless.</div>
-                                    </div>
-                                    <div className="item">
-                                        <div className="icon-cotton text-4xl"></div>
-                                        <div className="heading6 mt-4">Cotton Material</div>
-                                        <div className="text-secondary mt-2">Use on walls, furniture, doors and many more surfaces. The possibilities are endless.</div>
-                                    </div>
-                                    <div className="item">
-                                        <div className="icon-guarantee text-4xl"></div>
-                                        <div className="heading6 mt-4">High Quality</div>
-                                        <div className="text-secondary mt-2">Use on walls, furniture, doors and many more surfaces. The possibilities are endless.</div>
-                                    </div>
-                                    <div className="item">
-                                        <div className="icon-leaves-compatible text-4xl"></div>
-                                        <div className="heading6 mt-4">highly compatible</div>
-                                        <div className="text-secondary mt-2">Use on walls, furniture, doors and many more surfaces. The possibilities are endless.</div>
+                                    {/* 第二部分：图片画廊 (由 ACF Repeater 生成) */}
+                                    {imageGallery && imageGallery.length > 0 && ( // 只有当有图片时才渲染
+                                        <div className="product-gallery-section">
+                                            <div className="gallery-title-container">
+                                                <div className="gallery-badge">📸 GALLERY</div>
+                                                <h2>CUTE MOMENTS</h2>
+                                                <p className="gallery-subtitle">✨ Explore Our Collection ✨</p>
+                                            </div>
+                                            <div className="image-grid">
+                                                {imageGallery.map((image, index) => (
+                                                    <div key={index} className="grid-item">
+                                                        <img src={image.url} alt={image.alt} />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                    {/* 第三部分：固定内容 (Why Us & CTA) */}
+                                    <div className="why-us-section">
+                                        <div className="why-us-container">
+                                            <div className="why-us-title">
+                                                <h2>WHY US?</h2>
+                                                <div className="title-decorator">
+                                                    <div className="line"></div>
+                                                    <span>🌟</span>
+                                                    <div className="line"></div>
+                                                </div>
+                                            </div>
+                                            <div className="advantage-cards">
+                                                {/* 卡片1 */}
+                                                <div className="advantage-card">
+                                                    <div className="card-icon-bg" style={{'--icon-bg-color': '#FF6B9D'} as React.CSSProperties}>🏭</div>
+                                                    <h3>Original Source</h3>
+                                                    <p>We are the original manufacturer! Direct from our workshop to your hands with guaranteed authenticity and best prices! 🏷️</p>
+                                                </div>
+                                                {/* 卡片2 */}
+                                                <div className="advantage-card">
+                                                     <div className="card-icon-bg" style={{'--icon-bg-color': '#6BC5FF'} as React.CSSProperties}>✨</div>
+                                                    <h3>Trendy Designs</h3>
+                                                    <p>Stay ahead with the latest pop culture trends! Our designers create the most sought-after collectibles! 🎭</p>
+                                                </div>
+                                                {/* 卡片3 */}
+                                                <div className="advantage-card">
+                                                     <div className="card-icon-bg" style={{'--icon-bg-color': '#FFB627'} as React.CSSProperties}>💎</div>
+                                                    <h3>Premium Quality</h3>
+                                                    <p>Every piece is carefully crafted with love and attention to detail. Museum-quality collectibles! 💖</p>
+                                                </div>
+                                            </div>
+                                            <div className="cta-box">
+                                                <div className="cta-emoji">🎉</div>
+                                                <h3>Interested in wholesale pricing?</h3>
+                                                <p>Start your Art toys collection today! 🌈</p>
+                                                <a className="cta-button">Contact us today!</a>
+                                                <div className="cta-footer">✨ drop us a line for a quote.✨</div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -616,245 +926,12 @@ const Sale: React.FC<Props> = ({ data, productId }) => {
                         </div>
                     </div>
                 </div>
-                <div className="review-block md:py-20 py-10 bg-surface">
-                    <div className="container">
-                        <div className="heading flex items-center justify-between flex-wrap gap-4">
-                            <div className="heading4">Customer Review</div>
-                            <div className="right flex items-center gap-3">
-                                <label htmlFor='select-filter' className="capitalize">Sort by:</label>
-                                <div className="select-block relative">
-                                    <select
-                                        id="select-filter"
-                                        name="select-filter"
-                                        className='text-button py-2 pl-3 md:pr-14 pr-10 rounded-lg bg-white border border-line'
-                                        defaultValue={'Sorting'}
-                                    >
-                                        <option value="Sorting" disabled>Sorting</option>
-                                        <option value="newest">Newest</option>
-                                        <option value="5star">5 Star</option>
-                                        <option value="4star">4 Star</option>
-                                        <option value="3star">3 Star</option>
-                                        <option value="2star">2 Star</option>
-                                        <option value="1star">1 Star</option>
-                                    </select>
-                                    <Icon.CaretDown size={12} className='absolute top-1/2 -translate-y-1/2 md:right-4 right-2' />
-                                </div>
-                            </div>
-                        </div>
-                        <div className="top-overview flex justify-between py-6 max-lg:flex-col gap-y-10">
-                            <div className="rating black-start lg:w-5/12 w-full">
-                                <div className="heading flex items-center justify-between gap-12 gap-y-4">
-                                    <div className='flex flex-col items-center'>
-                                        <div className="text-display">4.6</div>
-                                        <Rate currentRate={5} size={18} />
-                                        <div className='text-center whitespace-nowrap mt-1'>(1,968 Ratings)</div>
-                                    </div>
-                                    <div className="list-rating w-full">
-                                        <div className="item flex items-center justify-end gap-1.5">
-                                            <div className="flex items-center gap-1">
-                                                <div className="caption1">5</div>
-                                                <Icon.Star size={14} weight='fill' />
-                                            </div>
-                                            <div className="progress bg-line relative w-3/4 h-2">
-                                                <div className="progress-percent absolute bg-yellow w-[50%] h-full left-0 top-0"></div>
-                                            </div>
-                                            <div className="caption1">50%</div>
-                                        </div>
-                                        <div className="item flex items-center justify-end gap-1.5 mt-1">
-                                            <div className="flex items-center gap-1">
-                                                <div className="caption1">4</div>
-                                                <Icon.Star size={14} weight='fill' />
-                                            </div>
-                                            <div className="progress bg-line relative w-3/4 h-2">
-                                                <div className="progress-percent absolute bg-yellow w-[20%] h-full left-0 top-0"></div>
-                                            </div>
-                                            <div className="caption1">20%</div>
-                                        </div>
-                                        <div className="item flex items-center justify-end gap-1.5 mt-1">
-                                            <div className="flex items-center gap-1">
-                                                <div className="caption1">3</div>
-                                                <Icon.Star size={14} weight='fill' />
-                                            </div>
-                                            <div className="progress bg-line relative w-3/4 h-2">
-                                                <div className="progress-percent absolute bg-yellow w-[10%] h-full left-0 top-0"></div>
-                                            </div>
-                                            <div className="caption1">10%</div>
-                                        </div>
-                                        <div className="item flex items-center justify-end gap-1.5 mt-1">
-                                            <div className="flex items-center gap-1">
-                                                <div className="caption1">2</div>
-                                                <Icon.Star size={14} weight='fill' />
-                                            </div>
-                                            <div className="progress bg-line relative w-3/4 h-2">
-                                                <div className="progress-percent absolute bg-yellow w-[10%] h-full left-0 top-0"></div>
-                                            </div>
-                                            <div className="caption1">10%</div>
-                                        </div>
-                                        <div className="item flex items-center justify-end gap-1.5 mt-1">
-                                            <div className="flex items-center gap-2">
-                                                <div className="caption1">1</div>
-                                                <Icon.Star size={14} weight='fill' />
-                                            </div>
-                                            <div className="progress bg-line relative w-3/4 h-2">
-                                                <div className="progress-percent absolute bg-yellow w-[10%] h-full left-0 top-0"></div>
-                                            </div>
-                                            <div className="caption1">10%</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div id="form-review" className='form-review pt-6'>
-                                    <div className="heading4">Leave A comment</div>
-                                    <form className="grid sm:grid-cols-2 gap-4 gap-y-5 md:mt-6 mt-3">
-                                        <div className="name ">
-                                            <input className="border-line px-4 pt-3 pb-3 w-full rounded-lg" id="username" type="text" placeholder="Your Name *" required />
-                                        </div>
-                                        <div className="mail ">
-                                            <input className="border-line px-4 pt-3 pb-3 w-full rounded-lg" id="email" type="email" placeholder="Your Email *" required />
-                                        </div>
-                                        <div className="col-span-full message">
-                                            <textarea className="border border-line px-4 py-3 w-full rounded-lg" id="message" name="message" placeholder="Your message *" required></textarea>
-                                        </div>
-                                        <div className="col-span-full flex items-start -mt-2 gap-2">
-                                            <input type="checkbox" id="saveAccount" name="saveAccount" className='mt-1.5' />
-                                            <label className="" htmlFor="saveAccount">Save my name, email, and website in this browser for the next time I comment.</label>
-                                        </div>
-                                        <div className="col-span-full sm:pt-3">
-                                            <button className='button-main bg-white text-black border border-black'>Submit Reviews</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                            <div className="list-review lg:w-7/12 lg:pl-[60px]">
-                                <div className="item">
-                                    <div className="heading flex items-center justify-between">
-                                        <div className="user-infor flex gap-4">
-                                            <div className="avatar">
-                                                <Image
-                                                    src={'/images/avatar/1.png'}
-                                                    width={200}
-                                                    height={200}
-                                                    alt='img'
-                                                    className='w-[52px] aspect-square rounded-full'
-                                                />
-                                            </div>
-                                            <div className="user">
-                                                <div className="flex items-center gap-2">
-                                                    <div className="text-title">Tony Nguyen</div>
-                                                    <div className="span text-line">-</div>
-                                                    <Rate currentRate={5} size={12} />
-                                                </div>
-                                                <div className="flex items-center gap-2">
-                                                    <div className="text-secondary2">1 days ago</div>
-                                                    <div className="text-secondary2">-</div>
-                                                    <div className="text-secondary2"><span>Yellow</span> / <span>XL</span></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="more-action cursor-pointer">
-                                            <Icon.DotsThree size={24} weight='bold' />
-                                        </div>
-                                    </div>
-                                    <div className="mt-3">I can{String.raw`'t`} get enough of the fashion pieces from this brand. They have a great selection for every occasion and the prices are reasonable. The shipping is fast and the items always arrive in perfect condition.</div>
-                                    <div className="action mt-3">
-                                        <div className="flex items-center gap-4">
-                                            <div className="like-btn flex items-center gap-1 cursor-pointer">
-                                                <Icon.HandsClapping size={18} />
-                                                <div className="text-button">20</div>
-                                            </div>
-                                            <Link href={'#form-review'} className="reply-btn text-button text-secondary cursor-pointer hover:text-black">Reply</Link>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="item mt-8">
-                                    <div className="heading flex items-center justify-between">
-                                        <div className="user-infor flex gap-4">
-                                            <div className="avatar">
-                                                <Image
-                                                    src={'/images/avatar/2.png'}
-                                                    width={200}
-                                                    height={200}
-                                                    alt='img'
-                                                    className='w-[52px] aspect-square rounded-full'
-                                                />
-                                            </div>
-                                            <div className="user">
-                                                <div className="flex items-center gap-2">
-                                                    <div className="text-title">Guy Hawkins</div>
-                                                    <div className="span text-line">-</div>
-                                                    <Rate currentRate={4} size={12} />
-                                                </div>
-                                                <div className="flex items-center gap-2">
-                                                    <div className="text-secondary2">1 days ago</div>
-                                                    <div className="text-secondary2">-</div>
-                                                    <div className="text-secondary2"><span>Yellow</span> / <span>XL</span></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="more-action cursor-pointer">
-                                            <Icon.DotsThree size={24} weight='bold' />
-                                        </div>
-                                    </div>
-                                    <div className="mt-3">I can{String.raw`'t`} get enough of the fashion pieces from this brand. They have a great selection for every occasion and the prices are reasonable. The shipping is fast and the items always arrive in perfect condition.</div>
-                                    <div className="action mt-3">
-                                        <div className="flex items-center gap-4">
-                                            <div className="like-btn flex items-center gap-1 cursor-pointer">
-                                                <Icon.HandsClapping size={18} />
-                                                <div className="text-button">20</div>
-                                            </div>
-                                            <Link href={'#form-review'} className="reply-btn text-button text-secondary cursor-pointer hover:text-black">Reply</Link>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="item mt-8">
-                                    <div className="heading flex items-center justify-between">
-                                        <div className="user-infor flex gap-4">
-                                            <div className="avatar">
-                                                <Image
-                                                    src={'/images/avatar/3.png'}
-                                                    width={200}
-                                                    height={200}
-                                                    alt='img'
-                                                    className='w-[52px] aspect-square rounded-full'
-                                                />
-                                            </div>
-                                            <div className="user">
-                                                <div className="flex items-center gap-2">
-                                                    <div className="text-title">John Smith</div>
-                                                    <div className="span text-line">-</div>
-                                                    <Rate currentRate={5} size={12} />
-                                                </div>
-                                                <div className="flex items-center gap-2">
-                                                    <div className="text-secondary2">1 days ago</div>
-                                                    <div className="text-secondary2">-</div>
-                                                    <div className="text-secondary2"><span>Yellow</span> / <span>XL</span></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="more-action cursor-pointer">
-                                            <Icon.DotsThree size={24} weight='bold' />
-                                        </div>
-                                    </div>
-                                    <div className="mt-3">I can{String.raw`'t`} get enough of the fashion pieces from this brand. They have a great selection for every occasion and the prices are reasonable. The shipping is fast and the items always arrive in perfect condition.</div>
-                                    <div className="action mt-3">
-                                        <div className="flex items-center gap-4">
-                                            <div className="like-btn flex items-center gap-1 cursor-pointer">
-                                                <Icon.HandsClapping size={18} />
-                                                <div className="text-button">20</div>
-                                            </div>
-                                            <Link href={'#form-review'} className="reply-btn text-button text-secondary cursor-pointer hover:text-black">Reply</Link>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
+                
                 <div className="related-product md:py-20 py-10">
                     <div className="container">
                         <div className="heading3 text-center">Related Products</div>
                         <div className="list-product hide-product-sold  grid lg:grid-cols-4 grid-cols-2 md:gap-[30px] gap-5 md:mt-10 mt-6">
-                            {data.slice(Number(productId), Number(productId) + 4).map((item, index) => (
+                            {relatedProducts.map((item, index) => (
                                 <Product key={index} data={item} type='grid' style='style-1' />
                             ))}
                         </div>

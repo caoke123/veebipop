@@ -10,6 +10,7 @@ import { ProductType } from '@/type/ProductType'
 import Product from '@/components/Product/Product'
 import HandlePagination from '@/components/Other/HandlePagination'
 import * as Icon from "@phosphor-icons/react/dist/ssr";
+import { wcArrayToProductTypes } from '@/utils/wcAdapter'
 
 const SearchResult = () => {
     const [searchKeyword, setSearchKeyword] = useState<string>('');
@@ -89,9 +90,10 @@ const SearchResult = () => {
     useEffect(() => {
         const load = async () => {
             try {
-                const res = await fetch('/Product.json')
+                const res = await fetch('http://localhost:3001/api/woocommerce/products?per_page=50');
                 const data = await res.json()
-                setProducts(data)
+                const normalized: ProductType[] = Array.isArray(data) ? await wcArrayToProductTypes(data) : []
+                setProducts(normalized)
             } catch (e) {
                 console.error('Failed to load products', e)
             }

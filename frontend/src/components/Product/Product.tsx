@@ -1,7 +1,8 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import Image from 'next/image'
+import BlurImage from '@/components/common/BlurImage'
 import Link from 'next/link'
 import { ProductType } from '@/type/ProductType'
 import * as Icon from "@phosphor-icons/react/dist/ssr";
@@ -15,14 +16,18 @@ import { useModalQuickviewContext } from '@/context/ModalQuickviewContext'
 import { useRouter } from 'next/navigation'
 import Marquee from 'react-fast-marquee'
 import Rate from '../Other/Rate'
+import { formatPrice } from '@/utils/priceFormat'
 
 interface ProductProps {
     data: ProductType
     type: string
     style?: string
+    priority?: boolean
+    disableBlur?: boolean
+    disablePrefetchDetail?: boolean
 }
 
-const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
+const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1', priority = false, disableBlur = false, disablePrefetchDetail = false }) => {
     const [activeColor, setActiveColor] = useState<string>('')
     const [activeSize, setActiveSize] = useState<string>('')
     const [openQuickShop, setOpenQuickShop] = useState<boolean>(false)
@@ -34,6 +39,23 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
     const { openModalCompare } = useModalCompareContext()
     const { openQuickview } = useModalQuickviewContext()
     const router = useRouter()
+    // 使用确定性随机延迟避免水合错误
+    const randomDelay = useMemo(() => {
+        // 基于产品ID生成确定延迟，避免水合错误
+        const seed = String(data.id || '').split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        return (seed % 20) + 1; // 1-21之间的确定值
+    }, [data.id])
+
+    // 预取详情页路由，提升从列表到详情的跳转速度（可禁用以降低首页/列表初始网络负载）
+    useEffect(() => {
+        if (disablePrefetchDetail) return
+        const slugOrId = data.slug || String(data.id)
+        if (slugOrId) {
+            try {
+                router.prefetch(`/product/${slugOrId}`)
+            } catch {}
+        }
+    }, [router, data.slug, data.id, disablePrefetchDetail])
 
     const handleActiveColor = (item: string) => {
         setActiveColor(item)
@@ -84,19 +106,36 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
         openQuickview(data)
     }
 
-    const handleDetailProduct = (productId: string) => {
-        // redirect to shop with category selected
-    router.push(`/product/thumbnail-bottom?id=${productId}`);
+    const handleDetailProduct = (productSlug: string) => {
+        router.push(`/product/${productSlug}`)
     };
 
     let percentSale = Math.floor(100 - ((data.price / data.originPrice) * 100))
     let percentSold = Math.floor((data.sold / data.quantity) * 100)
 
+    const baseSrc = activeColor
+        ? (
+            data.variation.find(item => item.color === activeColor)?.image
+            || data.thumbImage?.[0]
+            || data.images?.[0]
+            || '/images/product/1000x1000.png'
+          )
+        : (
+            data.thumbImage?.[0]
+            || data.images?.[0]
+            || '/images/product/1000x1000.png'
+          )
+
+    const isPlaceholder = String(baseSrc).includes('/images/product/1000x1000.png')
+    if (isPlaceholder && process.env.NODE_ENV !== 'production') {
+        try { console.warn('Image placeholder used for product', { id: data.id, slug: data.slug, name: data.name }) } catch {}
+    }
+
     return (
         <>
             {type === "grid" ? (
                 <div className={`product-item grid-type ${style}`}>
-                    <div onClick={() => handleDetailProduct(data.id)} className="product-main cursor-pointer block">
+                    <Link href={`/product/${data.slug || String(data.id)}`} prefetch={false} className="product-main cursor-pointer block">
                         <div className="product-thumb bg-white relative overflow-hidden rounded-2xl">
                             {data.new && (
                                 <div className="product-tag text-button-uppercase bg-green px-3 py-0.5 inline-block rounded-full absolute top-3 left-3 z-[1]">
@@ -114,6 +153,7 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                         <div
                                             className={`add-cart-btn w-[32px] h-[32px] flex items-center justify-center rounded-full bg-white duration-300 relative mb-2 ${compareState.compareArray.some(item => item.id === data.id) ? 'active' : ''}`}
                                             onClick={e => {
+                                                e.preventDefault();
                                                 e.stopPropagation();
                                                 handleAddToCart()
                                             }}
@@ -125,6 +165,7 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                     <div
                                         className={`add-wishlist-btn w-[32px] h-[32px] flex items-center justify-center rounded-full bg-white duration-300 relative ${wishlistState.wishlistArray.some(item => item.id === data.id) ? 'active' : ''}`}
                                         onClick={(e) => {
+                                            e.preventDefault();
                                             e.stopPropagation()
                                             handleAddToWishlist()
                                         }}
@@ -143,6 +184,7 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                     <div
                                         className={`compare-btn w-[32px] h-[32px] flex items-center justify-center rounded-full bg-white duration-300 relative mt-2 ${compareState.compareArray.some(item => item.id === data.id) ? 'active' : ''}`}
                                         onClick={(e) => {
+                                            e.preventDefault();
                                             e.stopPropagation()
                                             handleAddToCompare()
                                         }}
@@ -155,6 +197,7 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                         <div
                                             className={`quick-view-btn w-[32px] h-[32px] flex items-center justify-center rounded-full bg-white duration-300 relative mt-2 ${compareState.compareArray.some(item => item.id === data.id) ? 'active' : ''}`}
                                             onClick={(e) => {
+                                                e.preventDefault();
                                                 e.stopPropagation()
                                                 handleQuickviewOpen()
                                             }}
@@ -165,53 +208,38 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                     ) : <></>}
                                 </div>
                             ) : <></>}
-                            <div className="product-img w-full h-full aspect-[3/4]">
-                                {activeColor ? (
-                                    <>
-                                        {
-                                            <Image
-                                                src={data.variation.find(item => item.color === activeColor)?.image ?? ''}
-                                                width={500}
-                                                height={500}
-                                                alt={data.name}
-                                                sizes="(max-width: 768px) 50vw, 300px"
-                                                className='w-full h-full object-cover duration-700'
-                                            />
-                                        }
-                                    </>
-                                ) : (
-                                    <>
-                                        {
-                                            data.thumbImage.map((img, index) => (
-                                                <Image
-                                                    key={index}
-                                                    src={img}
-                                                    width={500}
-                                                    height={500}
-                                                    alt={data.name}
-                                                    sizes="(max-width: 768px) 50vw, 300px"
-                                                    className='w-full h-full object-cover duration-700'
-                                                />
-                                            ))
-                                        }
-                                    </>
+                            <div className="product-img w-full h-full aspect-[3/4] relative">
+                                <BlurImage
+                                    src={baseSrc}
+                                    width={500}
+                                    height={500}
+                                    alt={data.name || 'Product image'}
+                                    sizes="(max-width: 768px) 50vw, 300px"
+                                    quality={70}
+                                    priority={priority}
+                                    loading={priority ? 'eager' : 'lazy'}
+                                    fetchPriority={priority ? 'high' : undefined}
+                                    className='w-full h-full object-cover duration-700'
+                                    disableBlur={disableBlur}
+                                />
+                                {isPlaceholder && (
+                                    <div className='absolute top-3 right-3 bg-yellow-500 text-white text-xs px-2 py-0.5 rounded'>No Image</div>
                                 )}
                             </div>
                             {data.sale && (
-                                <>
-                                    <Marquee className='banner-sale-auto bg-black absolute bottom-0 left-0 w-full py-1.5'>
-                                        <div className={`caption2 font-semibold uppercase text-white px-2.5`}>Hot Sale {percentSale}% OFF</div>
-                                        <Icon.Lightning weight='fill' className='text-red' />
-                                        <div className={`caption2 font-semibold uppercase text-white px-2.5`}>Hot Sale {percentSale}% OFF</div>
-                                        <Icon.Lightning weight='fill' className='text-red' />
-                                        <div className={`caption2 font-semibold uppercase text-white px-2.5`}>Hot Sale {percentSale}% OFF</div>
-                                        <Icon.Lightning weight='fill' className='text-red' />
-                                        <div className={`caption2 font-semibold uppercase text-white px-2.5`}>Hot Sale {percentSale}% OFF</div>
-                                        <Icon.Lightning weight='fill' className='text-red' />
-                                        <div className={`caption2 font-semibold uppercase text-white px-2.5`}>Hot Sale {percentSale}% OFF</div>
-                                        <Icon.Lightning weight='fill' className='text-red' />
-                                    </Marquee>
-                                </>
+                                <Marquee
+                                    className="banner-sale-auto bg-black absolute bottom-0 left-0 w-full py-1.5"
+                                    gradient={false}
+                                    pauseOnHover={false}
+                                    pauseOnClick={false}
+                                    speed={40}
+                                    delay={randomDelay}
+                                >
+                                    <div className="caption2 font-semibold uppercase text-white px-2.5">Hot Sale {percentSale}% OFF</div>
+                                    <Icon.Lightning className="text-red" />
+                                    <div className="caption2 font-semibold uppercase text-white px-2.5">China Yiwu – Source Procurement</div>
+                                    <Icon.Lightning className="text-red" />
+                                </Marquee>
                             )}
                             {style === 'style-2' || style === 'style-4' ? (
                                 <div className="list-size-block flex items-center justify-center gap-4 absolute bottom-0 left-0 w-full h-8">
@@ -226,6 +254,7 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                         <div
                                             className="quick-view-btn w-full text-button-uppercase py-2 text-center rounded-full duration-300 bg-white hover:bg-black hover:text-white"
                                             onClick={(e) => {
+                                                e.preventDefault();
                                                 e.stopPropagation()
                                                 handleQuickviewOpen()
                                             }}
@@ -237,6 +266,7 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                         <div
                                             className="add-cart-btn w-full text-button-uppercase py-2 text-center rounded-full duration-500 bg-white hover:bg-black hover:text-white"
                                             onClick={e => {
+                                                e.preventDefault();
                                                 e.stopPropagation();
                                                 handleAddToCart()
                                             }}
@@ -248,6 +278,7 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                             <div
                                                 className="quick-shop-btn text-button-uppercase py-2 text-center rounded-full duration-500 bg-white hover:bg-black hover:text-white"
                                                 onClick={e => {
+                                                    e.preventDefault();
                                                     e.stopPropagation();
                                                     setOpenQuickShop(!openQuickShop)
                                                 }}
@@ -257,6 +288,7 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                             <div
                                                 className={`quick-shop-block absolute left-5 right-5 bg-white p-5 rounded-[20px] ${openQuickShop ? 'open' : ''}`}
                                                 onClick={(e) => {
+                                                    e.preventDefault();
                                                     e.stopPropagation()
                                                 }}
                                             >
@@ -273,7 +305,9 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                                 </div>
                                                 <div
                                                     className="button-main w-full text-center rounded-full py-3 mt-4"
-                                                    onClick={() => {
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
                                                         handleAddToCart()
                                                         setOpenQuickShop(false)
                                                     }}
@@ -293,6 +327,7 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                             <div
                                                 className={`add-cart-btn w-9 h-9 flex items-center justify-center rounded-full bg-white duration-300 relative ${compareState.compareArray.some(item => item.id === data.id) ? 'active' : ''}`}
                                                 onClick={e => {
+                                                    e.preventDefault();
                                                     e.stopPropagation();
                                                     handleAddToCart()
                                                 }}
@@ -304,6 +339,7 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                         <div
                                             className={`add-wishlist-btn w-9 h-9 flex items-center justify-center rounded-full bg-white duration-300 relative ${wishlistState.wishlistArray.some(item => item.id === data.id) ? 'active' : ''}`}
                                             onClick={(e) => {
+                                                e.preventDefault();
                                                 e.stopPropagation()
                                                 handleAddToWishlist()
                                             }}
@@ -322,6 +358,7 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                         <div
                                             className={`compare-btn w-9 h-9 flex items-center justify-center rounded-full bg-white duration-300 relative ${compareState.compareArray.some(item => item.id === data.id) ? 'active' : ''}`}
                                             onClick={(e) => {
+                                                e.preventDefault();
                                                 e.stopPropagation()
                                                 handleAddToCompare()
                                             }}
@@ -333,6 +370,7 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                         <div
                                             className={`quick-view-btn w-9 h-9 flex items-center justify-center rounded-full bg-white duration-300 relative ${compareState.compareArray.some(item => item.id === data.id) ? 'active' : ''}`}
                                             onClick={(e) => {
+                                                e.preventDefault();
                                                 e.stopPropagation()
                                                 handleQuickviewOpen()
                                             }}
@@ -344,6 +382,7 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                             <div
                                                 className={`quick-shop-block absolute left-5 right-5 bg-white p-5 rounded-[20px] ${openQuickShop ? 'open' : ''}`}
                                                 onClick={(e) => {
+                                                    e.preventDefault();
                                                     e.stopPropagation()
                                                 }}
                                             >
@@ -360,7 +399,9 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                                 </div>
                                                 <div
                                                     className="button-main w-full text-center rounded-full py-3 mt-4"
-                                                    onClick={() => {
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
                                                         handleAddToCart()
                                                         setOpenQuickShop(false)
                                                     }}
@@ -377,6 +418,7 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                 <div
                                     className="quick-view-btn w-9 h-9 flex items-center justify-center rounded-lg duration-300 bg-white hover:bg-black hover:text-white"
                                     onClick={(e) => {
+                                        e.preventDefault();
                                         e.stopPropagation()
                                         handleQuickviewOpen()
                                     }}
@@ -386,6 +428,7 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                 <div
                                     className="add-cart-btn w-9 h-9 flex items-center justify-center rounded-lg duration-300 bg-white hover:bg-black hover:text-white"
                                     onClick={e => {
+                                        e.preventDefault();
                                         e.stopPropagation();
                                         handleAddToCart()
                                     }}
@@ -423,6 +466,7 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                             className={`color-item w-6 h-6 rounded-full duration-300 relative ${activeColor === item.color ? 'active' : ''}`}
                                             style={{ backgroundColor: `${item.colorCode}` }}
                                             onClick={(e) => {
+                                                e.preventDefault();
                                                 e.stopPropagation()
                                                 handleActiveColor(item.color)
                                             }}>
@@ -438,6 +482,7 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                             className={`color-item w-8 h-8 rounded-lg duration-300 relative ${activeColor === item.color ? 'active' : ''}`}
                                             key={index}
                                             onClick={(e) => {
+                                                e.preventDefault();
                                                 e.stopPropagation()
                                                 handleActiveColor(item.color)
                                             }}
@@ -447,6 +492,8 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                                 width={100}
                                                 height={100}
                                                 alt='color'
+                                                quality={60}
+                                                placeholder="empty"
                                                 className='w-full h-full object-cover rounded-lg'
                                             />
                                             <div className="tag-action bg-black text-white caption2 capitalize px-1.5 py-0.5 rounded-sm">{item.color}</div>
@@ -455,10 +502,10 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                 </div>
                             )}
                             <div className="product-price-block flex items-center gap-2 flex-wrap mt-1 duration-300 relative z-[1]">
-                                <div className="product-price text-title">${data.price}.00</div>
+                                <div className="product-price text-title">{formatPrice(data.price)}</div>
                                 {percentSale > 0 && (
                                     <>
-                                        <div className="product-origin-price caption1 text-secondary2"><del>${data.originPrice}.00</del></div>
+                                        <div className="product-origin-price caption1 text-secondary2"><del>{formatPrice(data.originPrice)}</del></div>
                                         <div className="product-sale caption1 font-medium bg-green px-3 py-0.5 inline-block rounded-full">
                                             -{percentSale}%
                                         </div>
@@ -472,6 +519,7 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                         <div
                                             className="add-cart-btn w-full text-button-uppercase py-2.5 text-center mt-2 rounded-full duration-300 bg-white border border-black hover:bg-black hover:text-white max-lg:hidden"
                                             onClick={e => {
+                                                e.preventDefault();
                                                 e.stopPropagation()
                                                 handleAddToCart()
                                             }}
@@ -482,6 +530,7 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                         <div
                                             className="quick-shop-btn text-button-uppercase py-2.5 text-center mt-2 rounded-full duration-300 bg-white border border-black hover:bg-black hover:text-white max-lg:hidden"
                                             onClick={e => {
+                                                e.preventDefault();
                                                 e.stopPropagation()
                                                 setOpenQuickShop(!openQuickShop)
                                             }}
@@ -492,15 +541,15 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                 </>
                             }
                         </div>
-                    </div>
+                    </Link>
                 </div>
             ) : (
                 <>
                     {type === "list" ? (
                         <>
                             <div className="product-item list-type">
-                                <div className="product-main cursor-pointer flex lg:items-center sm:justify-between gap-7 max-lg:gap-5">
-                                    <div onClick={() => handleDetailProduct(data.id)} className="product-thumb bg-white relative overflow-hidden rounded-2xl block max-sm:w-1/2">
+                                <Link href={`/product/${data.slug || String(data.id)}`} prefetch={false} className="product-main cursor-pointer flex lg:items-center sm:justify-between gap-7 max-lg:gap-5">
+                                    <div className="product-thumb bg-white relative overflow-hidden rounded-2xl block max-sm:w-1/2">
                                         {data.new && (
                                             <div className="product-tag text-button-uppercase bg-green px-3 py-0.5 inline-block rounded-full absolute top-3 left-3 z-[1]">
                                                 New
@@ -512,22 +561,26 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                             </div>
                                         )}
                                         <div className="product-img w-full aspect-[3/4] rounded-2xl overflow-hidden">
-                                            {data.thumbImage.map((img, index) => (
-                                                <Image
-                                                    key={index}
-                                                    src={img}
-                                                    width={500}
-                                                    height={500}
-                                                    alt={data.name}
-                                                    sizes="(max-width: 768px) 50vw, 300px"
-                                                    className='w-full h-full object-cover duration-700'
-                                                />
-                                            ))}
+                                            <BlurImage
+                                                src={
+                                                    data.thumbImage?.[0]
+                                                    || data.images?.[0]
+                                                    || '/images/product/1000x1000.png'
+                                                }
+                                                width={500}
+                                                height={500}
+                                                alt={data.name || 'Product image'}
+                                                sizes="(max-width: 768px) 50vw, 300px"
+                                                quality={70}
+                                                className='w-full h-full object-cover duration-700'
+                                                disableBlur={disableBlur}
+                                            />
                                         </div>
                                         <div className="list-action px-5 absolute w-full bottom-5 max-lg:hidden">
                                             <div
                                                 className={`quick-shop-block absolute left-5 right-5 bg-white p-5 rounded-[20px] ${openQuickShop ? 'open' : ''}`}
                                                 onClick={(e) => {
+                                                    e.preventDefault();
                                                     e.stopPropagation()
                                                 }}
                                             >
@@ -544,7 +597,9 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                                 </div>
                                                 <div
                                                     className="button-main w-full text-center rounded-full py-3 mt-4"
-                                                    onClick={() => {
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
                                                         handleAddToCart()
                                                         setOpenQuickShop(false)
                                                     }}
@@ -556,10 +611,10 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                     </div>
                                     <div className='flex sm:items-center gap-7 max-lg:gap-4 max-lg:flex-wrap max-lg:w-full max-sm:flex-col max-sm:w-1/2'>
                                         <div className="product-infor max-sm:w-full">
-                                            <div onClick={() => handleDetailProduct(data.id)} className="product-name heading6 inline-block duration-300">{data.name}</div>
+                                            <div className="product-name heading6 inline-block duration-300">{data.name}</div>
                                             <div className="product-price-block flex items-center gap-2 flex-wrap mt-2 duration-300 relative z-[1]">
-                                                <div className="product-price text-title">${data.price}.00</div>
-                                                <div className="product-origin-price caption1 text-secondary2"><del>${data.originPrice}.00</del></div>
+                                                <div className="product-price text-title">{formatPrice(data.price)}</div>
+                                                <div className="product-origin-price caption1 text-secondary2"><del>{formatPrice(data.originPrice)}</del></div>
                                                 {data.originPrice && (
                                                     <div className="product-sale caption1 font-medium bg-green px-3 py-0.5 inline-block rounded-full">
                                                         -{percentSale}%
@@ -588,6 +643,7 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                                                         className={`color-item w-12 h-12 rounded-xl duration-300 relative ${activeColor === item.color ? 'active' : ''}`}
                                                                         key={index}
                                                                         onClick={(e) => {
+                                                                            e.preventDefault();
                                                                             e.stopPropagation()
                                                                             handleActiveColor(item.color)
                                                                         }}
@@ -597,6 +653,8 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                                                             width={100}
                                                                             height={100}
                                                                             alt='color'
+                                                                            quality={60}
+                                                                            placeholder="empty"
                                                                             className='rounded-xl'
                                                                         />
                                                                         <div className="tag-action bg-black text-white caption2 capitalize px-1.5 py-0.5 rounded-sm">
@@ -617,6 +675,7 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                             <div
                                                 className="quick-shop-btn button-main whitespace-nowrap py-2 px-9 max-lg:px-5 rounded-full bg-white text-black border border-black hover:bg-black hover:text-white"
                                                 onClick={e => {
+                                                    e.preventDefault();
                                                     e.stopPropagation();
                                                     setOpenQuickShop(!openQuickShop)
                                                 }}
@@ -627,6 +686,7 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                                 <div
                                                     className={`add-wishlist-btn w-[32px] h-[32px] flex items-center justify-center rounded-full bg-white duration-300 relative ${wishlistState.wishlistArray.some(item => item.id === data.id) ? 'active' : ''}`}
                                                     onClick={(e) => {
+                                                        e.preventDefault();
                                                         e.stopPropagation()
                                                         handleAddToWishlist()
                                                     }}
@@ -645,6 +705,7 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                                 <div
                                                     className={`compare-btn w-[32px] h-[32px] flex items-center justify-center rounded-full bg-white duration-300 relative ${compareState.compareArray.some(item => item.id === data.id) ? 'active' : ''}`}
                                                     onClick={(e) => {
+                                                        e.preventDefault();
                                                         e.stopPropagation()
                                                         handleAddToCompare()
                                                     }}
@@ -656,6 +717,7 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                                 <div
                                                     className="quick-view-btn-list w-[32px] h-[32px] flex items-center justify-center rounded-full bg-white duration-300 relative"
                                                     onClick={(e) => {
+                                                        e.preventDefault();
                                                         e.stopPropagation()
                                                         handleQuickviewOpen()
                                                     }}
@@ -666,7 +728,7 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </Link>
                             </div>
                         </>
                     ) : (
@@ -677,14 +739,28 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
             }
 
             {type === 'marketplace' ? (
-                <div className="product-item style-marketplace p-4 border border-line rounded-2xl" onClick={() => handleDetailProduct(data.id)}>
+                <Link href={`/product/${data.slug || String(data.id)}`} prefetch={false} className="product-item style-marketplace p-4 border border-line rounded-2xl">
                     <div className="bg-img relative w-full">
-                        <Image className='w-full aspect-square' width={5000} height={5000} src={data.thumbImage[0]} alt="img" />
+                        <Image
+                            className='w-full aspect-square'
+                            width={500}
+                            height={500}
+                            src={
+                                data.thumbImage?.[0]
+                                || data.images?.[0]
+                                || '/images/product/1000x1000.png'
+                            }
+                            alt={data.name || 'Product image'}
+                            sizes="(max-width: 640px) 50vw, 200px"
+                            quality={70}
+                            placeholder="empty"
+                        />
                         <div className="list-action flex flex-col gap-1 absolute top-0 right-0">
                             <span
                                 className={`add-wishlist-btn w-8 h-8 bg-white flex items-center justify-center rounded-full box-shadow-sm duration-300 ${wishlistState.wishlistArray.some(item => item.id === data.id) ? 'active' : ''}`}
                                 onClick={(e) => {
-                                    e.stopPropagation()
+                                    e.preventDefault();
+                                    e.stopPropagation();
                                     handleAddToWishlist()
                                 }}
                             >
@@ -701,7 +777,8 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                             <span
                                 className={`compare-btn w-8 h-8 bg-white flex items-center justify-center rounded-full box-shadow-sm duration-300 ${compareState.compareArray.some(item => item.id === data.id) ? 'active' : ''}`}
                                 onClick={(e) => {
-                                    e.stopPropagation()
+                                    e.preventDefault();
+                                    e.stopPropagation();
                                     handleAddToCompare()
                                 }}
                             >
@@ -711,7 +788,8 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                             <span
                                 className="quick-view-btn w-8 h-8 bg-white flex items-center justify-center rounded-full box-shadow-sm duration-300"
                                 onClick={(e) => {
-                                    e.stopPropagation()
+                                    e.preventDefault();
+                                    e.stopPropagation();
                                     handleQuickviewOpen()
                                 }}
                             >
@@ -720,6 +798,7 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                             <span
                                 className="add-cart-btn w-8 h-8 bg-white flex items-center justify-center rounded-full box-shadow-sm duration-300"
                                 onClick={e => {
+                                    e.preventDefault();
                                     e.stopPropagation();
                                     handleAddToCart()
                                 }}
@@ -733,9 +812,9 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
                         <div className="flex gap-0.5 mt-1">
                             <Rate currentRate={data.rate} size={16} />
                         </div>
-                        <span className="text-title inline-block mt-1">${data.price}.00</span>
+                        <span className="text-title inline-block mt-1">{formatPrice(data.price)}</span>
                     </div>
-                </div>
+                </Link>
             ) : (
                 <></>
             )}
@@ -743,4 +822,20 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1' }) => {
     )
 }
 
-export default Product
+// Custom comparison function for React.memo
+const areEqual = (prevProps: ProductProps, nextProps: ProductProps) => {
+    // Compare data object
+    if (JSON.stringify(prevProps.data) !== JSON.stringify(nextProps.data)) {
+        return false;
+    }
+    
+    // Compare type and style props
+    if (prevProps.type !== nextProps.type || prevProps.style !== nextProps.style) {
+        return false;
+    }
+    
+    // If all props are equal, don't re-render
+    return true;
+};
+
+export default React.memo(Product, areEqual);

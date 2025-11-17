@@ -12,6 +12,7 @@ import { useWishlist } from '@/context/WishlistContext';
 import { useModalWishlistContext } from '@/context/ModalWishlistContext';
 import { useCompare } from '@/context/CompareContext'
 import { useModalCompareContext } from '@/context/ModalCompareContext'
+import { formatPrice } from '@/utils/priceFormat'
 import Rate from '../Other/Rate';
 import ModalSizeguide from './ModalSizeguide';
 
@@ -163,9 +164,9 @@ const ModalQuickview = () => {
                                     <span className='caption1 text-secondary'>(1.234 reviews)</span>
                                 </div>
                                 <div className="flex items-center gap-3 flex-wrap mt-5 pb-6 border-b border-line">
-                                    <div className="product-price heading5">${selectedProduct?.price}.00</div>
+                                    <div className="product-price heading5">{selectedProduct ? formatPrice(selectedProduct.price) : ''}</div>
                                     <div className='w-px h-4 bg-line'></div>
-                                    <div className="product-origin-price font-normal text-secondary2"><del>${selectedProduct?.originPrice}.00</del></div>
+                                    <div className="product-origin-price font-normal text-secondary2"><del>{selectedProduct ? formatPrice(selectedProduct.originPrice) : ''}</del></div>
                                     {selectedProduct?.originPrice && (
                                         <div className="product-sale caption2 font-semibold bg-green px-3 py-0.5 inline-block rounded-full">
                                             -{percentSale}%
@@ -297,7 +298,7 @@ const ModalQuickview = () => {
                                             <div className="list grid grid-cols-6">
                                                 <div className="item flex items-center justify-center lg:px-3 px-1">
                                                     <Image
-                                                        src={'/images/payment/Frame-0.png'}
+                                                        src={'https://image.nv315.top/images/payment (3)-optimized.webp'}
                                                         width={500}
                                                         height={450}
                                                         alt='payment'
@@ -306,7 +307,7 @@ const ModalQuickview = () => {
                                                 </div>
                                                 <div className="item flex items-center justify-center lg:px-3 px-1">
                                                     <Image
-                                                        src={'/images/payment/Frame-1.png'}
+                                                        src={'https://image.nv315.top/images/payment (2)-optimized.webp'}
                                                         width={500}
                                                         height={450}
                                                         alt='payment'
@@ -315,7 +316,7 @@ const ModalQuickview = () => {
                                                 </div>
                                                 <div className="item flex items-center justify-center lg:px-3 px-1">
                                                     <Image
-                                                        src={'/images/payment/Frame-2.png'}
+                                                        src={'https://image.nv315.top/images/payment (1)-optimized.webp'}
                                                         width={500}
                                                         height={450}
                                                         alt='payment'
@@ -324,7 +325,7 @@ const ModalQuickview = () => {
                                                 </div>
                                                 <div className="item flex items-center justify-center lg:px-3 px-1">
                                                     <Image
-                                                        src={'/images/payment/Frame-3.png'}
+                                                        src={'https://image.nv315.top/images/payment (6)-optimized.webp'}
                                                         width={500}
                                                         height={450}
                                                         alt='payment'
@@ -333,7 +334,7 @@ const ModalQuickview = () => {
                                                 </div>
                                                 <div className="item flex items-center justify-center lg:px-3 px-1">
                                                     <Image
-                                                        src={'/images/payment/Frame-4.png'}
+                                                        src={'https://image.nv315.top/images/payment (5)-optimized.webp'}
                                                         width={500}
                                                         height={450}
                                                         alt='payment'
@@ -342,7 +343,7 @@ const ModalQuickview = () => {
                                                 </div>
                                                 <div className="item flex items-center justify-center lg:px-3 px-1">
                                                     <Image
-                                                        src={'/images/payment/Frame-5.png'}
+                                                        src={'https://image.nv315.top/images/payment (4)-optimized.webp'}
                                                         width={500}
                                                         height={450}
                                                         alt='payment'

@@ -9,6 +9,7 @@ import { useModalCartContext } from '@/context/ModalCartContext'
 import { useCart } from '@/context/CartContext'
 import { countdownTime } from '@/store/countdownTime'
 import CountdownTimeType from '@/type/CountdownType';
+import { formatPrice } from '@/utils/priceFormat'
 
 const ModalCart = ({ serverTimeLeft }: { serverTimeLeft: CountdownTimeType }) => {
     const [timeLeft, setTimeLeft] = useState(serverTimeLeft);
@@ -26,12 +27,20 @@ const ModalCart = ({ serverTimeLeft }: { serverTimeLeft: CountdownTimeType }) =>
     const { cartState, addToCart, removeFromCart, updateCart } = useCart()
 
     const handleAddToCart = (productItem: ProductType) => {
-        if (!cartState.cartArray.find(item => item.id === productItem.id)) {
+        // 检查商品是否已在购物车中
+        const existingItem = cartState.cartArray.find(item => item.id === productItem.id);
+        
+        if (!existingItem) {
+            // 如果商品不在购物车中，添加新商品
             addToCart({ ...productItem });
-            updateCart(productItem.id, productItem.quantityPurchase, '', '')
         } else {
+            // 如果商品已在购物车中，更新数量
             updateCart(productItem.id, productItem.quantityPurchase, '', '')
         }
+        
+        // 打开购物车模态框
+        // 注意：不需要在这里调用openModalCart，因为模态框已经是打开状态
+        // 这个函数主要用于在模态框内的推荐商品区域添加商品
     };
 
     const handleActiveTab = (tab: string) => {
@@ -42,9 +51,13 @@ const ModalCart = ({ serverTimeLeft }: { serverTimeLeft: CountdownTimeType }) =>
     let [totalCart, setTotalCart] = useState<number>(0)
     let [discountCart, setDiscountCart] = useState<number>(0)
 
-    cartState.cartArray.map(item => totalCart += item.price * item.quantity)
+    useEffect(() => {
+        const newTotal = cartState.cartArray.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        setTotalCart(newTotal);
+    }, [cartState.cartArray]);
 
     const [products, setProducts] = useState<ProductType[]>([])
+    const [creatingOrder, setCreatingOrder] = useState(false)
 
     useEffect(() => {
         let mounted = true
@@ -56,6 +69,90 @@ const ModalCart = ({ serverTimeLeft }: { serverTimeLeft: CountdownTimeType }) =>
             .catch(() => { /* silently ignore */ })
         return () => { mounted = false }
     }, [])
+
+    const handleCheckout = async () => {
+        if (cartState.cartArray.length === 0) {
+            alert('购物车为空，无法创建订单')
+            return
+        }
+
+        setCreatingOrder(true)
+        
+        try {
+            // 获取WooCommerce真实产品ID
+            const wcCartItems = []
+            
+            for (const item of cartState.cartArray) {
+                try {
+                    // 使用产品slug查询WooCommerce真实产品信息
+                    const response = await fetch(`http://localhost:3001/api/woocommerce/products?slug=${item.slug}`)
+                    
+                    if (response.ok) {
+                        const wcProducts = await response.json()
+                        
+                        if (wcProducts && wcProducts.length > 0) {
+                            const wcProduct = wcProducts[0] // 获取第一个匹配的产品
+                            
+                            wcCartItems.push({
+                                productId: wcProduct.id, // 使用WooCommerce真实ID
+                                quantity: item.quantity,
+                                variationId: null, // 暂时不处理variation ID
+                                size: item.selectedSize || null,
+                                color: item.selectedColor || null
+                            })
+                        } else {
+                            console.warn(`未找到slug为${item.slug}的WooCommerce产品，使用前端ID: ${item.id}`)
+                            // 如果未找到WooCommerce产品，继续使用前端ID作为备选
+                            wcCartItems.push({
+                                productId: item.id,
+                                quantity: item.quantity,
+                                variationId: null, // 暂时不处理variation ID
+                                size: item.selectedSize || null,
+                                color: item.selectedColor || null
+                            })
+                        }
+                    } else {
+                        console.warn(`查询slug为${item.slug}的WooCommerce产品失败: ${response.status}`)
+                        // 如果查询失败，继续使用前端ID作为备选
+                        wcCartItems.push({
+                                productId: item.id,
+                                quantity: item.quantity,
+                                variationId: null, // 暂时不处理variation ID
+                                size: item.selectedSize || null,
+                                color: item.selectedColor || null
+                            })
+                    }
+                } catch (error) {
+                    console.error(`获取产品${item.slug}的WooCommerce信息时出错:`, error)
+                    // 如果出现错误，继续使用前端ID作为备选
+                    wcCartItems.push({
+                                productId: item.id,
+                                quantity: item.quantity,
+                                variationId: null, // 暂时不处理variation ID
+                                size: item.selectedSize || null,
+                                color: item.selectedColor || null
+                            })
+                }
+            }
+
+            const params = new URLSearchParams()
+            params.set('cartItems', JSON.stringify(wcCartItems))
+            params.set('discount', String(discountCart))
+            params.set('ship', String(totalCart < moneyForFreeship ? 30 : 0))
+            
+            // 关闭模态框并跳转到checkout页面
+            closeModalCart()
+            // 检查是否在浏览器环境中
+            if (typeof window !== 'undefined') {
+                window.location.href = `/checkout?${params.toString()}`
+            }
+        } catch (error) {
+            console.error('Error redirecting to checkout:', error)
+            alert('结算过程中出现错误，请重试')
+        } finally {
+            setCreatingOrder(false)
+        }
+    }
 
     return (
         <>
@@ -71,19 +168,27 @@ const ModalCart = ({ serverTimeLeft }: { serverTimeLeft: CountdownTimeType }) =>
                                 <div key={product.id} className='item py-5 flex items-center justify-between gap-3 border-b border-line'>
                                     <div className="infor flex items-center gap-5">
                                         <div className="bg-img">
-                                            <Image
-                                                src={product.images[0]}
-                                                width={300}
-                                                height={300}
-                                                alt={product.name}
-                                                className='w-[100px] aspect-square flex-shrink-0 rounded-lg'
-                                            />
+                                            {(() => {
+                                                const imgSrc = product.thumbImage?.[0]
+                                                    || product.images?.[0]
+                                                    || product.variation?.[0]?.image
+                                                    || '/images/product/1000x1000.png';
+                                                return (
+                                                    <Image
+                                                        src={imgSrc}
+                                                        width={300}
+                                                        height={300}
+                                                        alt={product.name || 'Product image'}
+                                                        className='w-[100px] aspect-square flex-shrink-0 rounded-lg'
+                                                    />
+                                                );
+                                            })()}
                                         </div>
                                         <div className=''>
                                             <div className="name text-button">{product.name}</div>
                                             <div className="flex items-center gap-2 mt-2">
-                                                <div className="product-price text-title">${product.price}.00</div>
-                                                <div className="product-origin-price text-title text-secondary2"><del>${product.originPrice}.00</del></div>
+                                                <div className="product-price text-title">{formatPrice(product.price)}</div>
+                                                <div className="product-origin-price text-title text-secondary2"><del>{formatPrice(product.originPrice)}</del></div>
                                             </div>
                                         </div>
                                     </div>
@@ -119,7 +224,7 @@ const ModalCart = ({ serverTimeLeft }: { serverTimeLeft: CountdownTimeType }) =>
                             </div>
                         </div>
                         <div className="heading banner mt-3 px-6">
-                            <div className="text">Buy <span className="text-button"> $<span className="more-price">{moneyForFreeship - totalCart > 0 ? (<>{moneyForFreeship - totalCart}</>) : (0)}</span>.00 </span>
+                            <div className="text">Buy <span className="text-button"> {formatPrice(moneyForFreeship - totalCart > 0 ? moneyForFreeship - totalCart : 0)} </span>
                                 <span>more to get </span>
                                 <span className="text-button">freeship</span></div>
                             <div className="tow-bar-block mt-3">
@@ -134,13 +239,21 @@ const ModalCart = ({ serverTimeLeft }: { serverTimeLeft: CountdownTimeType }) =>
                                 <div key={product.id} className='item py-5 flex items-center justify-between gap-3 border-b border-line'>
                                     <div className="infor flex items-center gap-3 w-full">
                                         <div className="bg-img w-[100px] aspect-square flex-shrink-0 rounded-lg overflow-hidden">
-                                            <Image
-                                                src={product.images[0]}
-                                                width={300}
-                                                height={300}
-                                                alt={product.name}
-                                                className='w-full h-full'
-                                            />
+                                            {(() => {
+                                                const imgSrc = product.thumbImage?.[0]
+                                                    || product.images?.[0]
+                                                    || product.variation?.[0]?.image
+                                                    || '/images/product/1000x1000.png';
+                                                return (
+                                                    <Image
+                                                        src={imgSrc}
+                                                        width={300}
+                                                        height={300}
+                                                        alt={product.name || 'Product image'}
+                                                        className='w-full h-full'
+                                                    />
+                                                );
+                                            })()}
                                         </div>
                                         <div className='w-full'>
                                             <div className="flex items-center justify-between w-full">
@@ -154,9 +267,9 @@ const ModalCart = ({ serverTimeLeft }: { serverTimeLeft: CountdownTimeType }) =>
                                             </div>
                                             <div className="flex items-center justify-between gap-2 mt-3 w-full">
                                                 <div className="flex items-center text-secondary2 capitalize">
-                                                    {product.selectedSize || product.sizes[0]}/{product.selectedColor || product.variation[0].color}
-                                                </div>
-                                                <div className="product-price text-title">${product.price}.00</div>
+                                                {(product.selectedSize || product.sizes?.[0] || '')}/{(product.selectedColor || (product.variation && product.variation[0] && product.variation[0].color) || '')}
+                                            </div>
+                                                <div className="product-price text-title">{formatPrice(product.price)}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -189,7 +302,7 @@ const ModalCart = ({ serverTimeLeft }: { serverTimeLeft: CountdownTimeType }) =>
                             </div>
                             <div className="flex items-center justify-between pt-6 px-6">
                                 <div className="heading5">Subtotal</div>
-                                <div className="heading5">${totalCart}.00</div>
+                                <div className="heading5">{formatPrice(totalCart)}</div>
                             </div>
                             <div className="block-button text-center p-6">
                                 <div className="flex items-center gap-4">
@@ -200,13 +313,13 @@ const ModalCart = ({ serverTimeLeft }: { serverTimeLeft: CountdownTimeType }) =>
                                     >
                                         View cart
                                     </Link>
-                                    <Link
-                                        href={'/checkout'}
+                                    <button
                                         className='button-main basis-1/2 text-center uppercase'
-                                        onClick={closeModalCart}
+                                        onClick={handleCheckout}
+                                        disabled={creatingOrder || cartState.cartArray.length === 0}
                                     >
-                                        Check Out
-                                    </Link>
+                                        {creatingOrder ? 'Creating Order...' : 'Check Out'}
+                                    </button>
                                 </div>
                                 <div onClick={closeModalCart} className="text-button-uppercase mt-4 text-center has-line-before cursor-pointer inline-block">Or continue shopping</div>
                             </div>

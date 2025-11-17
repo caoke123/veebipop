@@ -39,10 +39,10 @@ const Footer = () => {
                                     </div>
                                     <div className="item flex flex-col basis-1/3 ">
                                         <div className="text-button-uppercase pb-3">Quick Shop</div>
-                                        <Link className='caption1 has-line-before duration-300 w-fit' href={'/shop/breadcrumb1'}>Women</Link>
-                                        <Link className='caption1 has-line-before duration-300 w-fit pt-2' href={'/shop/breadcrumb1'}>Men</Link>
-                                        <Link className='caption1 has-line-before duration-300 w-fit pt-2' href={'/shop/breadcrumb1'}>Clothes</Link>
-                                        <Link className='caption1 has-line-before duration-300 w-fit pt-2' href={'/shop/breadcrumb1'}>Accessories</Link>
+<Link className='caption1 has-line-before duration-300 w-fit' href={'/shop'}>Women</Link>
+<Link className='caption1 has-line-before duration-300 w-fit pt-2' href={'/shop'}>Men</Link>
+<Link className='caption1 has-line-before duration-300 w-fit pt-2' href={'/shop'}>Clothes</Link>
+<Link className='caption1 has-line-before duration-300 w-fit pt-2' href={'/shop'}>Accessories</Link>
                                         <Link className='caption1 has-line-before duration-300 w-fit pt-2' href={'/blog'}>Blog</Link>
                                     </div>
                                     <div className="item flex flex-col basis-1/3 ">
@@ -110,7 +110,7 @@ const Footer = () => {
                                 <div className="caption1 text-secondary">Payment:</div>
                                 <div className="payment-img">
                                     <Image
-                                        src={'/images/payment/Frame-0.png'}
+                                        src={'https://image.nv315.top/images/payment (3)-optimized.webp'}
                                         width={500}
                                         height={500}
                                         alt={'payment'}
@@ -119,7 +119,7 @@ const Footer = () => {
                                 </div>
                                 <div className="payment-img">
                                     <Image
-                                        src={'/images/payment/Frame-1.png'}
+                                        src={'https://image.nv315.top/images/payment (2)-optimized.webp'}
                                         width={500}
                                         height={500}
                                         alt={'payment'}
@@ -128,7 +128,7 @@ const Footer = () => {
                                 </div>
                                 <div className="payment-img">
                                     <Image
-                                        src={'/images/payment/Frame-2.png'}
+                                        src={'https://image.nv315.top/images/payment (1)-optimized.webp'}
                                         width={500}
                                         height={500}
                                         alt={'payment'}
@@ -137,7 +137,7 @@ const Footer = () => {
                                 </div>
                                 <div className="payment-img">
                                     <Image
-                                        src={'/images/payment/Frame-3.png'}
+                                        src={'https://image.nv315.top/images/payment (6)-optimized.webp'}
                                         width={500}
                                         height={500}
                                         alt={'payment'}
@@ -146,7 +146,7 @@ const Footer = () => {
                                 </div>
                                 <div className="payment-img">
                                     <Image
-                                        src={'/images/payment/Frame-4.png'}
+                                        src={'https://image.nv315.top/images/payment (5)-optimized.webp'}
                                         width={500}
                                         height={500}
                                         alt={'payment'}
@@ -155,7 +155,7 @@ const Footer = () => {
                                 </div>
                                 <div className="payment-img">
                                     <Image
-                                        src={'/images/payment/Frame-5.png'}
+                                        src={'https://image.nv315.top/images/payment (4)-optimized.webp'}
                                         width={500}
                                         height={500}
                                         alt={'payment'}

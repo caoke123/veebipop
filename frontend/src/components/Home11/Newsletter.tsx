@@ -3,7 +3,7 @@ import React from 'react'
 const Newsletter = () => {
     return (
         <>
-            <div className={`newsletter-block bg-green py-7`}>
+            <div className={`newsletter-block bg-green py-7 md:mt-20 mt-10`}>
                 <div className="container flex max-lg:flex-col items-center lg:justify-between justify-center gap-8 gap-y-4">
                     <div className="text-content">
                         <div className="heading3 max-lg:text-center">Sign up and get 10% off</div>

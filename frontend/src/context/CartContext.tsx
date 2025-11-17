@@ -36,7 +36,12 @@ const CartContext = createContext<CartContextProps | undefined>(undefined);
 const cartReducer = (state: CartState, action: CartAction): CartState => {
     switch (action.type) {
         case 'ADD_TO_CART':
-            const newItem: CartItem = { ...action.payload, quantity: 1, selectedSize: '', selectedColor: '' };
+            const newItem: CartItem = { 
+                ...action.payload, 
+                quantity: action.payload.quantityPurchase || 1, 
+                selectedSize: action.payload.selectedSize || '', 
+                selectedColor: action.payload.selectedColor || '' 
+            };
             return {
                 ...state,
                 cartArray: [...state.cartArray, newItem],
@@ -72,6 +77,32 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [cartState, dispatch] = useReducer(cartReducer, { cartArray: [] });
+
+    // Load cart from localStorage on initial render
+    useEffect(() => {
+        // 检查是否在浏览器环境中
+        if (typeof window === 'undefined') {
+            return;
+        }
+        
+        const savedCart = localStorage.getItem('cart');
+        if (savedCart) {
+            try {
+                const parsedCart = JSON.parse(savedCart);
+                dispatch({ type: 'LOAD_CART', payload: parsedCart });
+            } catch (error) {
+                console.error('Failed to parse cart from localStorage:', error);
+            }
+        }
+    }, []);
+
+    // Save cart to localStorage whenever cartState changes
+    useEffect(() => {
+        // 检查是否在浏览器环境中
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('cart', JSON.stringify(cartState.cartArray));
+        }
+    }, [cartState.cartArray]);
 
     const addToCart = (item: ProductType) => {
         dispatch({ type: 'ADD_TO_CART', payload: item });

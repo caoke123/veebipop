@@ -1,0 +1,817 @@
+uid=1_0 RootWebArea "Anvogue" url="http://localhost:3001/"
+  uid=1_1 ignored
+    uid=1_2 ignored
+      uid=1_3 generic
+        uid=1_4 ignored
+          uid=1_5 ignored
+            uid=1_6 ignored
+              uid=1_7 generic
+                uid=1_8 generic
+                  uid=1_9 paragraph
+                    uid=1_10 StaticText "English"
+                      uid=1_11 InlineTextBox
+                  uid=1_12 ignored
+                uid=1_13 image
+              uid=1_14 generic
+                uid=1_15 generic
+                  uid=1_16 paragraph
+                    uid=1_17 StaticText "USD"
+                      uid=1_18 InlineTextBox
+                  uid=1_19 ignored
+                uid=1_20 image
+            uid=1_21 ignored
+              uid=1_22 StaticText "NEW CUSTOMERS SAVE 10% WITH THE CODE GET10"
+                uid=1_23 InlineTextBox
+            uid=1_24 ignored
+              uid=1_25 link "" url="https://www.facebook.com/"
+                uid=1_26 ignored
+                  uid=1_27 ignored
+                    uid=1_28 StaticText ""
+                      uid=1_29 InlineTextBox
+              uid=1_30 link "" url="https://www.instagram.com/"
+                uid=1_31 ignored
+                  uid=1_32 ignored
+                    uid=1_33 StaticText ""
+                      uid=1_34 InlineTextBox
+              uid=1_35 link "" url="https://www.youtube.com/"
+                uid=1_36 ignored
+                  uid=1_37 ignored
+                    uid=1_38 StaticText ""
+                      uid=1_39 InlineTextBox
+              uid=1_40 link "" url="https://twitter.com/"
+                uid=1_41 ignored
+                  uid=1_42 ignored
+                    uid=1_43 StaticText ""
+                      uid=1_44 InlineTextBox
+              uid=1_45 link "" url="https://pinterest.com/"
+                uid=1_46 ignored
+                  uid=1_47 ignored
+                    uid=1_48 StaticText ""
+                      uid=1_49 InlineTextBox
+      uid=1_50 generic
+        uid=1_51 ignored
+          uid=1_52 generic
+            uid=1_53 generic
+              uid=1_54 ignored
+                uid=1_55 ignored
+                  uid=1_56 link "Anvogue" url="http://localhost:3001/"
+                    uid=1_57 generic
+                      uid=1_58 StaticText "Anvogue"
+                        uid=1_59 InlineTextBox
+                  uid=1_60 ignored
+                    uid=1_61 navigation "Primary navigation"
+                      uid=1_62 list
+                        uid=1_63 listitem level="1"
+                          uid=1_64 link "Home" url="http://localhost:3001/"
+                            uid=1_65 StaticText "Home"
+                              uid=1_66 InlineTextBox
+                        uid=1_67 listitem level="1"
+                          uid=1_68 link "News" url="http://localhost:3001/blog/list"
+                            uid=1_69 StaticText "News"
+                              uid=1_70 InlineTextBox
+                        uid=1_71 listitem level="1"
+                          uid=1_72 link "Solutions" url="http://localhost:3001/pages/faqs"
+                            uid=1_73 StaticText "Solutions"
+                              uid=1_74 InlineTextBox
+                            uid=1_75 image
+                          uid=1_76 generic
+                            uid=1_77 list
+                              uid=1_78 listitem level="2"
+                                uid=1_79 link "FAQs" url="http://localhost:3001/pages/faqs"
+                                  uid=1_80 StaticText "FAQs"
+                                    uid=1_81 InlineTextBox
+                        uid=1_82 listitem level="1"
+                          uid=1_83 link "Products" url="http://localhost:3001/shop/collection"
+                            uid=1_84 StaticText "Products"
+                              uid=1_85 InlineTextBox
+                            uid=1_86 image
+                          uid=1_87 generic
+                            uid=1_88 list
+                              uid=1_89 listitem level="2"
+                                uid=1_90 link "Collection" url="http://localhost:3001/shop/collection"
+                                  uid=1_91 StaticText "Collection"
+                                    uid=1_92 InlineTextBox
+                        uid=1_93 listitem level="1"
+                          uid=1_94 link "About" url="http://localhost:3001/pages/about"
+                            uid=1_95 StaticText "About"
+                              uid=1_96 InlineTextBox
+                  uid=1_97 ignored
+                    uid=1_98 ignored
+                      uid=1_99 generic
+                        uid=1_100 image
+                      uid=1_101 generic
+                        uid=1_102 image
+                      uid=1_103 generic
+                        uid=1_104 image
+                        uid=1_105 ignored
+                          uid=1_106 StaticText "0"
+                            uid=1_107 InlineTextBox
+          uid=1_108 ignored
+          uid=1_109 ignored
+          uid=1_110 ignored
+            uid=1_111 ignored
+          uid=1_112 ignored
+            uid=1_113 ignored
+          uid=1_114 ignored
+            uid=1_115 ignored
+          uid=1_116 ignored
+          uid=1_117 ignored
+            uid=1_118 ignored
+          uid=1_119 ignored
+          uid=1_120 ignored
+            uid=1_121 ignored
+        uid=1_122 ignored
+          uid=1_123 ignored
+            uid=1_124 ignored
+              uid=1_125 generic
+                uid=1_126 generic
+                  uid=1_127 generic
+                    uid=1_128 generic
+                      uid=1_129 generic
+                        uid=1_130 generic
+                          uid=1_131 StaticText "PARTNER WITH US"
+                            uid=1_132 InlineTextBox
+                        uid=1_133 generic
+                          uid=1_134 StaticText "Define The Trendy Market"
+                            uid=1_135 InlineTextBox
+                            uid=1_136 InlineTextBox
+                        uid=1_137 generic
+                          uid=1_138 StaticText "Discover the beauty of fashion living"
+                            uid=1_139 InlineTextBox
+                        uid=1_140 link "SHOP NOW" url="http://localhost:3001/shop"
+                          uid=1_141 StaticText "SHOP NOW"
+                            uid=1_142 InlineTextBox
+                      uid=1_143 generic
+                        uid=1_144 image "bg11-1" url="http://localhost:3001/_next/image?url=https%3A%2F%2Fimage.nv315.top%2Fart%2520toys4-optimized.webp&w=1920&q=75"
+                  uid=1_145 generic
+                    uid=1_146 generic
+                      uid=1_147 generic
+                        uid=1_148 generic
+                          uid=1_149 StaticText "UNMATCHED QUALITY"
+                            uid=1_150 InlineTextBox
+                        uid=1_151 generic
+                          uid=1_152 StaticText "Every Detail Is Perfect"
+                            uid=1_153 InlineTextBox
+                            uid=1_154 InlineTextBox
+                        uid=1_155 generic
+                          uid=1_156 StaticText "One supplier, endless possibilities"
+                            uid=1_157 InlineTextBox
+                        uid=1_158 link "SHOP NOW" url="http://localhost:3001/shop"
+                          uid=1_159 StaticText "SHOP NOW"
+                            uid=1_160 InlineTextBox
+                      uid=1_161 generic
+                        uid=1_162 image "bg11-2" url="http://localhost:3001/_next/image?url=https%3A%2F%2Fimage.nv315.top%2Fimages%2Fslide-3-optimized.webp&w=1920&q=75"
+                  uid=1_163 generic
+                    uid=1_164 generic
+                      uid=1_165 generic
+                        uid=1_166 generic
+                          uid=1_167 StaticText "FRESH AND TASTY"
+                            uid=1_168 InlineTextBox
+                        uid=1_169 generic
+                          uid=1_170 StaticText "Summer Sale Collections"
+                            uid=1_171 InlineTextBox
+                            uid=1_172 InlineTextBox
+                        uid=1_173 generic
+                          uid=1_174 StaticText "Discover the beauty of fashion living"
+                            uid=1_175 InlineTextBox
+                        uid=1_176 link "SHOP NOW" url="http://localhost:3001/shop"
+                          uid=1_177 StaticText "SHOP NOW"
+                            uid=1_178 InlineTextBox
+                      uid=1_179 generic
+                        uid=1_180 image "bg11-3" url="http://localhost:3001/_next/image?url=https%3A%2F%2Fimage.nv315.top%2Fimages%2Fs11-3-optimized.webp&w=1920&q=75"
+                uid=1_181 generic
+                  uid=1_182 ignored
+                    uid=1_183 generic
+                  uid=1_184 ignored
+                    uid=1_185 generic
+                  uid=1_186 ignored
+                    uid=1_187 generic
+            uid=1_188 ignored
+              uid=1_189 generic
+                uid=1_190 generic
+                  uid=1_191 generic
+                    uid=1_192 StaticText "YIWU CHINA"
+                      uid=1_193 InlineTextBox
+                  uid=1_194 generic
+                    uid=1_195 StaticText "Direct Sourcing"
+                      uid=1_196 InlineTextBox
+                    uid=1_197 LineBreak "
+"
+                      uid=1_198 InlineTextBox
+                    uid=1_199 StaticText "For Charms"
+                      uid=1_200 InlineTextBox
+                  uid=1_201 generic
+                    uid=1_202 StaticText "Save More"
+                      uid=1_203 InlineTextBox
+                uid=1_204 image "bg-img" url="http://localhost:3001/_next/image?url=https%3A%2F%2Fimage.nv315.top%2Fimages%2Fs4-optimized.webp&w=750&q=75"
+              uid=1_205 generic
+                uid=1_206 generic
+                  uid=1_207 generic
+                    uid=1_208 StaticText "YIWU CHINA"
+                      uid=1_209 InlineTextBox
+                  uid=1_210 generic
+                    uid=1_211 StaticText "Premium Accessories"
+                      uid=1_212 InlineTextBox
+                    uid=1_213 LineBreak "
+"
+                      uid=1_214 InlineTextBox
+                    uid=1_215 StaticText "For Driver"
+                      uid=1_216 InlineTextBox
+                  uid=1_217 generic
+                    uid=1_218 StaticText "Source Directly"
+                      uid=1_219 InlineTextBox
+                uid=1_220 image "bg-img" url="http://localhost:3001/_next/image?url=https%3A%2F%2Fimage.nv315.top%2Fimages%2Fs5-3-optimized.webp&w=750&q=75"
+      uid=1_221 ignored
+        uid=1_222 ignored
+          uid=1_223 generic
+            uid=1_224 StaticText "Trending Right Now"
+              uid=1_225 InlineTextBox
+          uid=1_226 generic
+            uid=1_227 generic
+              uid=1_228 generic
+                uid=1_229 generic
+                  uid=1_230 generic
+                    uid=1_231 ignored
+                      uid=1_232 image "outerwear" url="http://localhost:3001/_next/image?url=https%3A%2F%2Fimage.nv315.top%2Fimages%2Fart%2520toys1-optimized.webp&w=256&q=75"
+                    uid=1_233 generic
+                      uid=1_234 StaticText "Art Toys"
+                        uid=1_235 InlineTextBox
+                uid=1_236 generic
+                  uid=1_237 generic
+                    uid=1_238 ignored
+                      uid=1_239 image "swimwear" url="http://localhost:3001/_next/image?url=https%3A%2F%2Fimage.nv315.top%2Fimages%2Fcharm-optimized.webp&w=256&q=75"
+                    uid=1_240 generic
+                      uid=1_241 StaticText "Charms"
+                        uid=1_242 InlineTextBox
+                uid=1_243 generic
+                  uid=1_244 generic
+                    uid=1_245 ignored
+                      uid=1_246 image "clothes" url="http://localhost:3001/_next/image?url=https%3A%2F%2Fimage.nv315.top%2Fimages%2Fart%2520toys3-optimized.webp&w=256&q=75"
+                    uid=1_247 generic
+                      uid=1_248 StaticText "Top"
+                        uid=1_249 InlineTextBox
+                uid=1_250 generic
+                  uid=1_251 generic
+                    uid=1_252 ignored
+                      uid=1_253 image "sets" url="http://localhost:3001/_next/image?url=https%3A%2F%2Fimage.nv315.top%2Fimages%2Fseatbelt-optimized.webp&w=256&q=75"
+                    uid=1_254 generic
+                      uid=1_255 StaticText "Seatbelt Covers"
+                        uid=1_256 InlineTextBox
+                uid=1_257 generic
+                  uid=1_258 generic
+                    uid=1_259 ignored
+                      uid=1_260 image "accessories" url="http://localhost:3001/_next/image?url=https%3A%2F%2Fimage.nv315.top%2Fimages%2Fhandle%2520covers-optimized.webp&w=256&q=75"
+                    uid=1_261 generic
+                      uid=1_262 StaticText "Grab Handle Covers"
+                        uid=1_263 InlineTextBox
+                uid=1_264 generic
+                  uid=1_265 generic
+                    uid=1_266 ignored
+                      uid=1_267 image "lingerie" url="http://localhost:3001/_next/image?url=https%3A%2F%2Fimage.nv315.top%2Fimages%2Fwayi-optimized.webp&w=256&q=75"
+                    uid=1_268 generic
+                      uid=1_269 StaticText "Clothing For Toys"
+                        uid=1_270 InlineTextBox
+                uid=1_271 generic
+                  uid=1_272 generic
+                    uid=1_273 ignored
+                      uid=1_274 image "lingerie" url="http://localhost:3001/_next/image?url=https%3A%2F%2Fimage.nv315.top%2Fimages%2Ffangxingpan-optimized.webp&w=256&q=75"
+                    uid=1_275 generic
+                      uid=1_276 StaticText "Steering Wheel Cover"
+                        uid=1_277 InlineTextBox
+                        uid=1_278 InlineTextBox
+              uid=1_279 generic
+                uid=1_280 generic
+                  uid=1_281 StaticText "prev"
+                    uid=1_282 InlineTextBox
+              uid=1_283 generic
+                uid=1_284 generic
+                  uid=1_285 StaticText "next"
+                    uid=1_286 InlineTextBox
+      uid=1_287 ignored
+        uid=1_288 ignored
+          uid=1_289 ignored
+            uid=1_290 generic
+              uid=1_291 StaticText "Art Toys"
+                uid=1_292 InlineTextBox
+            uid=1_293 ignored
+              uid=1_294 ignored
+                uid=1_295 generic
+                  uid=1_296 generic
+                  uid=1_297 StaticText "TOP"
+                    uid=1_298 InlineTextBox
+                uid=1_299 link "VIEW ALL" url="http://localhost:3001/shop?category=art-toys"
+                  uid=1_300 StaticText "VIEW ALL"
+                    uid=1_301 InlineTextBox
+          uid=1_302 ignored
+            uid=1_303 link url="http://localhost:3001/shop"
+              uid=1_304 ignored
+            uid=1_305 ignored
+              uid=1_306 ignored
+                uid=1_307 generic
+                uid=1_308 ignored
+                  uid=1_309 ignored
+                    uid=1_310 ignored
+                    uid=1_311 ignored
+                    uid=1_312 ignored
+                  uid=1_313 ignored
+                  uid=1_314 ignored
+                  uid=1_315 ignored
+                    uid=1_316 ignored
+                    uid=1_317 ignored
+                      uid=1_318 ignored
+                      uid=1_319 ignored
+                      uid=1_320 ignored
+            uid=1_321 ignored
+              uid=1_322 ignored
+                uid=1_323 generic
+                uid=1_324 ignored
+                  uid=1_325 ignored
+                    uid=1_326 ignored
+                    uid=1_327 ignored
+                    uid=1_328 ignored
+                  uid=1_329 ignored
+                  uid=1_330 ignored
+                  uid=1_331 ignored
+                    uid=1_332 ignored
+                    uid=1_333 ignored
+                      uid=1_334 ignored
+                      uid=1_335 ignored
+                      uid=1_336 ignored
+            uid=1_337 ignored
+              uid=1_338 ignored
+                uid=1_339 generic
+                uid=1_340 ignored
+                  uid=1_341 ignored
+                    uid=1_342 ignored
+                    uid=1_343 ignored
+                    uid=1_344 ignored
+                  uid=1_345 ignored
+                  uid=1_346 ignored
+                  uid=1_347 ignored
+                    uid=1_348 ignored
+                    uid=1_349 ignored
+                      uid=1_350 ignored
+                      uid=1_351 ignored
+                      uid=1_352 ignored
+      uid=1_353 ignored
+        uid=1_354 ignored
+          uid=1_355 ignored
+            uid=1_356 link "bg-img" url="http://localhost:3001/shop"
+              uid=1_357 ignored
+                uid=1_358 image "bg-img" url="http://localhost:3001/_next/image?url=https%3A%2F%2Fimage.nv315.top%2Fimages%2Fbanner1-optimized.webp&w=1200&q=75"
+            uid=1_359 link "bg-img" url="http://localhost:3001/shop"
+              uid=1_360 ignored
+                uid=1_361 image "bg-img" url="http://localhost:3001/_next/image?url=https%3A%2F%2Fimage.nv315.top%2Fimages%2Fbanner2-optimized.webp&w=1200&q=75"
+            uid=1_362 link "bg-img" url="http://localhost:3001/shop"
+              uid=1_363 ignored
+                uid=1_364 image "bg-img" url="http://localhost:3001/_next/image?url=https%3A%2F%2Fimage.nv315.top%2Fimages%2Ffind-optimized.webp&w=1200&q=75"
+      uid=1_365 ignored
+        uid=1_366 ignored
+          uid=1_367 ignored
+            uid=1_368 generic
+              uid=1_369 StaticText "Charms"
+                uid=1_370 InlineTextBox
+            uid=1_371 ignored
+              uid=1_372 ignored
+                uid=1_373 generic
+                  uid=1_374 generic
+                  uid=1_375 StaticText "TOP"
+                    uid=1_376 InlineTextBox
+                uid=1_377 link "VIEW ALL" url="http://localhost:3001/shop?category=charms"
+                  uid=1_378 StaticText "VIEW ALL"
+                    uid=1_379 InlineTextBox
+          uid=1_380 ignored
+            uid=1_381 link url="http://localhost:3001/shop"
+              uid=1_382 ignored
+            uid=1_383 ignored
+              uid=1_384 ignored
+                uid=1_385 generic
+                uid=1_386 ignored
+                  uid=1_387 ignored
+                    uid=1_388 ignored
+                    uid=1_389 ignored
+                    uid=1_390 ignored
+                  uid=1_391 ignored
+                  uid=1_392 ignored
+                  uid=1_393 ignored
+                    uid=1_394 ignored
+                    uid=1_395 ignored
+                      uid=1_396 ignored
+                      uid=1_397 ignored
+                      uid=1_398 ignored
+            uid=1_399 ignored
+              uid=1_400 ignored
+                uid=1_401 generic
+                uid=1_402 ignored
+                  uid=1_403 ignored
+                    uid=1_404 ignored
+                    uid=1_405 ignored
+                    uid=1_406 ignored
+                  uid=1_407 ignored
+                  uid=1_408 ignored
+                  uid=1_409 ignored
+                    uid=1_410 ignored
+                    uid=1_411 ignored
+                      uid=1_412 ignored
+                      uid=1_413 ignored
+                      uid=1_414 ignored
+            uid=1_415 ignored
+              uid=1_416 ignored
+                uid=1_417 generic
+                uid=1_418 ignored
+                  uid=1_419 ignored
+                    uid=1_420 ignored
+                    uid=1_421 ignored
+                    uid=1_422 ignored
+                  uid=1_423 ignored
+                  uid=1_424 ignored
+                  uid=1_425 ignored
+                    uid=1_426 ignored
+                    uid=1_427 ignored
+                      uid=1_428 ignored
+                      uid=1_429 ignored
+                      uid=1_430 ignored
+      uid=1_431 ignored
+        uid=1_432 ignored
+          uid=1_433 ignored
+            uid=1_434 ignored
+              uid=1_435 generic
+                uid=1_436 ignored
+                  uid=1_437 StaticText ""
+                    uid=1_438 InlineTextBox
+              uid=1_439 generic
+                uid=1_440 StaticText "24/7 Customer Service"
+                  uid=1_441 InlineTextBox
+              uid=1_442 generic
+                uid=1_443 StaticText "We're here to help you with any questions or concerns you have, 24/7."
+                  uid=1_444 InlineTextBox
+                  uid=1_445 InlineTextBox
+            uid=1_446 ignored
+              uid=1_447 generic
+                uid=1_448 ignored
+                  uid=1_449 StaticText ""
+                    uid=1_450 InlineTextBox
+              uid=1_451 generic
+                uid=1_452 StaticText "14-Day Money Back"
+                  uid=1_453 InlineTextBox
+              uid=1_454 generic
+                uid=1_455 StaticText "If you're not satisfied with your purchase, simply return it within 14 days for a refund."
+                  uid=1_456 InlineTextBox
+                  uid=1_457 InlineTextBox
+            uid=1_458 ignored
+              uid=1_459 generic
+                uid=1_460 ignored
+                  uid=1_461 StaticText ""
+                    uid=1_462 InlineTextBox
+              uid=1_463 generic
+                uid=1_464 StaticText "Our Guarantee"
+                  uid=1_465 InlineTextBox
+              uid=1_466 generic
+                uid=1_467 StaticText "We stand behind our products and services and guarantee your satisfaction."
+                  uid=1_468 InlineTextBox
+                  uid=1_469 InlineTextBox
+            uid=1_470 ignored
+              uid=1_471 generic
+                uid=1_472 ignored
+                  uid=1_473 StaticText ""
+                    uid=1_474 InlineTextBox
+              uid=1_475 generic
+                uid=1_476 StaticText "Shipping Worldwide"
+                  uid=1_477 InlineTextBox
+              uid=1_478 generic
+                uid=1_479 StaticText "We ship our products worldwide, making them accessible to customers everywhere."
+                  uid=1_480 InlineTextBox
+                  uid=1_481 InlineTextBox
+      uid=1_482 ignored
+        uid=1_483 ignored
+          uid=1_484 ignored
+            uid=1_485 generic
+              uid=1_486 StaticText "In-Car Accessories"
+                uid=1_487 InlineTextBox
+            uid=1_488 ignored
+              uid=1_489 ignored
+                uid=1_490 generic
+                  uid=1_491 generic
+                  uid=1_492 StaticText "TOP"
+                    uid=1_493 InlineTextBox
+                uid=1_494 link "VIEW ALL" url="http://localhost:3001/shop?category=in-car-accessories"
+                  uid=1_495 StaticText "VIEW ALL"
+                    uid=1_496 InlineTextBox
+          uid=1_497 ignored
+            uid=1_498 link url="http://localhost:3001/shop"
+              uid=1_499 ignored
+            uid=1_500 ignored
+              uid=1_501 ignored
+                uid=1_502 generic
+                uid=1_503 ignored
+                  uid=1_504 ignored
+                    uid=1_505 ignored
+                    uid=1_506 ignored
+                    uid=1_507 ignored
+                  uid=1_508 ignored
+                  uid=1_509 ignored
+                  uid=1_510 ignored
+                    uid=1_511 ignored
+                    uid=1_512 ignored
+                      uid=1_513 ignored
+                      uid=1_514 ignored
+                      uid=1_515 ignored
+            uid=1_516 ignored
+              uid=1_517 ignored
+                uid=1_518 generic
+                uid=1_519 ignored
+                  uid=1_520 ignored
+                    uid=1_521 ignored
+                    uid=1_522 ignored
+                    uid=1_523 ignored
+                  uid=1_524 ignored
+                  uid=1_525 ignored
+                  uid=1_526 ignored
+                    uid=1_527 ignored
+                    uid=1_528 ignored
+                      uid=1_529 ignored
+                      uid=1_530 ignored
+                      uid=1_531 ignored
+            uid=1_532 ignored
+              uid=1_533 ignored
+                uid=1_534 generic
+                uid=1_535 ignored
+                  uid=1_536 ignored
+                    uid=1_537 ignored
+                    uid=1_538 ignored
+                    uid=1_539 ignored
+                  uid=1_540 ignored
+                  uid=1_541 ignored
+                  uid=1_542 ignored
+                    uid=1_543 ignored
+                    uid=1_544 ignored
+                      uid=1_545 ignored
+                      uid=1_546 ignored
+                      uid=1_547 ignored
+      uid=1_548 ignored
+        uid=1_549 ignored
+          uid=1_550 ignored
+            uid=1_551 generic
+              uid=1_552 StaticText "Sign Up And Get 10% Off"
+                uid=1_553 InlineTextBox
+            uid=1_554 generic
+              uid=1_555 StaticText "Sign up for early sale access, new in, promotions and more"
+                uid=1_556 InlineTextBox
+          uid=1_557 ignored
+            uid=1_558 generic
+              uid=1_559 textbox "Enter your e-mail" required
+                uid=1_560 ignored
+                uid=1_561 generic
+              uid=1_562 button "SUBSCRIBE"
+                uid=1_563 StaticText "SUBSCRIBE"
+                  uid=1_564 InlineTextBox
+      uid=1_565 generic
+        uid=1_566 ignored
+          uid=1_567 ignored
+            uid=1_568 ignored
+              uid=1_569 ignored
+                uid=1_570 link "Anvogue" url="http://localhost:3001/"
+                  uid=1_571 generic
+                    uid=1_572 StaticText "Anvogue"
+                      uid=1_573 InlineTextBox
+                uid=1_574 ignored
+                  uid=1_575 ignored
+                    uid=1_576 ignored
+                      uid=1_577 StaticText "Mail:"
+                        uid=1_578 InlineTextBox
+                    uid=1_579 ignored
+                      uid=1_580 StaticText "Phone:"
+                        uid=1_581 InlineTextBox
+                    uid=1_582 ignored
+                      uid=1_583 StaticText "Address:"
+                        uid=1_584 InlineTextBox
+                  uid=1_585 ignored
+                    uid=1_586 ignored
+                      uid=1_587 StaticText "hi.avitex@gmail.com"
+                        uid=1_588 InlineTextBox
+                    uid=1_589 ignored
+                      uid=1_590 StaticText "1-333-345-6868"
+                        uid=1_591 InlineTextBox
+                    uid=1_592 ignored
+                      uid=1_593 StaticText "549 Oak St.Crystal Lake, IL 60014"
+                        uid=1_594 InlineTextBox
+                        uid=1_595 InlineTextBox
+              uid=1_596 ignored
+                uid=1_597 ignored
+                  uid=1_598 ignored
+                    uid=1_599 generic
+                      uid=1_600 StaticText "INFOMATION"
+                        uid=1_601 InlineTextBox
+                    uid=1_602 link "Contact us" url="http://localhost:3001/pages/contact"
+                      uid=1_603 StaticText "Contact us"
+                        uid=1_604 InlineTextBox
+                    uid=1_605 link "Career" url="http://localhost:3001/#!"
+                      uid=1_606 StaticText "Career"
+                        uid=1_607 InlineTextBox
+                    uid=1_608 link "My Account" url="http://localhost:3001/my-account"
+                      uid=1_609 StaticText "My Account"
+                        uid=1_610 InlineTextBox
+                    uid=1_611 link "Order & Returns" url="http://localhost:3001/order-tracking"
+                      uid=1_612 StaticText "Order & Returns"
+                        uid=1_613 InlineTextBox
+                    uid=1_614 link "FAQs" url="http://localhost:3001/pages/faqs"
+                      uid=1_615 StaticText "FAQs"
+                        uid=1_616 InlineTextBox
+                  uid=1_617 ignored
+                    uid=1_618 generic
+                      uid=1_619 StaticText "QUICK SHOP"
+                        uid=1_620 InlineTextBox
+                    uid=1_621 link "Women" url="http://localhost:3001/shop"
+                      uid=1_622 StaticText "Women"
+                        uid=1_623 InlineTextBox
+                    uid=1_624 link "Men" url="http://localhost:3001/shop"
+                      uid=1_625 StaticText "Men"
+                        uid=1_626 InlineTextBox
+                    uid=1_627 link "Clothes" url="http://localhost:3001/shop"
+                      uid=1_628 StaticText "Clothes"
+                        uid=1_629 InlineTextBox
+                    uid=1_630 link "Accessories" url="http://localhost:3001/shop"
+                      uid=1_631 StaticText "Accessories"
+                        uid=1_632 InlineTextBox
+                    uid=1_633 link "Blog" url="http://localhost:3001/blog"
+                      uid=1_634 StaticText "Blog"
+                        uid=1_635 InlineTextBox
+                  uid=1_636 ignored
+                    uid=1_637 generic
+                      uid=1_638 StaticText "CUSTOMER SERVICES"
+                        uid=1_639 InlineTextBox
+                    uid=1_640 link "Orders FAQs" url="http://localhost:3001/pages/faqs"
+                      uid=1_641 StaticText "Orders FAQs"
+                        uid=1_642 InlineTextBox
+                    uid=1_643 link "Shipping" url="http://localhost:3001/pages/faqs"
+                      uid=1_644 StaticText "Shipping"
+                        uid=1_645 InlineTextBox
+                    uid=1_646 link "Privacy Policy" url="http://localhost:3001/pages/faqs"
+                      uid=1_647 StaticText "Privacy Policy"
+                        uid=1_648 InlineTextBox
+                    uid=1_649 link "Return & Refund" url="http://localhost:3001/order-tracking"
+                      uid=1_650 StaticText "Return & Refund"
+                        uid=1_651 InlineTextBox
+                uid=1_652 ignored
+                  uid=1_653 generic
+                    uid=1_654 StaticText "NEWLETTER"
+                      uid=1_655 InlineTextBox
+                  uid=1_656 generic
+                    uid=1_657 StaticText "Sign up for our newsletter and get 10% off your first purchase"
+                      uid=1_658 InlineTextBox
+                      uid=1_659 InlineTextBox
+                  uid=1_660 ignored
+                    uid=1_661 generic
+                      uid=1_662 textbox "Enter your e-mail" required
+                        uid=1_663 ignored
+                        uid=1_664 generic
+                      uid=1_665 button
+                        uid=1_666 image
+                  uid=1_667 ignored
+                    uid=1_668 link "" url="https://www.facebook.com/"
+                      uid=1_669 generic
+                        uid=1_670 ignored
+                          uid=1_671 StaticText ""
+                            uid=1_672 InlineTextBox
+                    uid=1_673 link "" url="https://www.instagram.com/"
+                      uid=1_674 generic
+                        uid=1_675 ignored
+                          uid=1_676 StaticText ""
+                            uid=1_677 InlineTextBox
+                    uid=1_678 link "" url="https://www.twitter.com/"
+                      uid=1_679 generic
+                        uid=1_680 ignored
+                          uid=1_681 StaticText ""
+                            uid=1_682 InlineTextBox
+                    uid=1_683 link "" url="https://www.youtube.com/"
+                      uid=1_684 generic
+                        uid=1_685 ignored
+                          uid=1_686 StaticText ""
+                            uid=1_687 InlineTextBox
+                    uid=1_688 link "" url="https://www.pinterest.com/"
+                      uid=1_689 generic
+                        uid=1_690 ignored
+                          uid=1_691 StaticText ""
+                            uid=1_692 InlineTextBox
+            uid=1_693 ignored
+              uid=1_694 ignored
+                uid=1_695 generic
+                  uid=1_696 StaticText "©2023 Anvogue. All Rights Reserved."
+                    uid=1_697 InlineTextBox
+                uid=1_698 generic
+                  uid=1_699 ignored
+                    uid=1_700 combobox haspopup="menu" value="English"
+                      uid=1_701 MenuListPopup
+                        uid=1_702 option "English" selectable selected value="English"
+                        uid=1_703 option "Espana" value="Espana"
+                        uid=1_704 option "France" value="France"
+                    uid=1_705 image
+                  uid=1_706 ignored
+                    uid=1_707 combobox haspopup="menu" value="USD"
+                      uid=1_708 MenuListPopup
+                        uid=1_709 option "USD" selectable selected value="USD"
+                        uid=1_710 option "EUR" value="EUR"
+                        uid=1_711 option "GBP" value="GBP"
+                    uid=1_712 image
+              uid=1_713 ignored
+                uid=1_714 generic
+                  uid=1_715 StaticText "Payment:"
+                    uid=1_716 InlineTextBox
+                uid=1_717 ignored
+                  uid=1_718 image "payment" url="http://localhost:3001/_next/image?url=%2Fimages%2Fpayment%2FFrame-0.png&w=1080&q=75"
+                uid=1_719 ignored
+                  uid=1_720 image "payment" url="http://localhost:3001/_next/image?url=%2Fimages%2Fpayment%2FFrame-1.png&w=1080&q=75"
+                uid=1_721 ignored
+                  uid=1_722 image "payment" url="http://localhost:3001/_next/image?url=%2Fimages%2Fpayment%2FFrame-2.png&w=1080&q=75"
+                uid=1_723 ignored
+                  uid=1_724 image "payment" url="http://localhost:3001/_next/image?url=%2Fimages%2Fpayment%2FFrame-3.png&w=1080&q=75"
+                uid=1_725 ignored
+                  uid=1_726 image "payment" url="http://localhost:3001/_next/image?url=%2Fimages%2Fpayment%2FFrame-4.png&w=1080&q=75"
+                uid=1_727 ignored
+                  uid=1_728 image "payment" url="http://localhost:3001/_next/image?url=%2Fimages%2Fpayment%2FFrame-5.png&w=1080&q=75"
+      uid=1_729 ignored
+      uid=1_730 ignored
+        uid=1_731 ignored
+      uid=1_732 ignored
+      uid=1_733 ignored
+      uid=1_734 ignored
+        uid=1_735 ignored
+      uid=1_736 ignored
+        uid=1_737 ignored
+      uid=1_738 ignored
+        uid=1_739 ignored
+        uid=1_740 ignored
+        uid=1_741 ignored
+        uid=1_742 ignored
+        uid=1_743 ignored
+      uid=1_744 ignored
+        uid=1_745 ignored
+      uid=1_746 ignored
+        uid=1_747 ignored
+        uid=1_748 ignored
+        uid=1_749 ignored
+        uid=1_750 ignored
+        uid=1_751 ignored
+      uid=1_752 ignored
+        uid=1_753 ignored
+      uid=1_754 ignored
+      uid=1_755 ignored
+      uid=1_756 ignored
+        uid=1_757 ignored
+      uid=1_758 ignored
+        uid=1_759 ignored
+      uid=1_760 ignored
+      uid=1_761 ignored
+      uid=1_762 ignored
+        uid=1_763 ignored
+      uid=1_764 ignored
+        uid=1_765 ignored
+      uid=1_766 ignored
+      uid=1_767 ignored
+      uid=1_768 ignored
+      uid=1_769 ignored
+      uid=1_770 ignored
+      uid=1_771 ignored
+      uid=1_772 ignored
+      uid=1_773 ignored
+      uid=1_774 ignored
+      uid=1_775 ignored
+      uid=1_776 ignored
+        uid=1_777 ignored
+          uid=1_778 ignored
+          uid=1_779 ignored
+          uid=1_780 ignored
+          uid=1_781 ignored
+        uid=1_782 ignored
+          uid=1_783 ignored
+            uid=1_784 ignored
+            uid=1_785 ignored
+            uid=1_786 ignored
+            uid=1_787 ignored
+          uid=1_788 ignored
+            uid=1_789 ignored
+            uid=1_790 ignored
+            uid=1_791 ignored
+            uid=1_792 ignored
+          uid=1_793 ignored
+            uid=1_794 ignored
+            uid=1_795 ignored
+            uid=1_796 ignored
+            uid=1_797 ignored
+          uid=1_798 ignored
+            uid=1_799 ignored
+            uid=1_800 ignored
+            uid=1_801 ignored
+            uid=1_802 ignored
+          uid=1_803 ignored
+            uid=1_804 ignored
+            uid=1_805 ignored
+            uid=1_806 ignored
+            uid=1_807 ignored
+          uid=1_808 ignored
+            uid=1_809 ignored
+            uid=1_810 ignored
+            uid=1_811 ignored
+            uid=1_812 ignored
+      uid=1_813 generic
+        uid=1_814 alert

@@ -8,8 +8,13 @@ import ModalSearch from '@/components/Modal/ModalSearch'
 import ModalQuickview from '@/components/Modal/ModalQuickview'
 import ModalCompare from '@/components/Modal/ModalCompare'
 import CountdownTimeType from '@/type/CountdownType'
+import { useEffect } from 'react'
+import { initWebVitals } from '@/monitor/webVitals'
 
 const ClientRoot: React.FC<{ children: React.ReactNode; serverTimeLeft: CountdownTimeType }> = ({ children, serverTimeLeft }) => {
+  useEffect(() => {
+    initWebVitals()
+  }, [])
   return (
     <GlobalProvider>
       {children}

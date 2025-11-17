@@ -2,9 +2,9 @@
 
 import React from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
+import BlurImage from '@/components/common/BlurImage'
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Navigation } from 'swiper/modules';
+import { Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import { useRouter } from 'next/navigation';
@@ -13,7 +13,7 @@ const TrendingNow = () => {
     const router = useRouter()
 
     const handleTypeClick = (type: string) => {
-        router.push(`/shop/breadcrumb1?type=${type}`);
+router.push(`/shop?type=${type}`);
     };
 
     return (
@@ -28,7 +28,7 @@ const TrendingNow = () => {
                             slidesPerView={2}
                             navigation
                             loop={true}
-                            modules={[Navigation, Autoplay]}
+                            modules={[Navigation]}
                             breakpoints={{
                                 576: {
                                     slidesPerView: 3,
@@ -50,128 +50,135 @@ const TrendingNow = () => {
                             className='h-full'
                         >
                             <SwiperSlide>
-                                <div className="trending-item block relative cursor-pointer" onClick={() => handleTypeClick('t-shirt')}>
+                                <div className="trending-item block relative cursor-pointer" onClick={() => router.push('/shop?category=art-toys')}>
                                     <div className="bg-img rounded-full overflow-hidden">
-                                        <Image
-                                            src={'/images/avatar/1.png'}
+                                        <BlurImage
+                                            src="https://image.nv315.top/images/art%20toys1-optimized.webp"
                                             width={1000}
                                             height={1000}
                                             alt='outerwear'
                                             sizes="(max-width: 768px) 40vw, 200px"
                                             className='w-full'
+                                            disableBlur
                                         />
                                     </div>
                                     <div className="trending-name text-center mt-5 duration-500">
-                                        <span className='heading5'>t-shirt</span>
-                                        <span className='text-secondar2'> (12)</span>
+                                        <span className='heading5'>Art Toys</span>
+                                        {/* <span className='text-secondar2'> (12)</span> */}
                                     </div>
                                 </div>
                             </SwiperSlide>
                             <SwiperSlide>
-                                <div className="trending-item block relative cursor-pointer" onClick={() => handleTypeClick('sweater')}>
+                                <div className="trending-item block relative cursor-pointer" onClick={() => router.push('/shop?category=charms')}>
                                     <div className="bg-img rounded-full overflow-hidden">
-                                        <Image
-                                            src={'/images/avatar/2.png'}
+                                        <BlurImage
+                                            src="https://image.nv315.top/images/charm-optimized.webp"
                                             width={1000}
                                             height={1000}
                                             alt='swimwear'
                                             sizes="(max-width: 768px) 40vw, 200px"
                                             className='w-full'
+                                            disableBlur
                                         />
                                     </div>
                                     <div className="trending-name text-center mt-5 duration-500">
-                                        <span className='heading5'>sweater</span>
-                                        <span className='text-secondar2'> (12)</span>
+                                        <span className='heading5'>Charms</span>
+                                        {/* <span className='text-secondar2'> (12)</span> */}
                                     </div>
                                 </div>
                             </SwiperSlide>
                             <SwiperSlide>
-                                <div className="trending-item block relative cursor-pointer" onClick={() => handleTypeClick('top')}>
+                                <div className="trending-item block relative cursor-pointer" onClick={() => router.push('/shop?category=top')}>
                                     <div className="bg-img rounded-full overflow-hidden">
-                                        <Image
-                                            src={'/images/avatar/4.png'}
+                                        <BlurImage
+                                            src="https://image.nv315.top/images/art%20toys3-optimized.webp"
                                             width={1000}
                                             height={1000}
                                             alt='clothes'
                                             sizes="(max-width: 768px) 40vw, 200px"
                                             className='w-full'
+                                            disableBlur
                                         />
                                     </div>
                                     <div className="trending-name text-center mt-5 duration-500">
                                         <span className='heading5'>top</span>
-                                        <span className='text-secondar2'> (12)</span>
+                                        {/* <span className='text-secondar2'> (12)</span> */}
                                     </div>
                                 </div>
                             </SwiperSlide>
                             <SwiperSlide>
-                                <div className="trending-item block relative cursor-pointer" onClick={() => handleTypeClick('dress')}>
+                                <div className="trending-item block relative cursor-pointer" onClick={() => router.push('/shop?category=seatbelt')}>
                                     <div className="bg-img rounded-full overflow-hidden">
-                                        <Image
-                                            src={'/images/avatar/5.png'}
+                                        <BlurImage
+                                            src="https://image.nv315.top/images/seatbelt-optimized.webp"
                                             width={1000}
                                             height={1000}
                                             alt='sets'
                                             sizes="(max-width: 768px) 40vw, 200px"
                                             className='w-full'
+                                            disableBlur
                                         />
                                     </div>
                                     <div className="trending-name text-center mt-5 duration-500">
-                                        <span className='heading5'>dress</span>
-                                        <span className='text-secondar2'> (12)</span>
+                                        <span className='heading5'>Seatbelt Covers</span>
+                                        {/* <span className='text-secondar2'> (12)</span> */}
                                     </div>
                                 </div>
                             </SwiperSlide>
                             <SwiperSlide>
-                                <div className="trending-item block relative cursor-pointer" onClick={() => handleTypeClick('swimwear')}>
+                                <div className="trending-item block relative cursor-pointer" onClick={() => router.push('/shop?category=grab-handle-covers')}>
                                     <div className="bg-img rounded-full overflow-hidden">
-                                        <Image
-                                            src={'/images/avatar/6.png'}
+                                        <BlurImage
+                                            src="https://image.nv315.top/images/handle%20covers-optimized.webp"
                                             width={1000}
                                             height={1000}
                                             alt='accessories'
                                             sizes="(max-width: 768px) 40vw, 200px"
                                             className='w-full'
+                                            disableBlur
                                         />
                                     </div>
                                     <div className="trending-name text-center mt-5 duration-500">
-                                        <span className='heading5'>swimwear</span>
-                                        <span className='text-secondar2'> (12)</span>
+                                        <span className='heading5'>Grab Handle Covers</span>
+                                        {/* <span className='text-secondar2'> (12)</span> */}
                                     </div>
                                 </div>
                             </SwiperSlide>
                             <SwiperSlide>
-                                <div className="trending-item block relative cursor-pointer" onClick={() => handleTypeClick('outerwear')}>
+                                <div className="trending-item block relative cursor-pointer" onClick={() => router.push('/shop?category=clothing-for-toys')}>
                                     <div className="bg-img rounded-full overflow-hidden">
-                                        <Image
-                                            src={'/images/avatar/7.png'}
+                                        <BlurImage
+                                            src="https://image.nv315.top/images/wayi-optimized.webp"
                                             width={1000}
                                             height={1000}
                                             alt='lingerie'
                                             sizes="(max-width: 768px) 40vw, 200px"
                                             className='w-full'
+                                            disableBlur
                                         />
                                     </div>
                                     <div className="trending-name text-center mt-5 duration-500">
-                                        <span className='heading5'>outerwear</span>
-                                        <span className='text-secondar2'> (12)</span>
+                                        <span className='heading5'> Clothing for Toys</span>
+                                        {/* <span className='text-secondar2'> (12)</span> */}
                                     </div>
                                 </div>
                             </SwiperSlide>
                             <SwiperSlide>
-                                <div className="trending-item block relative cursor-pointer" onClick={() => handleTypeClick('shirt')}>
+                                <div className="trending-item block relative cursor-pointer" onClick={() => router.push('/shop?category=steering-wheel-cover')}>
                                     <div className="bg-img rounded-full overflow-hidden">
-                                        <Image
-                                            src={'/images/avatar/8.png'}
+                                        <BlurImage
+                                            src="https://image.nv315.top/images/fangxingpan-optimized.webp"
                                             width={1000}
                                             height={1000}
                                             alt='lingerie'
                                             sizes="(max-width: 768px) 40vw, 200px"
                                             className='w-full'
+                                            disableBlur
                                         />
                                     </div>
                                     <div className="trending-name text-center mt-5 duration-500">
-                                        <span className='heading5'>shirt</span>
-                                        <span className='text-secondar2'> (12)</span>
+                                        <span className='heading5'>Steering Wheel Cover</span>
+                                        {/* <span className='text-secondar2'> (12)</span> */}
                                     </div>
                                 </div>
                             </SwiperSlide>

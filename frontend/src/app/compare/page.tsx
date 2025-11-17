@@ -13,6 +13,7 @@ import { useCompare } from '@/context/CompareContext'
 import { useCart } from '@/context/CartContext'
 import { useModalCartContext } from '@/context/ModalCartContext'
 import Rate from '@/components/Other/Rate'
+import { formatPrice } from '@/utils/priceFormat'
 
 const Compare = () => {
     const { compareState } = useCompare();
@@ -86,7 +87,7 @@ const Compare = () => {
                                         {compareState.compareArray.map((item, index) => (
                                             <td className="w-full border border-line h-[60px] border-t-0 border-r-0" key={index}>
                                                 <div className='h-full flex items-center justify-center'>
-                                                    ${item.price}.00
+                                                    {formatPrice(item.price)}
                                                 </div>
                                             </td>
                                         ))}

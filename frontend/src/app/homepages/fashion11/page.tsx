@@ -1,5 +1,6 @@
 import React from 'react'
 import nextDynamic from 'next/dynamic'
+import MenFashion from '@/components/Home11/MenFashion'
 import blogData from '@/data/Blog.json'
 
 // 首屏必要组件保持 SSR，其他组件采用动态导入以减少首屏 JS
@@ -18,9 +19,8 @@ const SliderEleven = nextDynamic(
 )
 // 使用 swiper 的组件改为仅在客户端渲染，避免在首屏加载其 JS
 const TrendingNow = nextDynamic(() => import('@/components/Home11/TrendingNow'), { ssr: false })
-const Brand = nextDynamic(() => import('@/components/Home1/Brand'), { ssr: false })
+const InCarAccessories = nextDynamic(() => import('@/components/Home11/InCarAccessories'))
 // 其余非首屏组件按需分包加载
-const MenFashion = nextDynamic(() => import('@/components/Home11/MenFashion'))
 const Banner = nextDynamic(() => import('@/components/Home11/Banner'))
 const WomenFashion = nextDynamic(() => import('@/components/Home11/WomenFashion'))
 const Benefit = nextDynamic(() => import('@/components/Home1/Benefit'))
@@ -34,41 +34,39 @@ import productData from '@/data/Product.json'
 // 将页面静态化，避免运行时 fs 读取的动态开销
 export const dynamic = 'force-static'
 
-export default function HomeEleven() {
-  return (
+export default async function HomeEleven() {
+    const host = 'localhost:3000'
+    const protocol = 'http'
+    const artToysUrl = `${protocol}://${host}/api/woocommerce/products/by-category-and-tag?category=art-toys&per_page=3&tag=home`
+    const charmsUrl = `${protocol}://${host}/api/woocommerce/products/by-category-and-tag?category=charms&per_page=3&tag=home`
+    const inCarUrl = `${protocol}://${host}/api/woocommerce/products/by-category-and-tag?category=in-car-accessories&per_page=3&tag=home`
+    const [artRes, charmsRes, carRes] = await Promise.all([
+      fetch(artToysUrl, { next: { revalidate: 60 } }).catch(() => null),
+      fetch(charmsUrl, { next: { revalidate: 60 } }).catch(() => null),
+      fetch(inCarUrl, { next: { revalidate: 60 } }).catch(() => null),
+    ])
+    const artData = artRes && artRes.ok ? await artRes.json() : null
+    const charmsData = charmsRes && charmsRes.ok ? await charmsRes.json() : null
+    const carData = carRes && carRes.ok ? await carRes.json() : null
+    const artInitial = artData?.data || []
+    const charmsInitial = charmsData?.data || []
+    const carInitial = carData?.data || []
+    return (
         <>
             <TopNavOne props="style-one bg-black" slogan='New customers save 10% with the code GET10' />
             <div id="header" className='relative w-full'>
                 <MenuEleven />
                 <SliderEleven />
             </div>
-            <section className="cv-auto">
-              <TrendingNow />
-            </section>
-            <section className="cv-auto">
-              <MenFashion data={productData} start={0} limit={3} />
-            </section>
-            <section className="cv-auto">
-              <Banner />
-            </section>
-            <section className="cv-auto">
-              <WomenFashion data={productData} start={0} limit={3} />
-            </section>
-            <section className="cv-auto">
-              <Benefit props="md:mt-20 mt-10 py-10 px-2.5 bg-surface rounded-[32px]" />
-            </section>
-            <section className="cv-auto">
-              <NewsInsight data={blogData} start={0} limit={3} />
-            </section>
-            <section className="cv-auto">
-              <Brand />
-            </section>
-            <section className="cv-auto">
-              <Newsletter />
-            </section>
-            <section className="cv-auto">
-              <Footer />
-            </section>
+            <TrendingNow />
+            <MenFashion start={0} limit={3} initialData={artInitial} />
+            <Banner />
+            <WomenFashion start={0} limit={3} initialData={charmsInitial} />
+            <Benefit props="md:mt-20 mt-10 py-10 px-2.5 bg-surface rounded-[32px]" />
+            {/* NewsInsight component removed */}
+            <InCarAccessories initialData={carInitial} />
+            <Newsletter />
+            <Footer />
             {/* ModalNewsletter hidden */}
         </>
     )

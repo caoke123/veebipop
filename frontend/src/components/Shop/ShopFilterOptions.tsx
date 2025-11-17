@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
+import CategoryTabs from './CategoryTabs'
 import * as Icon from "@phosphor-icons/react/dist/ssr";
 import { ProductType } from '@/type/ProductType'
 import Product from '../Product/Product';
@@ -11,10 +13,13 @@ import HandlePagination from '../Other/HandlePagination';
 
 interface Props {
     data: Array<ProductType>;
-    productPerPage: number
+    productPerPage: number;
+    dataType?: string;
 }
 
-const ShopFilterOptions: React.FC<Props> = ({ data, productPerPage }) => {
+const ShopFilterOptions: React.FC<Props> = ({ data, productPerPage, dataType }) => {
+    const searchParams = useSearchParams()
+    const currentCategorySlug = searchParams.get('category') || null
     const [layoutCol, setLayoutCol] = useState<number | null>(4)
     const [sortOption, setSortOption] = useState('');
     const [showOnlySale, setShowOnlySale] = useState(false)
@@ -24,6 +29,7 @@ const ShopFilterOptions: React.FC<Props> = ({ data, productPerPage }) => {
     const [brand, setBrand] = useState<string | undefined>()
     const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 100 });
     const [currentPage, setCurrentPage] = useState(0);
+    const [priorityCount, setPriorityCount] = useState<number>(9)
     const productsPerPage = productPerPage;
     const offset = currentPage * productsPerPage;
 
@@ -101,7 +107,7 @@ const ShopFilterOptions: React.FC<Props> = ({ data, productPerPage }) => {
             isBrandMatched = product.brand === brand;
         }
 
-        return isShowOnlySaleMatched && isTypeMatched && isSizeMatched && isColorMatched && isBrandMatched && isPriceRangeMatched && product.category === 'fashion'
+        return isShowOnlySaleMatched && isTypeMatched && isSizeMatched && isColorMatched && isBrandMatched && isPriceRangeMatched && product.category === dataType
     })
 
     // Create a copy array filtered to sort
@@ -199,23 +205,17 @@ const ShopFilterOptions: React.FC<Props> = ({ data, productPerPage }) => {
                         <div className="main-content w-full h-full flex flex-col items-center justify-center relative z-[1]">
                             <div className="text-content">
                                 <div className="heading2 text-center">{type === undefined ? 'Shop' : type}</div>
-                                <div className="link flex items-center justify-center gap-1 caption1 mt-3">
-                                    <Link href={'/'}>Homepage</Link>
-                                    <Icon.CaretRight size={14} className='text-secondary2' />
-                                    <div className='text-secondary2 capitalize'>{type === undefined ? 'Shop' : type}</div>
-                                </div>
-                            </div>
-                            <div className="list-tab flex flex-wrap items-center justify-center gap-y-5 gap-8 lg:mt-[70px] mt-12 overflow-hidden">
-                                {['t-shirt', 'dress', 'top', 'swimwear', 'shirt'].map((item, index) => (
-                                    <div
-                                        key={index}
-                                        className={`tab-item text-button-uppercase cursor-pointer has-line-before line-2px ${type === item ? 'active' : ''}`}
-                                        onClick={() => handleType(item)}
-                                    >
-                                        {item}
+                                {currentCategorySlug ? (
+                                    <div className="link flex items-center justify-center gap-1 caption1 mt-3">
+                                        <Link href={'/'}>Homepage</Link>
+                                        <Icon.CaretRight size={14} className='text-secondary2' />
+                                        <Link href={'/shop'}>Shop</Link>
+                                        <Icon.CaretRight size={14} className='text-secondary2' />
+                                        <div className='text-secondary2 capitalize'>{type === undefined ? 'Shop' : type}</div>
                                     </div>
-                                ))}
+                                ) : null}
                             </div>
+                            <CategoryTabs />
                         </div>
                     </div>
                 </div>
@@ -313,46 +313,6 @@ const ShopFilterOptions: React.FC<Props> = ({ data, productPerPage }) => {
                                     </select>
                                     <Icon.CaretDown size={12} className='absolute top-1/2 -translate-y-1/2 md:right-4 right-2' />
                                 </div>
-                                <div className="select-block filter-color relative">
-                                    <select
-                                        className='caption1 py-2 pl-3 md:pr-12 pr-8 rounded-lg border border-line capitalize'
-                                        name="select-color"
-                                        id="select-color"
-                                        onChange={(e) => handleColor(e.target.value)}
-                                        value={color === undefined ? 'Color' : color}
-                                    >
-                                        <option value="Color" disabled>Color</option>
-                                        {['red', 'green', 'yellow', 'purple', 'black', 'pink', 'white'].map((item, index) => (
-                                            <option
-                                                key={index}
-                                                className={`item cursor-pointer ${color === item ? 'active' : ''}`}
-                                            >
-                                                {item}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    <Icon.CaretDown size={12} className='absolute top-1/2 -translate-y-1/2 md:right-4 right-2' />
-                                </div>
-                                <div className="select-block filter-brand relative">
-                                    <select
-                                        className='caption1 py-2 pl-3 md:pr-12 pr-8 rounded-lg border border-line capitalize'
-                                        name="select-brand"
-                                        id="select-brand"
-                                        onChange={(e) => handleBrand(e.target.value)}
-                                        value={brand === undefined ? 'Brand' : brand}
-                                    >
-                                        <option value="Brand" disabled>Brand</option>
-                                        {['adidas', 'hermes', 'zara', 'nike', 'gucci'].map((item, index) => (
-                                            <option
-                                                key={index}
-                                                className={`item cursor-pointer ${brand === item ? 'active' : ''}`}
-                                            >
-                                                {item}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    <Icon.CaretDown size={12} className='absolute top-1/2 -translate-y-1/2 md:right-4 right-2' />
-                                </div>
                                 <div className="select-block relative">
                                     <select
                                         id="select-filter"
@@ -420,11 +380,11 @@ const ShopFilterOptions: React.FC<Props> = ({ data, productPerPage }) => {
                         </div>
 
                         <div className={`list-product hide-product-sold grid lg:grid-cols-${layoutCol} sm:grid-cols-3 grid-cols-2 sm:gap-[30px] gap-[20px] mt-7`}>
-                            {currentProducts.map((item) => (
+                            {currentProducts.map((item, index) => (
                                 item.id === 'no-data' ? (
                                     <div key={item.id} className="no-data-product">No products match the selected criteria.</div>
                                 ) : (
-                                    <Product key={item.id} data={item} type='grid' />
+                                    <Product key={item.id} data={item} type='grid' priority={index < priorityCount} disableBlur disablePrefetchDetail />
                                 )
                             ))}
                         </div>
@@ -439,6 +399,17 @@ const ShopFilterOptions: React.FC<Props> = ({ data, productPerPage }) => {
             </div >
         </>
     )
+
+    useEffect(() => {
+        // 避免服务端渲染水合错误
+        if (typeof window === 'undefined') return;
+        
+        const mq = window.matchMedia('(min-width: 1024px)')
+        const compute = () => setPriorityCount(((mq.matches ? (layoutCol ?? 4) : 2) * 3))
+        compute()
+        mq.addEventListener('change', compute)
+        return () => { mq.removeEventListener('change', compute) }
+    }, [layoutCol])
 }
 
 export default ShopFilterOptions

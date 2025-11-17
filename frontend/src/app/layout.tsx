@@ -8,7 +8,7 @@ import { countdownTime } from '@/store/countdownTime'
 
 const serverTimeLeft: CountdownTimeType = countdownTime();
 
-const instrument = Instrument_Sans({ subsets: ['latin'], adjustFontFallback: true })
+const instrument = Instrument_Sans({ subsets: ['latin'], adjustFontFallback: true, variable: '--font-instrument' })
 
 // Load icomoon icon font via next/font/local with display swap
 const icomoon = localFont({
@@ -35,8 +35,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-        <html lang="en" className={`${icomoon.variable}`}>
-          <body className={instrument.className}>
+        <html lang="en" className={`${instrument.variable} ${icomoon.variable}`}>
+          <body className="font-sans">
         <ClientRoot serverTimeLeft={serverTimeLeft}>
           {children}
         </ClientRoot>

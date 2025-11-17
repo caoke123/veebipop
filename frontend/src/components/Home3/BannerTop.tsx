@@ -1,5 +1,6 @@
 import React from 'react'
 import Marquee from 'react-fast-marquee'
+import { formatPrice } from '@/utils/priceFormat'
 
 interface Props {
     props: string
@@ -18,7 +19,7 @@ const BannerTop: React.FC<Props> = ({ props, textColor, bgLine }) => {
                     <div className={`line w-8 h-px ${bgLine}`}></div>
                     <div className={`text-button-uppercase px-8 ${textColor}`}>10% off swim suits</div>
                     <div className={`line w-8 h-px ${bgLine}`}></div>
-                    <div className={`text-button-uppercase px-8 ${textColor}`}>Free shipping on all orders over $50</div>
+                    <div className={`text-button-uppercase px-8 ${textColor}`}>Free shipping on all orders over {formatPrice(50)}</div>
                     <div className={`line w-8 h-px ${bgLine}`}></div>
                     <div className={`text-button-uppercase px-8 ${textColor}`}>10% off on all summer essentials!</div>
                     <div className={`line w-8 h-px ${bgLine}`}></div>

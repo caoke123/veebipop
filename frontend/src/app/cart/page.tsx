@@ -10,6 +10,7 @@ import Footer from '@/components/Footer/Footer'
 import * as Icon from "@phosphor-icons/react/dist/ssr";
 import { useCart } from '@/context/CartContext'
 import { countdownTime } from '@/store/countdownTime'
+import { formatPrice } from '@/utils/priceFormat'
 
 const Cart = () => {
     const [timeLeft, setTimeLeft] = useState(countdownTime());
@@ -49,7 +50,7 @@ const Cart = () => {
             setApplyCode(minValue)
             setDiscountCart(discount)
         } else {
-            alert(`Minimum order must be ${minValue}$`)
+            alert(`Minimum order must be ${formatPrice(minValue)}`)
         }
     }
 
@@ -66,8 +67,79 @@ const Cart = () => {
         shipCart = 0
     }
 
-    const redirectToCheckout = () => {
-        router.push(`/checkout?discount=${discountCart}&ship=${shipCart}`)
+    const redirectToCheckout = async () => {
+        try {
+            if (cartState.cartArray.length === 0) {
+                alert('购物车为空，无法结算')
+                return
+            }
+
+            // 获取WooCommerce真实产品ID
+            const wcCartItems = []
+            
+            for (const item of cartState.cartArray) {
+                try {
+                    // 使用产品slug查询WooCommerce真实产品信息
+                    const response = await fetch(`http://localhost:3001/api/woocommerce/products?slug=${item.slug}`)
+                    
+                    if (response.ok) {
+                        const wcProducts = await response.json()
+                        
+                        if (wcProducts && wcProducts.length > 0) {
+                            const wcProduct = wcProducts[0] // 获取第一个匹配的产品
+                            
+                            wcCartItems.push({
+                                productId: wcProduct.id, // 使用WooCommerce真实ID
+                                quantity: item.quantity,
+                                variationId: null, // 暂时不处理variation ID
+                                size: item.selectedSize || null,
+                                color: item.selectedColor || null
+                            })
+                        } else {
+                            console.warn(`未找到slug为${item.slug}的WooCommerce产品，使用前端ID: ${item.id}`)
+                            // 如果未找到WooCommerce产品，继续使用前端ID作为备选
+                            wcCartItems.push({
+                                productId: item.id,
+                                quantity: item.quantity,
+                                variationId: null, // 暂时不处理variation ID
+                                size: item.selectedSize || null,
+                                color: item.selectedColor || null
+                            })
+                        }
+                    } else {
+                        console.warn(`查询slug为${item.slug}的WooCommerce产品失败: ${response.status}`)
+                        // 如果查询失败，继续使用前端ID作为备选
+                        wcCartItems.push({
+                                productId: item.id,
+                                quantity: item.quantity,
+                                variationId: null, // 暂时不处理variation ID
+                                size: item.selectedSize || null,
+                                color: item.selectedColor || null
+                            })
+                    }
+                } catch (error) {
+                    console.error(`获取产品${item.slug}的WooCommerce信息时出错:`, error)
+                    // 如果出现错误，继续使用前端ID作为备选
+                    wcCartItems.push({
+                                productId: item.id,
+                                quantity: item.quantity,
+                                variationId: null, // 暂时不处理variation ID
+                                size: item.selectedSize || null,
+                                color: item.selectedColor || null
+                            })
+                }
+            }
+
+            const params = new URLSearchParams()
+            params.set('cartItems', JSON.stringify(wcCartItems))
+            params.set('discount', String(discountCart))
+            params.set('ship', String(shipCart))
+            
+            router.push(`/checkout?${params.toString()}`)
+        } catch (error) {
+            console.error('Error redirecting to checkout:', error)
+            alert('结算过程中出现错误，请重试')
+        }
     }
 
     return (
@@ -90,7 +162,7 @@ const Cart = () => {
                             </div>
                             <div className="heading banner mt-5">
                                 <div className="text">Buy
-                                    <span className="text-button"> $<span className="more-price">{moneyForFreeship - totalCart > 0 ? (<>{moneyForFreeship - totalCart}</>) : (0)}</span>.00 </span>
+                                    <span className="text-button"> {formatPrice(moneyForFreeship - totalCart > 0 ? moneyForFreeship - totalCart : 0)} </span>
                                     <span>more to get </span>
                                     <span className="text-button">freeship</span>
                                 </div>
@@ -128,13 +200,21 @@ const Cart = () => {
                                                     <div className="w-1/2">
                                                         <div className="flex items-center gap-6">
                                                             <div className="bg-img md:w-[100px] w-20 aspect-[3/4]">
-                                                                <Image
-                                                                    src={product.thumbImage[0]}
-                                                                    width={1000}
-                                                                    height={1000}
-                                                                    alt={product.name}
-                                                                    className='w-full h-full object-cover rounded-lg'
-                                                                />
+                                                                {(() => {
+                                                                    const imgSrc = product.thumbImage?.[0]
+                                                                        || product.images?.[0]
+                                                                        || product.variation?.[0]?.image
+                                                                        || '/images/product/1000x1000.png';
+                                                                    return (
+                                                                        <Image
+                                                                            src={imgSrc}
+                                                                            width={1000}
+                                                                            height={1000}
+                                                                            alt={product.name || 'Product image'}
+                                                                            className='w-full h-full object-cover rounded-lg'
+                                                                        />
+                                                                    );
+                                                                })()}
                                                             </div>
                                                             <div>
                                                                 <div className="text-title">{product.name}</div>
@@ -143,7 +223,7 @@ const Cart = () => {
                                                         </div>
                                                     </div>
                                                     <div className="w-1/12 price flex items-center justify-center">
-                                                        <div className="text-title text-center">${product.price}.00</div>
+                                                        <div className="text-title text-center">{formatPrice(product.price)}</div>
                                                     </div>
                                                     <div className="w-1/6 flex items-center justify-center">
                                                         <div className="quantity-block bg-surface md:p-3 p-2 flex items-center justify-between rounded-lg border border-line md:w-[100px] flex-shrink-0 w-20">
@@ -163,7 +243,7 @@ const Cart = () => {
                                                         </div>
                                                     </div>
                                                     <div className="w-1/6 flex total-price items-center justify-center">
-                                                        <div className="text-title text-center">${product.quantity * product.price}.00</div>
+                                                        <div className="text-title text-center">{formatPrice(product.quantity * product.price)}</div>
                                                     </div>
                                                     <div className="w-1/12 flex items-center justify-center">
                                                         <Icon.XCircle
@@ -254,11 +334,11 @@ const Cart = () => {
                                 <div className="heading5">Order Summary</div>
                                 <div className="total-block py-5 flex justify-between border-b border-line">
                                     <div className="text-title">Subtotal</div>
-                                    <div className="text-title">$<span className="total-product">{totalCart}</span><span>.00</span></div>
+                                    <div className="text-title">{formatPrice(totalCart)}</div>
                                 </div>
                                 <div className="discount-block py-5 flex justify-between border-b border-line">
                                     <div className="text-title">Discounts</div>
-                                    <div className="text-title"> <span>-$</span><span className="discount">{discountCart}</span><span>.00</span></div>
+                                    <div className="text-title">-{formatPrice(discountCart)}</div>
                                 </div>
                                 <div className="ship-block py-5 flex justify-between border-b border-line">
                                     <div className="text-title">Shipping</div>
@@ -308,21 +388,19 @@ const Cart = () => {
                                             </div>
                                         </div>
                                         <div className="right">
-                                            <div className="ship">$0.00</div>
-                                            <div className="local text-on-surface-variant1 mt-1">$30.00</div>
-                                            <div className="flat text-on-surface-variant1 mt-1">$40.00</div>
+                                            <div className="ship">{formatPrice(0)}</div>
+                                            <div className="local text-on-surface-variant1 mt-1">{formatPrice(30)}</div>
+                                            <div className="flat text-on-surface-variant1 mt-1">{formatPrice(40)}</div>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="total-cart-block pt-4 pb-4 flex justify-between">
                                     <div className="heading5">Total</div>
-                                    <div className="heading5">$
-                                        <span className="total-cart heading5">{totalCart - discountCart + shipCart}</span>
-                                        <span className='heading5'>.00</span></div>
+                                    <div className="heading5">{formatPrice(totalCart - discountCart + shipCart)}</div>
                                 </div>
                                 <div className="block-button flex flex-col items-center gap-y-4 mt-5">
                                     <div className="checkout-btn button-main text-center w-full" onClick={redirectToCheckout}>Process To Checkout</div>
-                                    <Link className="text-button hover-underline" href={"/shop/breadcrumb1"}>Continue shopping</Link>
+<Link className="text-button hover-underline" href={"/shop"}>Continue shopping</Link>
                                 </div>
                             </div>
                         </div>

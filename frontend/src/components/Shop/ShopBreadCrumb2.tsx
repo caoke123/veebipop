@@ -8,6 +8,7 @@ import Product from '../Product/Product';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css'
 import HandlePagination from '../Other/HandlePagination';
+import { formatPrice } from '@/utils/priceFormat'
 
 interface Props {
     data: Array<ProductType>;
@@ -24,6 +25,10 @@ const ShopBreadCrumb2: React.FC<Props> = ({ data, productPerPage, dataType }) =>
     const [brand, setBrand] = useState<string | null>()
     const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 100 });
     const [currentPage, setCurrentPage] = useState(0);
+    const [priorityCount, setPriorityCount] = useState<number>(() => {
+        // 始终返回默认值避免水合错误，在useEffect中再动态设置
+        return 9;
+    })
     const productsPerPage = productPerPage;
     const offset = currentPage * productsPerPage;
 
@@ -194,6 +199,17 @@ const ShopBreadCrumb2: React.FC<Props> = ({ data, productPerPage, dataType }) =>
         setType(dataType);
     };
 
+    useEffect(() => {
+        // 避免服务端渲染水合错误
+        if (typeof window === 'undefined') return;
+        
+        const mq = window.matchMedia('(min-width: 1024px)')
+        const compute = () => setPriorityCount(mq.matches ? 9 : 6)
+        compute()
+        mq.addEventListener('change', compute)
+        return () => { mq.removeEventListener('change', compute) }
+    }, [])
+
     return (
         <>
             <div className="breadcrumb-block style-img">
@@ -310,11 +326,11 @@ const ShopBreadCrumb2: React.FC<Props> = ({ data, productPerPage, dataType }) =>
                             </div>
 
                             <div className="list-product hide-product-sold grid lg:grid-cols-3 grid-cols-2 sm:gap-[30px] gap-[20px] mt-7">
-                                {currentProducts.map((item) => (
+                                {currentProducts.map((item, index) => (
                                     item.id === 'no-data' ? (
                                         <div key={item.id} className="no-data-product">No products match the selected criteria.</div>
                                     ) : (
-                                        <Product key={item.id} data={item} type='grid' />
+                                        <Product key={item.id} data={item} type='grid' priority={index < priorityCount} disableBlur disablePrefetchDetail />
                                     )
                                 ))}
                             </div>
@@ -343,28 +359,6 @@ const ShopBreadCrumb2: React.FC<Props> = ({ data, productPerPage, dataType }) =>
                                     ))}
                                 </div>
                             </div>
-                            <div className="filter-size pb-8 border-b border-line mt-8">
-                                <div className="heading6">Size</div>
-                                <div className="list-size flex items-center flex-wrap gap-3 gap-y-4 mt-4">
-                                    {
-                                        ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'].map((item, index) => (
-                                            <div
-                                                key={index}
-                                                className={`size-item text-button w-[44px] h-[44px] flex items-center justify-center rounded-full border border-line ${size === item ? 'active' : ''}`}
-                                                onClick={() => handleSize(item)}
-                                            >
-                                                {item}
-                                            </div>
-                                        ))
-                                    }
-                                    <div
-                                        className={`size-item text-button px-4 py-2 flex items-center justify-center rounded-full border border-line ${size === 'freesize' ? 'active' : ''}`}
-                                        onClick={() => handleSize('freesize')}
-                                    >
-                                        Freesize
-                                    </div>
-                                </div>
-                            </div>
                             <div className="filter-price pb-8 border-b border-line mt-8">
                                 <div className="heading6">Price Range</div>
                                 <Slider
@@ -378,94 +372,12 @@ const ShopBreadCrumb2: React.FC<Props> = ({ data, productPerPage, dataType }) =>
                                 <div className="price-block flex items-center justify-between flex-wrap mt-4">
                                     <div className="min flex items-center gap-1">
                                         <div>Min price:</div>
-                                        <div className='price-min'>$
-                                            <span>{priceRange.min}</span>
-                                        </div>
+                                        <div className='price-min'>{formatPrice(priceRange.min)}</div>
                                     </div>
                                     <div className="min flex items-center gap-1">
                                         <div>Max price:</div>
-                                        <div className='price-max'>$
-                                            <span>{priceRange.max}</span>
-                                        </div>
+                                        <div className='price-max'>{formatPrice(priceRange.max)}</div>
                                     </div>
-                                </div>
-                            </div>
-                            <div className="filter-color pb-8 border-b border-line mt-8">
-                                <div className="heading6">colors</div>
-                                <div className="list-color flex items-center flex-wrap gap-3 gap-y-4 mt-4">
-                                    <div
-                                        className={`color-item px-3 py-[5px] flex items-center justify-center gap-2 rounded-full border border-line ${color === 'pink' ? 'active' : ''}`}
-                                        onClick={() => handleColor('pink')}
-                                    >
-                                        <div className="color bg-[#F4C5BF] w-5 h-5 rounded-full"></div>
-                                        <div className="caption1 capitalize">pink</div>
-                                    </div>
-                                    <div
-                                        className={`color-item px-3 py-[5px] flex items-center justify-center gap-2 rounded-full border border-line ${color === 'red' ? 'active' : ''}`}
-                                        onClick={() => handleColor('red')}
-                                    >
-                                        <div className="color bg-red w-5 h-5 rounded-full"></div>
-                                        <div className="caption1 capitalize">red</div>
-                                    </div>
-                                    <div
-                                        className={`color-item px-3 py-[5px] flex items-center justify-center gap-2 rounded-full border border-line ${color === 'green' ? 'active' : ''}`}
-                                        onClick={() => handleColor('green')}
-                                    >
-                                        <div className="color bg-green w-5 h-5 rounded-full"></div>
-                                        <div className="caption1 capitalize">green</div>
-                                    </div>
-                                    <div
-                                        className={`color-item px-3 py-[5px] flex items-center justify-center gap-2 rounded-full border border-line ${color === 'yellow' ? 'active' : ''}`}
-                                        onClick={() => handleColor('yellow')}
-                                    >
-                                        <div className="color bg-yellow w-5 h-5 rounded-full"></div>
-                                        <div className="caption1 capitalize">yellow</div>
-                                    </div>
-                                    <div
-                                        className={`color-item px-3 py-[5px] flex items-center justify-center gap-2 rounded-full border border-line ${color === 'purple' ? 'active' : ''}`}
-                                        onClick={() => handleColor('purple')}
-                                    >
-                                        <div className="color bg-purple w-5 h-5 rounded-full"></div>
-                                        <div className="caption1 capitalize">purple</div>
-                                    </div>
-                                    <div
-                                        className={`color-item px-3 py-[5px] flex items-center justify-center gap-2 rounded-full border border-line ${color === 'black' ? 'active' : ''}`}
-                                        onClick={() => handleColor('black')}
-                                    >
-                                        <div className="color bg-black w-5 h-5 rounded-full"></div>
-                                        <div className="caption1 capitalize">black</div>
-                                    </div>
-                                    <div
-                                        className={`color-item px-3 py-[5px] flex items-center justify-center gap-2 rounded-full border border-line ${color === 'white' ? 'active' : ''}`}
-                                        onClick={() => handleColor('white')}
-                                    >
-                                        <div className="color bg-[#F6EFDD] w-5 h-5 rounded-full"></div>
-                                        <div className="caption1 capitalize">white</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="filter-brand mt-8">
-                                <div className="heading6">Brands</div>
-                                <div className="list-brand mt-4">
-                                    {['adidas', 'hermes', 'zara', 'nike', 'gucci'].map((item, index) => (
-                                        <div key={index} className="brand-item flex items-center justify-between">
-                                            <div className="left flex items-center cursor-pointer">
-                                                <div className="block-input">
-                                                    <input
-                                                        type="checkbox"
-                                                        name={item}
-                                                        id={item}
-                                                        checked={brand === item}
-                                                        onChange={() => handleBrand(item)} />
-                                                    <Icon.CheckSquare size={20} weight='fill' className='icon-checkbox' />
-                                                </div>
-                                                <label htmlFor={item} className="brand-name capitalize pl-2 cursor-pointer">{item}</label>
-                                            </div>
-                                            <div className='text-secondary2'>
-                                                ({data.filter(dataItem => dataItem.brand === item && dataItem.category === 'fashion').length})
-                                            </div>
-                                        </div>
-                                    ))}
                                 </div>
                             </div>
                         </div>

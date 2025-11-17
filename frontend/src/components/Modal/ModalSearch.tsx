@@ -9,6 +9,7 @@ import { useEffect } from 'react'
 import { ProductType } from '@/type/ProductType'
 import Product from '../Product/Product';
 import { useModalSearchContext } from '@/context/ModalSearchContext'
+import { wcArrayToProductTypes } from '@/utils/wcAdapter'
 
 const ModalSearch = () => {
     const { isModalOpen, closeModalSearch } = useModalSearchContext();
@@ -24,11 +25,30 @@ const ModalSearch = () => {
 
     useEffect(() => {
         let mounted = true
-        fetch('/Product.json')
-            .then(res => res.json())
-            .then((data: ProductType[]) => { if (mounted) setProducts(data) })
-            .catch(() => { /* ignore */ })
-        return () => { mounted = false }
+        
+        // 首先尝试使用本地Product.json数据作为后备方案
+        fetch('/Product.json', { cache: 'no-store' })
+            .then(res => {
+                if (!mounted) return null
+                if (!res.ok) throw new Error('Local product data request failed with status ' + res.status)
+                return res.json()
+            })
+            .then((data) => {
+                if (!mounted || !data) return
+                const normalized: ProductType[] = Array.isArray(data) ? data.slice(0, 12) : []
+                setProducts(normalized)
+            })
+            .catch((err) => {
+                // 处理错误，设置空产品数组，防止组件崩溃
+                console.error('Failed to fetch local product data:', err)
+                if (mounted) {
+                    setProducts([])
+                }
+            })
+        
+        return () => {
+            mounted = false
+        }
     }, [])
 
     return (

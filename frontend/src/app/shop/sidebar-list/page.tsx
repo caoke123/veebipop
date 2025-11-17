@@ -1,41 +1,19 @@
-'use client'
+import React from 'react'
+import { redirect } from 'next/navigation'
 
-import React, { useEffect, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation';
-import TopNavOne from '@/components/Header/TopNav/TopNavOne'
-import MenuEleven from '@/components/Header/Menu/MenuEleven'
-import ShopSidebarList from '@/components/Shop/ShopSidebarList'
-import { ProductType } from '@/type/ProductType'
-import Footer from '@/components/Footer/Footer'
-
-export default function SidebarList() {
-    const searchParams = useSearchParams()
-    const type = searchParams.get('type')
-    const category = searchParams.get('category')
-
-    const [products, setProducts] = useState<ProductType[]>([])
-
-    useEffect(() => {
-        const load = async () => {
-            try {
-                const res = await fetch('/Product.json')
-                const data = await res.json()
-                setProducts(data)
-            } catch (e) {
-                console.error('Failed to load products', e)
-            }
-        }
-        load()
-    }, [])
-
-    return (
-        <>
-            <TopNavOne props="style-one bg-black" slogan="New customers save 10% with the code GET10" />
-            <div id="header" className='relative w-full'>
-                <MenuEleven />
-            </div>
-            <ShopSidebarList data={products} productPerPage={4} dataType={type} />
-            <Footer />
-        </>
-    )
+export default function SidebarList({
+  searchParams,
+}: {
+  searchParams?: Record<string, string | string[] | undefined>
+}) {
+  const qs = new URLSearchParams()
+  Object.entries(searchParams ?? {}).forEach(([key, value]) => {
+    if (!value) return
+    if (Array.isArray(value)) {
+      value.forEach((v) => qs.append(key, v))
+    } else {
+      qs.set(key, value)
+    }
+  })
+  redirect(`/shop${qs.size ? `?${qs.toString()}` : ''}`)
 }

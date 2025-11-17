@@ -135,3 +135,14 @@
         }
     }
 }
+
+// 特定的Payment按钮样式 - 不透明背景颜色
+.payment-submit-btn {
+    background-color: var(--black) !important;
+    opacity: 1 !important;
+    
+    &:hover {
+        background-color: var(--green) !important;
+        opacity: 1 !important;
+    }
+}

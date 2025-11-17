@@ -1,32 +1,21 @@
-import React from 'react'
-import fs from 'fs'
-import path from 'path'
-import TopNavOne from '@/components/Header/TopNav/TopNavOne'
-import MenuEleven from '@/components/Header/Menu/MenuEleven'
-import ShopBreadCrumb1 from '@/components/Shop/ShopBreadCrumb1'
-import Footer from '@/components/Footer/Footer'
+import { redirect } from 'next/navigation'
 
-export default async function BreadCrumb1({
+export default function BreadCrumb1({
   searchParams,
 }: {
-  searchParams?: { type?: string; gender?: string; category?: string }
+  searchParams?: Record<string, string | string[] | undefined>
 }) {
-  const type = searchParams?.type ?? null
-  const gender = searchParams?.gender ?? null
-  const category = searchParams?.category ?? null
-
-  const filePath = path.join(process.cwd(), 'src', 'data', 'Product.json')
-  const fileData = fs.readFileSync(filePath, 'utf-8')
-  const productData = JSON.parse(fileData)
-
-  return (
-    <>
-      <TopNavOne props="style-one bg-black" slogan="New customers save 10% with the code GET10" />
-      <div id="header" className='relative w-full'>
-        <MenuEleven />
-      </div>
-      <ShopBreadCrumb1 data={productData} productPerPage={9} dataType={type} gender={gender} category={category} />
-      <Footer />
-    </>
-  )
+  const qs = new URLSearchParams()
+  const params = searchParams ?? {}
+  for (const [key, value] of Object.entries(params)) {
+    if (Array.isArray(value)) {
+      for (const v of value) {
+        if (v != null) qs.append(key, v)
+      }
+    } else if (typeof value === 'string') {
+      qs.set(key, value)
+    }
+  }
+  const suffix = qs.toString() ? `?${qs.toString()}` : ''
+  redirect(`/shop${suffix}`)
 }

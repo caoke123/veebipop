@@ -16,6 +16,9 @@ const useMenuMobile = () => {
     }, [openMenuMobile]);
 
     useEffect(() => {
+        // 检查是否在浏览器环境中
+        if (typeof window === 'undefined') return;
+        
         document.addEventListener('click', handleClickOutsideMenuMobile);
 
         return () => {

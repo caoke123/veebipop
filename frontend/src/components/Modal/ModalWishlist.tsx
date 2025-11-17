@@ -6,6 +6,7 @@ import Image from 'next/image'
 import * as Icon from "@phosphor-icons/react/dist/ssr";
 import { useModalWishlistContext } from '@/context/ModalWishlistContext'
 import { useWishlist } from '@/context/WishlistContext'
+import { formatPrice } from '@/utils/priceFormat'
 
 const ModalWishlist = () => {
     const { isModalOpen, closeModalWishlist } = useModalWishlistContext();
@@ -43,8 +44,8 @@ const ModalWishlist = () => {
                                     <div className=''>
                                         <div className="name text-button">{product.name}</div>
                                         <div className="flex items-center gap-2 mt-2">
-                                            <div className="product-price text-title">${product.price}.00</div>
-                                            <div className="product-origin-price text-title text-secondary2"><del>${product.originPrice}.00</del></div>
+                                            <div className="product-price text-title">{formatPrice(product.price)}</div>
+                                            <div className="product-origin-price text-title text-secondary2"><del>{formatPrice(product.originPrice)}</del></div>
                                         </div>
                                     </div>
                                 </div>

@@ -1,0 +1,21 @@
+.layoutShell {
+  background: #f7f7f9;
+}
+
+.pageWrapper {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+@media (min-width: 768px) {
+  .pageWrapper {
+    padding: 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .pageWrapper {
+    padding: 32px;
+  }
+}

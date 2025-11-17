@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react';
+import React, { useCallback, memo } from 'react';
 import ReactPaginate from 'react-paginate';
 
 interface Props {
@@ -10,6 +10,11 @@ interface Props {
 }
 
 const HandlePagination: React.FC<Props> = ({ pageCount, onPageChange, forcePage }) => {
+    // 使用useCallback来稳定onPageChange处理函数，避免不必要的重新渲染
+    const handlePageChange = useCallback((selectedItem: { selected: number }) => {
+        onPageChange(selectedItem.selected);
+    }, [onPageChange]);
+
     return (
         <ReactPaginate
             previousLabel="<"
@@ -17,7 +22,7 @@ const HandlePagination: React.FC<Props> = ({ pageCount, onPageChange, forcePage 
             pageCount={pageCount}
             pageRangeDisplayed={3}
             marginPagesDisplayed={2}
-            onPageChange={(selectedItem) => onPageChange(selectedItem.selected)}
+            onPageChange={handlePageChange}
             forcePage={forcePage}
             containerClassName={'pagination'}
             activeClassName={'active'}
@@ -25,4 +30,5 @@ const HandlePagination: React.FC<Props> = ({ pageCount, onPageChange, forcePage 
     );
 };
 
-export default HandlePagination;
+// 使用React.memo包装组件，避免不必要的重新渲染
+export default memo(HandlePagination);
