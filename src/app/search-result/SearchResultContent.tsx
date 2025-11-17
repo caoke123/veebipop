@@ -86,7 +86,7 @@ const SearchResultContent = ({ query }: SearchResultContentProps) => {
     useEffect(() => {
         const load = async () => {
             try {
-                const res = await fetch('http://localhost:3001/api/woocommerce/products?per_page=50');
+                const res = await fetch('/api/woocommerce/products?per_page=50');
                 const data = await res.json()
                 const normalized: ProductType[] = Array.isArray(data) ? await wcArrayToProductTypes(data) : []
                 setProducts(normalized)

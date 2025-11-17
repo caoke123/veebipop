@@ -1,18 +1,12 @@
 import { Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
 import TopNavOne from '@/components/Header/TopNav/TopNavOne'
 import MenuEleven from '@/components/Header/Menu/MenuEleven'
 import Breadcrumb from '@/components/Breadcrumb/Breadcrumb'
 import Footer from '@/components/Footer/Footer'
 import SearchResultContent from './SearchResultContent'
 
-const SearchResult = () => {
-    const searchParams = useSearchParams()
-    let query = searchParams.get('query') as string
-
-    if (query === null) {
-        query = 'dress'
-    }
+const SearchResult = ({ searchParams }: { searchParams: { query?: string } }) => {
+    const query = (searchParams?.query ?? 'dress') as string
 
     return (
         <>

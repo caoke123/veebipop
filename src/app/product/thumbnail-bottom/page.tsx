@@ -1,5 +1,4 @@
 import { Suspense } from 'react'
-import { useParams } from 'next/navigation'
 import TopNavOne from '@/components/Header/TopNav/TopNavOne'
 import MenuEleven from '@/components/Header/Menu/MenuEleven'
 import Footer from '@/components/Footer/Footer'
@@ -9,12 +8,8 @@ import ProductThumbnailBottomContent from './ProductThumbnailBottomContent'
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-const ProductThumbnailBottom = () => {
-    const params = useParams()
-
-    // Prefer dynamic segment id; fallback to query param id
-    const idFromParams = Array.isArray(params?.id) ? params?.id?.[0] : (params as any)?.id
-    const productId = (idFromParams ?? '1') as string
+const ProductThumbnailBottom = ({ searchParams }: { searchParams: { id?: string } }) => {
+    const productId = String(searchParams?.id ?? '1')
 
     return (
         <>
