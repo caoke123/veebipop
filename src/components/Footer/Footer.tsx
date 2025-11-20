@@ -193,6 +193,12 @@ const Footer = () => {
                                 </div>
                             </div>
                         </div>
+                        {/* 品牌清晰化免责声明 */}
+                        <div className="disclaimer" style={{textAlign: 'center', padding: '15px', backgroundColor: '#f8f8f8', borderTop: '1px solid #eee'}}>
+                            <p style={{fontSize: '12px', color: '#666', margin: '0'}}>
+                                *Disclaimer: Selmi Toys is an independent manufacturer of plush toys and accessories. We are not affiliated with, endorsed by, or in any way officially connected with Selmi Group (Chocolate Machinery), Pastifício Selmi, or any of their subsidiaries or affiliates.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

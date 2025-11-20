@@ -792,7 +792,7 @@ const Sale: React.FC<Props> = ({ data, productKey }) => {
                                     {/* 第一部分：产品介绍 (由 Markdown 生成) */}
                                     <div className="product-intro-section">
                                         <div className="intro-content-container">
-                                            <div className="yiwu-badge">🎪 YIWU CHINA</div>
+                                            <div className="china-direct-badge">🎪 CHINA DIRECT</div>
                                             {markdownContent && hydrated && ( // 只有当有内容时才渲染
                                                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                                     {markdownContent}

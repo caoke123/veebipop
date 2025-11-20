@@ -11,8 +11,8 @@ import Brand from '@/components/Home1/Brand'
 import Footer from '@/components/Footer/Footer'
 
 export const metadata: Metadata = {
-  title: 'About Selmi - Yiwu Leading Plush Toys & Fashion Accessories Manufacturer',
-  description: 'Learn about Selmi, Yiwu\'s premier manufacturer of trendy plush toys, doll clothes, fashion keychains, and car accessories. 10+ years OEM/ODM experience serving global B2B wholesalers.',
+  title: 'About Selmi - Leading Factory-Direct Plush Toys & Fashion Accessories Manufacturer',
+  description: 'Learn about Selmi, a premier factory-direct manufacturer of trendy plush toys, doll clothes, fashion keychains, and car accessories. 10+ years OEM/ODM experience serving global B2B wholesalers.',
 }
 
 const AboutUs = () => {

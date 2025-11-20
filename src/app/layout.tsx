@@ -30,8 +30,8 @@ const icomoon = localFont({
 })
 
 export const metadata: Metadata = {
-  title: 'Selmi® - Yiwu Trendy Plush Toys & Fashion Accessories Wholesale Manufacturer',
-  description: 'Selmi® Yiwu source factory direct wholesale trendy plush dolls, Labubu outfits, car charms, seatbelt covers. 50pcs MOQ · Free samples · OEM/ODM · Global shipping.',
+  title: 'Selmi Toys - Factory-Direct Custom Plush Toys & Accessories Manufacturer',
+  description: 'Leading factory-direct manufacturer of custom plush toys, stuffed animals, and fashion accessories. We provide wholesale OEM/ODM services for global brands. Get a direct quote today.',
   robots: {
     index: true,
     follow: true,
@@ -40,10 +40,10 @@ export const metadata: Metadata = {
     canonical: 'https://selmi.cc',
   },
   openGraph: {
-    title: 'Selmi® Yiwu Plush Toys & Car Accessories Wholesale Factory',
-    description: 'China Yiwu No.1 trendy plush & fashion accessories manufacturer. Low MOQ 50pcs · Free samples · Fast worldwide shipping.',
+    title: 'Selmi Toys | Your Factory-Direct Partner for Custom Plushies',
+    description: 'Bring your designs to life! We are a premier manufacturer specializing in high-quality, custom-made plush toys and fashion accessories for brands worldwide. Factory-direct pricing and quality guaranteed.',
     type: 'website',
-    url: 'https://selmi.cc',
+    url: 'https://www.selmi.cc/',
     images: [
       {
         url: 'https://image.selmi.cc/og-selmi-wholesale.jpg',
@@ -55,8 +55,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Selmi® - Yiwu Plush Dolls & Charms Wholesale Source Factory',
-    description: '50pcs MOQ · Free samples · OEM/ODM · Global shipping from Yiwu China',
+    title: 'Selmi - Plush Dolls & Charms Wholesale Source Factory',
+    description: '50pcs MOQ · Free samples · OEM/ODM · Global shipping from China',
     images: ['https://image.selmi.cc/twitter-og.jpg'],
   },
   other: {

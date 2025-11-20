@@ -15,8 +15,8 @@ import { headers } from 'next/headers'
 import ProductData from '@/data/Product.json'
 
 export const metadata: Metadata = {
-  title: 'Wholesale Trendy Plush Toys, Doll Outfits, Car Charms | Selmi Yiwu Factory',
-  description: 'Bulk buy from Yiwu source factory: Labubu, plush dolls, fashion accessories, seatbelt covers. 50pcs MOQ · Free samples · Custom logo welcome.',
+  title: 'Wholesale Trendy Plush Toys, Doll Outfits, Car Charms | Selmi Factory-Direct Manufacturer',
+  description: 'Bulk buy from factory-direct manufacturer: Labubu, plush dolls, fashion accessories, seatbelt covers. 50pcs MOQ · Free samples · Custom logo welcome.',
 }
 
 export default async function ShopIndex({

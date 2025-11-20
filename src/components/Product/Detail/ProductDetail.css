@@ -34,7 +34,7 @@
     z-index: 1;
 }
 
-.yiwu-badge {
+.china-direct-badge {
     display: inline-block;
     background: linear-gradient(135deg, #FF6B9D 0%, #FFA6C9 100%);
     color: #fff;
@@ -203,7 +203,7 @@
             "p p p"
             "card1 card2 card3";
     }
-    .yiwu-badge { grid-area: badge; justify-self: center; }
+    .china-direct-badge { grid-area: badge; justify-self: center; }
     .intro-content-container h1 { grid-area: h1; }
     .intro-content-container h2 { grid-area: h2; }
     .intro-content-container > p { grid-area: p; }

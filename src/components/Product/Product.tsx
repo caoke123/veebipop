@@ -237,7 +237,7 @@ const Product: React.FC<ProductProps> = ({ data, type, style = 'style-1', priori
                                 >
                                     <div className="caption2 font-semibold uppercase text-white px-2.5">Hot Sale {percentSale}% OFF</div>
                                     <Icon.Lightning className="text-red" />
-                                    <div className="caption2 font-semibold uppercase text-white px-2.5">China Yiwu – Source Procurement</div>
+                                    <div className="caption2 font-semibold uppercase text-white px-2.5">China-Based – Source Procurement</div>
                                     <Icon.Lightning className="text-red" />
                                 </Marquee>
                             )}

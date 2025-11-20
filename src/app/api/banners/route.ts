@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
       subtitle: "Define the trendy Market",
       buttonText: "Shop Now",
       link: "/shop",
-      badge: "YiWu China",
+      badge: "China Direct",
       textPosition: "left"
     },
     {

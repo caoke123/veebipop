@@ -195,7 +195,7 @@ router.push(`/shop?type=${type}`);
                     <div className="banner-ads-block lg:w-1/2 lg:pl-0 w-full max-lg:grid sm:grid-cols-2 gap-5">
                         <div className="banner-ads-item bg-linear rounded-2xl relative overflow-hidden cursor-pointer" onClick={() => handleTypeClick('swimwear')}>
                             <div className="text-content relative z-[1] py-12 pl-8">
-                                <div className="text-button-uppercase text-white bg-red px-2 py-0.5 inline-block rounded-sm">YiWu China</div>
+                                <div className="text-button-uppercase text-white bg-red px-2 py-0.5 inline-block rounded-sm">China Direct</div>
                                 <div className="heading6 mt-2">Direct Sourcing   <br />for Charms</div>
                                 <div className="body1 mt-3 text-secondary">
                                     Save More
@@ -212,7 +212,7 @@ router.push(`/shop?type=${type}`);
                         </div>
                         <div className="banner-ads-item bg-linear rounded-2xl relative overflow-hidden cursor-pointer lg:mt-8" onClick={() => handleTypeClick('accessories')}>
                             <div className="text-content relative z-[1] py-12 pl-8">
-                                <div className="text-button-uppercase text-white bg-red px-2 py-0.5 inline-block rounded-sm">YiWu China</div>
+                                <div className="text-button-uppercase text-white bg-red px-2 py-0.5 inline-block rounded-sm">China Direct</div>
                                 <div className="heading6 mt-2"> Premium Accessories<br/>For Driver</div>
                                 <div className="body1 mt-3 text-secondary">
                                     Source Directly

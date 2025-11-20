@@ -105,10 +105,10 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const productImage = product.images?.[0] || "https://image.selmi.cc/og-product.jpg"
   
   return {
-    title: `${product.name} - Wholesale from Yiwu Selmi Factory | 50pcs MOQ`,
-    description: `Bulk wholesale ${product.name} directly from Yiwu China factory. MOQ 50pcs · Free samples · OEM/ODM available.`,
+    title: `${product.name} - Wholesale from Selmi Factory-Direct Manufacturer | 50pcs MOQ`,
+    description: `Bulk wholesale ${product.name} directly from China factory. MOQ 50pcs · Free samples · OEM/ODM available.`,
     openGraph: {
-      title: `${product.name} - Selmi Yiwu Wholesale`,
+      title: `${product.name} - Selmi Factory-Direct Wholesale`,
       images: [
         {
           url: productImage,
@@ -119,8 +119,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${product.name} - Selmi Yiwu Wholesale`,
-      description: `Bulk wholesale ${product.name} from Yiwu China factory. MOQ 50pcs · Free samples · OEM/ODM available.`,
+      title: `${product.name} - Selmi Factory-Direct Wholesale`,
+      description: `Bulk wholesale ${product.name} from China factory. MOQ 50pcs · Free samples · OEM/ODM available.`,
       images: [productImage],
     },
   }

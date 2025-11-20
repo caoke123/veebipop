@@ -9,8 +9,8 @@ import Breadcrumb from '@/components/Breadcrumb/Breadcrumb';
 import Footer from '@/components/Footer/Footer'
 
 export const metadata: Metadata = {
-  title: 'Contact Selmi - Yiwu Plush Toys & Fashion Accessories Wholesale Supplier',
-  description: 'Get in touch with Selmi, your trusted Yiwu wholesale supplier for plush toys, doll clothes, fashion keychains, and car accessories. Fast response for B2B inquiries.',
+  title: 'Contact Selmi - Factory-Direct Plush Toys & Fashion Accessories Wholesale Supplier',
+  description: 'Get in touch with Selmi, your trusted factory-direct wholesale supplier for plush toys, doll clothes, fashion keychains, and car accessories. Fast response for B2B inquiries.',
 }
 
 const ContactUs = () => {

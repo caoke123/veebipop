@@ -18,8 +18,8 @@ interface BlogPageProps {
 }
 
 export const metadata: Metadata = {
-  title: 'Yiwu Wholesale Industry News & Market Insights | Selmi Blog',
-  description: 'Latest trends in plush toys, fashion accessories & wholesale market insights from Yiwu China. Industry news, business tips & sourcing guides.',
+  title: 'Wholesale Industry News & Market Insights | Selmi Blog',
+  description: 'Latest trends in plush toys, fashion accessories & wholesale market insights from China. Industry news, business tips & sourcing guides.',
 }
 import { BlogType } from '@/type/BlogType'
 

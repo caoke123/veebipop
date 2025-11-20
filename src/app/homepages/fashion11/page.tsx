@@ -36,8 +36,8 @@ import productData from '@/data/Product.json'
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'Selmi® Yiwu Direct Factory | Trendy Plush Dolls & Car Accessories Wholesale',
-  description: 'Official Selmi® Yiwu source factory. Wholesale plush toys, doll clothes, fashion keychains, car interior charms. MOQ 50pcs · Free samples · Worldwide shipping.',
+  title: 'Selmi Toys - Factory-Direct Custom Plush Toys & Accessories Manufacturer',
+  description: 'Leading factory-direct manufacturer of custom plush toys, stuffed animals, and fashion accessories. We provide wholesale OEM/ODM services for global brands. Get a direct quote today.',
 }
 
 export default async function HomeEleven() {
@@ -86,7 +86,7 @@ export default async function HomeEleven() {
                 subtitle: "Define the trendy Market",
                 buttonText: "Shop Now",
                 link: "/shop",
-                badge: "YiWu China",
+                badge: "China Direct",
                 textPosition: "left"
             },
             {
@@ -102,11 +102,11 @@ export default async function HomeEleven() {
             {
     id: 3,
     image: "https://image.nv315.top/images/s11-3-optimized.webp",
-    title: "Yiwu Source Factory",
+    title: "Factory-Direct Manufacturer",
     subtitle: "Free Samples",
     buttonText: "Start Wholesale",
     link: "/shop",
-    badge: "Yiwu Direct",
+    badge: "Factory Direct",
     textPosition: "left"
 }
         ]
