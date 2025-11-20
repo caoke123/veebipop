@@ -46,5 +46,6 @@ export interface ProductType {
     tags?: Array<{id: number, name: string, slug: string}>,
     categories?: Array<{id: number, name: string, slug: string}>,
     acf?: ProductACF,
-    meta_data?: Array<{key?: string, value?: any}>
+    meta_data?: Array<{key?: string, value?: any}>,
+    related_ids?: Array<number>
 }

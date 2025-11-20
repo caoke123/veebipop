@@ -1,4 +1,5 @@
 import React from 'react'
+import { Metadata } from 'next'
 import TopNavOne from '@/components/Header/TopNav/TopNavOne'
 import MenuEleven from '@/components/Header/Menu/MenuEleven'
 import ShopBreadCrumb1 from '@/components/Shop/ShopBreadCrumb1'
@@ -8,6 +9,11 @@ import { buildProductParams } from '@/utils/wcQuery'
 import { ProductType } from '@/type/ProductType'
 import { headers } from 'next/headers'
 import ProductData from '@/data/Product.json'
+
+export const metadata: Metadata = {
+  title: 'Wholesale Trendy Plush Toys, Doll Outfits, Car Charms | Selmi Yiwu Factory',
+  description: 'Bulk buy from Yiwu source factory: Labubu, plush dolls, fashion accessories, seatbelt covers. 50pcs MOQ · Free samples · Custom logo welcome.',
+}
 
 export default async function ShopIndex({
   searchParams,
@@ -25,6 +31,7 @@ export default async function ShopIndex({
   let products: ProductType[] = []
   let initialCategories: any[] = []
   let initialBrands: any[] = []
+  let paginationMeta: any = null
   let host = 'localhost:3002'
   let protocol = 'http'
   let url = ''
@@ -35,25 +42,22 @@ export default async function ShopIndex({
     const forwardedProto = hdrs.get('x-forwarded-proto')
     host = forwardedHost ?? hostHdr ?? 'localhost:3000'
     protocol = forwardedProto ?? 'http'
-    const qs = buildProductParams({
-      page: 1,
+    // 使用新的服务端筛选API端点，减少客户端数据处理
+    const filterParams = new URLSearchParams({
       per_page: perPage,
-      category: category,
-      on_sale: (on_sale ?? '').toLowerCase() === 'true',
-      price_min: price_min ?? null,
-      price_max: price_max ?? null,
-      orderby: null,
-      order: null,
-      merge: true,
-      no304: true,
-      require_images: true,
+      category: category || '',
+      on_sale: on_sale || '',
+      price_min: price_min || '',
+      price_max: price_max || '',
     })
-    url = `${protocol}://${host}/api/woocommerce/products?${qs.toString()}`
+    url = `${protocol}://${host}/api/woocommerce/products/filtered?${filterParams.toString()}`
     const catUrl = `${protocol}://${host}/api/woocommerce/categories?per_page=100&hide_empty=false`
     const brandsUrl = `${protocol}://${host}/api/woocommerce/brands`
 
     console.log('ShopIndex fetch url:', url)
-    const res = await fetch(url, { cache: 'no-store' })
+    const res = await fetch(url, {
+      next: { revalidate: 300 } // 5分钟重新验证缓存
+    })
     console.log('ShopIndex fetch status:', res.status)
     
     // Handle 204 No Content response
@@ -68,11 +72,20 @@ export default async function ShopIndex({
       const data = await res.json()
       const raw = Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : [])
       products = Array.isArray(raw) ? (raw as ProductType[]) : []
+      
+      // Extract pagination metadata
+      if (data?.meta) {
+        paginationMeta = data.meta
+      }
     }
 
     const [catResult, brandResult] = await Promise.allSettled([
-      fetch(catUrl, { next: { revalidate: 600, tags: ['categories:all'] } }),
-      fetch(brandsUrl, { next: { revalidate: 600, tags: ['brands:all'] } })
+      fetch(catUrl, {
+        next: { revalidate: 600, tags: ['categories:all'] }
+      }),
+      fetch(brandsUrl, {
+        next: { revalidate: 600, tags: ['brands:all'] }
+      })
     ])
 
     if (catResult.status === 'fulfilled' && catResult.value.ok) {
@@ -86,7 +99,8 @@ export default async function ShopIndex({
   } catch (e) {
     const isDev = process.env.NODE_ENV !== 'production'
     const isPreview = (process.env.VERCEL_ENV || '').toLowerCase() === 'preview' || (process.env.APP_ENV || '').toLowerCase() === 'staging'
-    const disableFallback = (process.env.DISABLE_FALLBACK_JSON || '').toLowerCase() === 'true' || isDev || isPreview
+    // 临时启用回退数据，即使是在开发环境中，以便在没有 WooCommerce 配置时也能正常显示
+    const disableFallback = (process.env.DISABLE_FALLBACK_JSON || '').toLowerCase() === 'true' || isPreview
     console.error('Failed to load products from WooCommerce API', e)
     console.error('Error details:', {
       message: e instanceof Error ? e.message : String(e),
@@ -98,6 +112,7 @@ export default async function ShopIndex({
     if (disableFallback) {
       throw e instanceof Error ? e : new Error(String(e))
     } else {
+      console.log('Using fallback product data from Product.json')
       products = Array.isArray(ProductData) ? ProductData.slice(0, parseInt(perPage)).map(product => ({
         ...product,
         imageStatus: product.imageStatus as 'mapped' | 'fallback' | 'empty' | undefined
@@ -126,16 +141,17 @@ export default async function ShopIndex({
       <div id="header" className='relative w-full'>
         <MenuEleven />
       </div>
-      <ShopBreadCrumb1 
-        data={products} 
-        productPerPage={parseInt(perPage) || 9} 
-        dataType={type} 
-        gender={gender} 
-        category={category} 
-        initialCategories={initialCategories} 
+      <ShopBreadCrumb1
+        data={products}
+        productPerPage={parseInt(perPage) || 9}
+        dataType={type}
+        gender={gender}
+        category={category}
+        initialCategories={initialCategories}
         initialBrands={initialBrands}
         isEmptyState={isEmptyCategory}
         emptyCategoryName={displayCategoryName}
+        paginationMeta={paginationMeta}
       />
       <Footer />
     </>

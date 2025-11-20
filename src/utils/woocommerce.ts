@@ -52,7 +52,16 @@ export function getWcApi(): WooCommerceRestApi | null {
   const consumerKey = firstEnv('WOOCOMMERCE_CONSUMER_KEY', 'WC_CONSUMER_KEY')
   const consumerSecret = firstEnv('WOOCOMMERCE_CONSUMER_SECRET', 'WC_CONSUMER_SECRET')
 
-  if (!url || !consumerKey || !consumerSecret) {
+  // 检查是否为示例/无效配置
+  const isDemoConfig = url?.includes('example.com') ||
+                      url?.includes('demo.woocommerce.com') ||
+                      consumerKey?.includes('example') ||
+                      consumerKey?.includes('demo') ||
+                      consumerSecret?.includes('example') ||
+                      consumerSecret?.includes('demo')
+
+  if (!url || !consumerKey || !consumerSecret || isDemoConfig) {
+    console.log('WooCommerce API not configured or using demo config, returning null')
     return null
   }
 

@@ -45,7 +45,7 @@ export async function GET(req: Request) {
   const priceMinParam = searchParams.get('price_min')
   const priceMaxParam = searchParams.get('price_max')
   const refresh = (searchParams.get('refresh') ?? '').toLowerCase() === 'true'
-  const defaultFields = 'id,name,slug,price,regular_price,sale_price,average_rating,stock_quantity,manage_stock,images,short_description,description,categories,attributes,tags,date_created,meta_data'
+  const defaultFields = 'id,name,slug,price,regular_price,sale_price,average_rating,stock_quantity,manage_stock,images,short_description,description,categories,attributes,tags,date_created,meta_data,related_ids'
   const fieldsParam = searchParams.get('_fields') ?? defaultFields
   
   // Always ensure meta_data and categories are included in fields, regardless of source

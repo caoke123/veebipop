@@ -12,4 +12,5 @@ export interface BlogType {
     subImg: Array<string>,
     shortDesc: string,
     description: string,
+    slug: string,
 }

@@ -14,7 +14,7 @@ interface BlogProps {
 }
 
 const BlogItem: React.FC<BlogProps> = ({ data, type, searchParams }) => {
-    const detailHref = buildHref('/blog/detail1', searchParams, { set: { id: String(data.id) } })
+    const detailHref = `/blog/${data.slug}`
 
     return (
         <>

@@ -25,9 +25,16 @@ interface Props {
     initialBrands?: any[]
     isEmptyState?: boolean
     emptyCategoryName?: string
+    paginationMeta?: {
+        total?: number
+        totalPages?: number
+        page?: number
+        per_page?: number
+        count?: number
+    }
 }
 
-const ShopBreadCrumb1: React.FC<Props> = ({ data, productPerPage, dataType, gender, category, initialCategories, initialBrands, isEmptyState, emptyCategoryName }) => {
+const ShopBreadCrumb1: React.FC<Props> = ({ data, productPerPage, dataType, gender, category, initialCategories, initialBrands, isEmptyState, emptyCategoryName, paginationMeta }) => {
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
@@ -39,11 +46,29 @@ const ShopBreadCrumb1: React.FC<Props> = ({ data, productPerPage, dataType, gend
     const [brand, setBrand] = useState<string | null>()
     const [mounted, setMounted] = useState(false)
     const [expandedCats, setExpandedCats] = useState<Set<number>>(new Set())
+    const [categoryCounts, setCategoryCounts] = useState<Record<string, number>>({})
     const [priorityCount, setPriorityCount] = useState<number>(() => {
         // 始终返回默认值避免水合错误，在useEffect中再动态设置
         return 9;
     })
     useEffect(() => { setMounted(true) }, [])
+
+    // 获取类目真实产品数量
+    useEffect(() => {
+        const fetchCategoryCounts = async () => {
+            try {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/woocommerce/categories-count`)
+                if (response.ok) {
+                    const counts = await response.json()
+                    setCategoryCounts(counts)
+                }
+            } catch (error) {
+                console.error('Failed to fetch category counts:', error)
+            }
+        }
+
+        fetchCategoryCounts()
+    }, [])
 
     useEffect(() => {
         // 检查是否在浏览器环境中
@@ -233,77 +258,20 @@ const ShopBreadCrumb1: React.FC<Props> = ({ data, productPerPage, dataType, gend
     }
 
 
-    // Filter product using useMemo for performance optimization
+    // 简化客户端过滤逻辑，因为大部分工作已移至服务端
     const filteredData = useMemo(() => {
+        // 数据已经在服务端过滤，这里只做基本的客户端过滤
         return (data || [])
             .filter(product => {
+                // 确保产品有图片
                 const hasImage = (Array.isArray((product as any).images) && (product as any).images.length > 0)
                     || (Array.isArray((product as any).thumbImage) && (product as any).thumbImage.length > 0)
+                
+                // 只保留有图片的产品
                 return hasImage
             })
-            .filter(product => {
-            let isShowOnlySaleMatched = true;
-            if (showOnlySale) {
-                isShowOnlySaleMatched = product.sale
-            }
-
-            let isDatagenderMatched = true;
-            if (gender) {
-                isDatagenderMatched = product.gender === gender
-            }
-
-            let isDataCategoryMatched = true;
-            if (currentCategorySlug) {
-                const hasArray = Array.isArray((product as any).categories)
-                if (hasArray) {
-                    if (allowedCategorySlugs && allowedCategorySlugs.size > 0) {
-                        isDataCategoryMatched = (product as any).categories.some((cat: any) => allowedCategorySlugs.has(String(cat?.slug || '').toLowerCase()))
-                    } else {
-                        isDataCategoryMatched = (product as any).categories.some((cat: any) => String(cat?.slug || '').toLowerCase() === String(currentCategorySlug).toLowerCase())
-                    }
-                } else {
-                    const raw = String((product as any).category || '').toLowerCase()
-                    if (allowedCategorySlugs && allowedCategorySlugs.size > 0) {
-                        isDataCategoryMatched = raw ? allowedCategorySlugs.has(raw) : true
-                    } else {
-                        isDataCategoryMatched = raw ? (raw === String(currentCategorySlug).toLowerCase()) : true
-                    }
-                }
-            }
-
-            let isDataTypeMatched = true;
-            if (dataType) {
-                isDataTypeMatched = product.type === dataType
-            }
-
-            let isTypeMatched = true;
-            if (type) {
-                isTypeMatched = product.type === type;
-            }
-
-            let isSizeMatched = true;
-            if (size) {
-                isSizeMatched = product.sizes.includes(size)
-            }
-
-            let isPriceRangeMatched = true;
-            if (priceRange.min !== 0 || priceRange.max !== 100) {
-                isPriceRangeMatched = product.price >= priceRange.min && product.price <= priceRange.max;
-            }
-
-            let isColorMatched = true;
-            if (color) {
-                isColorMatched = product.variation.some(item => item.color === color)
-            }
-
-            let isBrandMatched = true;
-            if (brand) {
-                isBrandMatched = product.brand === brand;
-            }
-
-            return isShowOnlySaleMatched && isDatagenderMatched && isDataCategoryMatched && isDataTypeMatched && isTypeMatched && isSizeMatched && isColorMatched && isBrandMatched && isPriceRangeMatched
-        })
-    }, [data, showOnlySale, gender, dataType, type, size, priceRange, color, brand, currentCategorySlug, allowedCategorySlugs]);
+            // 移除复杂的服务端筛选逻辑，这些已在API端处理
+    }, [data]);
 
     // Sort the filtered data using useMemo for performance optimization
     const sortedData = useMemo(() => {
@@ -373,7 +341,8 @@ const ShopBreadCrumb1: React.FC<Props> = ({ data, productPerPage, dataType, gend
     // Find page number base on sortedData (use sorted data for pagination)
     const dataForPaging = hasNoData ? [] : sortedData
 
-    const pageCount = Math.ceil(dataForPaging.length / productsPerPage);
+    // Use paginationMeta from API if available, otherwise fall back to client-side calculation
+    const pageCount = paginationMeta?.totalPages || Math.ceil(filteredData.length / productsPerPage);
 
     // 根据页数安全调整当前页，避免在渲染阶段直接 setState 导致循环渲染
     useEffect(() => {
@@ -455,23 +424,10 @@ const ShopBreadCrumb1: React.FC<Props> = ({ data, productPerPage, dataType, gend
                                 <div className="heading6">Products Type</div>
                                 <div className="list-type mt-4">
                                     {(() => {
-                                        const countBySlug = new Map<string, number>()
-                                        for (const p of data || []) {
-                                            const arr = Array.isArray((p as any).categories) ? (p as any).categories : []
-                                            if (arr.length) {
-                                                for (const cat of arr) {
-                                                    const slug = String(cat?.slug || '').toLowerCase()
-                                                    if (!slug) continue
-                                                    countBySlug.set(slug, (countBySlug.get(slug) || 0) + 1)
-                                                }
-                                            } else {
-                                                const slug = String((p as any).category || '').toLowerCase()
-                                                if (slug) countBySlug.set(slug, (countBySlug.get(slug) || 0) + 1)
-                                            }
-                                        }
+                                        // 使用真实类目数量计算总数（包括子类目）
                                         const totalCount = (id: number): number => {
                                             const node = byId.get(id)
-                                            const self = node ? (countBySlug.get(String(node.slug).toLowerCase()) || 0) : 0
+                                            const self = node ? (categoryCounts[String(node.slug).toLowerCase()] || 0) : 0
                                             const children = childrenByParent.get(id) || []
                                             let sum = self
                                             for (const ch of children) sum += totalCount(ch.id)
@@ -509,7 +465,7 @@ const ShopBreadCrumb1: React.FC<Props> = ({ data, productPerPage, dataType, gend
                                                                 })
                                                                 setCurrentPage(0)
                                                             }}>
-                                                                {(() => { 
+                                                                {(() => {
                                                                     const n = (() => { try { return decodeURIComponent(String(name)) } catch { return String(name) } })()
                                                                     return level > 0 ? `- ${n}` : n
                                                                 })()}

@@ -36,6 +36,7 @@ const ShopSidebarList: React.FC<Props> = ({ data, productPerPage, dataType, virt
         // 始终返回默认值避免水合错误，在useEffect中再动态设置
         return 9;
     });
+    const [typeCounts, setTypeCounts] = useState<Record<string, number>>({})
     const productsPerPage = productPerPage;
     const router = useRouter()
     const pathname = usePathname()
@@ -51,6 +52,29 @@ const ShopSidebarList: React.FC<Props> = ({ data, productPerPage, dataType, virt
         compute()
         mq.addEventListener('change', compute)
         return () => { mq.removeEventListener('change', compute) }
+    }, [])
+
+    // 获取产品类型的真实数量（从全站数据）
+    useEffect(() => {
+        const fetchTypeCounts = async () => {
+            try {
+                // 获取所有产品来计算真实的产品类型数量
+                const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/woocommerce/products?per_page=100&_fields=type`)
+                if (response.ok) {
+                    const products = await response.json()
+                    const counts = products.reduce((acc: Record<string, number>, product: any) => {
+                        const productType = product.type || 'uncategorized'
+                        acc[productType] = (acc[productType] || 0) + 1
+                        return acc
+                    }, {})
+                    setTypeCounts(counts)
+                }
+            } catch (error) {
+                console.error('Failed to fetch type counts:', error)
+            }
+        }
+
+        fetchTypeCounts()
     }, [])
 
     const handleType = (nextType: string) => {
@@ -318,7 +342,7 @@ const ShopSidebarList: React.FC<Props> = ({ data, productPerPage, dataType, virt
                                         >
                                             <div className='text-secondary has-line-before hover:text-black capitalize'>{item}</div>
                                             <div className='text-secondary2'>
-                                                ({data.filter(dataItem => (dataItem.type || '').toLowerCase() === item.toLowerCase()).length})
+                                                ({typeCounts[item] || 0})
                                             </div>
                                         </div>
                                     ))}

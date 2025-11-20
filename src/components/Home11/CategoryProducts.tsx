@@ -100,10 +100,27 @@ const CategoryProducts: React.FC<CategoryProductsProps> = ({
 
     const fetchSubcategories = async () => {
       try {
-        const res = await fetch(`/api/woocommerce/categories/${categorySlug}-subcategories`);
+        // 修正API路径，根据categorySlug映射到正确的端点
+        let endpoint;
+        if (categorySlug === 'art-toy') {
+          endpoint = '/api/woocommerce/categories/art-toy-subcategories';
+        } else if (categorySlug === 'charms') {
+          endpoint = '/api/woocommerce/categories/charms-subcategories';
+        } else if (categorySlug === 'in-car-accessories') {
+          endpoint = '/api/woocommerce/categories/in-car-accessories-subcategories';
+        } else {
+          // 对于其他类别，尝试动态端点
+          endpoint = `/api/woocommerce/categories/${categorySlug}-subcategories`;
+        }
+        
+        const res = await fetch(endpoint);
         if (!res.ok) {
           // 如果API端点不存在或返回错误，不抛出错误，只是不设置子类别
           console.warn(`No subcategories API endpoint for ${categorySlug} or endpoint returned error`);
+          // 对于没有子类别的类别，仍然设置hasSubcategories为true以显示默认标签
+          if (tabs) {
+            setHasSubcategories(true);
+          }
           return;
         }
         const data = await res.json();
@@ -124,10 +141,16 @@ const CategoryProducts: React.FC<CategoryProductsProps> = ({
             });
         } else {
           console.log(`CategoryProducts: No subcategories found for ${categorySlug}`);
+          // 即使没有子类别，也设置hasSubcategories为true以显示默认标签
+          setHasSubcategories(true);
         }
       } catch (error) {
         // 捕获所有错误，但不阻止组件渲染
         console.warn(`Error fetching subcategories for ${categorySlug}:`, error);
+        // 对于有自定义标签的类别，即使出错也要设置hasSubcategories
+        if (tabs) {
+          setHasSubcategories(true);
+        }
       } finally {
         setInitialLoad(false);
       }

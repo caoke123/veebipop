@@ -2,6 +2,9 @@ import { NextRequest } from 'next/server'
 import { getWcApi } from '@/utils/woocommerce'
 import { json, error, badRequest } from '@/utils/apiResponse'
 
+// Changed from 'edge' to 'nodejs' to fix compatibility with Node.js modules
+export const runtime = 'nodejs'
+
 function toInt(v: string | null | undefined, def: number): number {
   const n = v ? parseInt(v, 10) : NaN
   return Number.isNaN(n) ? def : Math.max(1, n)

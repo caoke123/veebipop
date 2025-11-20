@@ -30,8 +30,41 @@ const icomoon = localFont({
 })
 
 export const metadata: Metadata = {
-  title: 'Anvogue',
-  description: 'Multipurpose eCommerce Template',
+  title: 'Selmi® - Yiwu Trendy Plush Toys & Fashion Accessories Wholesale Manufacturer',
+  description: 'Selmi® Yiwu source factory direct wholesale trendy plush dolls, Labubu outfits, car charms, seatbelt covers. 50pcs MOQ · Free samples · OEM/ODM · Global shipping.',
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: 'https://selmi.cc',
+  },
+  openGraph: {
+    title: 'Selmi® Yiwu Plush Toys & Car Accessories Wholesale Factory',
+    description: 'China Yiwu No.1 trendy plush & fashion accessories manufacturer. Low MOQ 50pcs · Free samples · Fast worldwide shipping.',
+    type: 'website',
+    url: 'https://selmi.cc',
+    images: [
+      {
+        url: 'https://image.selmi.cc/og-selmi-wholesale.jpg',
+        width: 1200,
+        height: 630,
+      },
+    ],
+    siteName: 'Selmi Wholesale',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Selmi® - Yiwu Plush Dolls & Charms Wholesale Source Factory',
+    description: '50pcs MOQ · Free samples · OEM/ODM · Global shipping from Yiwu China',
+    images: ['https://image.selmi.cc/twitter-og.jpg'],
+  },
+  other: {
+    'pinterest-rich-pin': 'true',
+    'product:brand': 'Selmi',
+    'product:availability': 'in stock',
+    'product:condition': 'new',
+  },
 }
 
 export default function RootLayout({

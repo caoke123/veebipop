@@ -26,6 +26,7 @@ export type WcProduct = {
   tags?: WcTag[];
   date_created?: string;
   meta_data?: WcMeta[];
+  related_ids?: number[];
 };
 
 const toNumber = (val: string | number | undefined | null): number => {
@@ -288,7 +289,9 @@ export async function wcToProductType(p: WcProduct): Promise<ProductType> {
     // Include ACF fields
     acf,
     // Preserve original meta_data
-    meta_data: p.meta_data
+    meta_data: p.meta_data,
+    // Include related_ids if available
+    related_ids: p.related_ids || []
   };
 };
 

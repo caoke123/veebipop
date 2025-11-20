@@ -29,6 +29,7 @@ const ShopFilterCanvas: React.FC<Props> = ({ data, productPerPage, dataType, pro
     const [priceRange, setPriceRange] = useState<{ min: number; max: number }>({ min: 0, max: 100 });
     const [currentPage, setCurrentPage] = useState(0);
     const [priorityCount, setPriorityCount] = useState<number>(9)
+    const [typeCounts, setTypeCounts] = useState<Record<string, number>>({})
     const productsPerPage = productPerPage;
     const offset = currentPage * productsPerPage;
 
@@ -248,7 +249,7 @@ const ShopFilterCanvas: React.FC<Props> = ({ data, productPerPage, dataType, pro
                                 >
                                     <div className='text-secondary has-line-before hover:text-black capitalize'>{item}</div>
                                     <div className='text-secondary2'>
-                                        ({data.filter(dataItem => dataItem.type === item && (!dataType || dataItem.category === dataType)).length})
+                                        ({typeCounts[item] || 0})
                                     </div>
                                 </div>
                             ))}
@@ -457,6 +458,29 @@ const ShopFilterCanvas: React.FC<Props> = ({ data, productPerPage, dataType, pro
             return () => { mq.removeEventListener('change', updatePriorityCount) }
         }
     }, [layoutCol])
+
+    // 获取产品类型的真实数量（从全站数据）
+    useEffect(() => {
+        const fetchTypeCounts = async () => {
+            try {
+                // 获取所有产品来计算真实的产品类型数量
+                const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/woocommerce/products?per_page=100&_fields=type`)
+                if (response.ok) {
+                    const products = await response.json()
+                    const counts = products.reduce((acc: Record<string, number>, product: any) => {
+                        const productType = product.type || 'uncategorized'
+                        acc[productType] = (acc[productType] || 0) + 1
+                        return acc
+                    }, {})
+                    setTypeCounts(counts)
+                }
+            } catch (error) {
+                console.error('Failed to fetch type counts:', error)
+            }
+        }
+
+        fetchTypeCounts()
+    }, [])
 }
 
 export default ShopFilterCanvas

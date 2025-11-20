@@ -89,7 +89,7 @@ const MenuEleven = () => {
                                 <i className="icon-category text-2xl"></i>
                             </div>
                             <Link href={'/'} className='flex items-center'>
-                                <div className="heading4">Anvogue</div>
+                                <div className="heading4">Selmi</div>
                             </Link>
                             <div className="form-search w-2/3 pl-8 flex items-center h-[44px] max-lg:hidden">
                                 {/* Primary navigation: Tailwind group-hover dropdown, no JS */}

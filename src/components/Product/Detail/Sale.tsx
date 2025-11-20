@@ -208,49 +208,60 @@ const Sale: React.FC<Props> = ({ data, productKey }) => {
         }
     };
 
-    // Index of the selected product, used for related products section (legacy)
-    const selectedIndex = productMain ? Math.max(0, data.findIndex(p => p.id === productMain.id)) : 0
-    // Related products: same category, exclude current; fill with others to reach minimum 4, maximum grid capacity
-    const sameCategory = productMain ? data.filter(p => p.category === productMain.category && p.id !== productMain.id) : []
-    const needed = productMain ? Math.max(0, 8 - sameCategory.length) : 0 // Increase target to 8 for better fill rate
-    const others = productMain && needed > 0
-        ? data.filter(p => p.id !== productMain.id && !sameCategory.some(s => s.id === p.id)).slice(0, needed)
-        : []
-    let relatedProducts = productMain ? [...sameCategory.slice(0, 8), ...others] : []
+    // Extract related products from data array (excluding the main product)
+    // The related products are already fetched and included in the data array
+    let relatedProducts = data.filter(p => p.id !== productMain?.id)
     
     // Debug related products calculation
     useEffect(() => {
         console.log('=== Related Products Debug ===')
         console.log('productMain:', productMain?.name, 'ID:', productMain?.id, 'Category:', productMain?.category)
         console.log('data.length:', data.length)
-        console.log('sameCategory.length:', sameCategory.length)
-        console.log('sameCategory:', sameCategory.map(p => ({name: p.name, id: p.id, category: p.category})))
-        console.log('needed:', needed)
-        console.log('others:', others.map(p => ({name: p.name, id: p.id, category: p.category})))
-        console.log('final relatedProducts:', relatedProducts.length)
+        console.log('relatedProducts.length:', relatedProducts.length)
         console.log('relatedProducts:', relatedProducts.map(p => ({name: p.name, id: p.id, category: p.category})))
-    }, [productMain, data, sameCategory, others, relatedProducts])
+        console.log('productMain.related_ids:', productMain?.related_ids)
+    }, [productMain, data, relatedProducts])
     
-    // Enhanced fallback strategy: If still no products, use any available products
-    if (productMain && relatedProducts.length === 0 && data.length > 1) {
-        // Get first 4 products that are not the current product
-        relatedProducts = data.filter(p => p.id !== productMain.id).slice(0, 4)
-    }
+    // Enhanced fallback strategy: If no related products, fetch fallback products from same category
+    const [fallbackProducts, setFallbackProducts] = useState<ProductType[]>([])
     
-    // Final safety check: If still no products, create placeholder products
-    if (productMain && relatedProducts.length === 0) {
-        // Create placeholder products based on current product's category/type
-        const placeholderCount = Math.min(4, Math.max(1, data.length - 1))
-        const availableProducts = data.filter(p => p.id !== productMain.id)
-        if (availableProducts.length > 0) {
-            // Repeat available products to fill the grid
-            const repeatedProducts = []
-            for (let i = 0; i < placeholderCount; i++) {
-                repeatedProducts.push(availableProducts[i % availableProducts.length])
+    useEffect(() => {
+        const fetchFallbackProducts = async () => {
+            if (relatedProducts.length === 0 && productMain?.category) {
+                try {
+                    console.log('No related products found, fetching fallback products from category:', productMain.category)
+                    const params = new URLSearchParams()
+                    params.set('category', productMain.category)
+                    params.set('per_page', '8')
+                    params.set('_fields', 'id,name,slug,price,regular_price,sale_price,average_rating,stock_quantity,manage_stock,images,short_description,description,categories,attributes,tags,date_created,meta_data')
+                    
+                    const res = await fetch(`/api/woocommerce/products?${params.toString()}`)
+                    if (res.ok) {
+                        const list = await res.json()
+                        const filteredList = Array.isArray(list)
+                            ? list.filter((product: any) => product.id !== parseInt(productMain?.id || '0')).slice(0, 8)
+                            : []
+                        
+                        const convertedProducts = await Promise.all(
+                            filteredList.map((product: any) => import('@/utils/wcAdapter').then(({ wcToProductType }) => wcToProductType(product)))
+                        )
+                        
+                        console.log(`获取到 ${convertedProducts.length} 个同类目兜底产品`)
+                        setFallbackProducts(convertedProducts)
+                    }
+                } catch (error) {
+                    console.error('Error fetching fallback products:', error)
+                }
+            } else {
+                setFallbackProducts([])
             }
-            relatedProducts = repeatedProducts
         }
-    }
+        
+        fetchFallbackProducts()
+    }, [productMain, relatedProducts.length])
+    
+    // Use related products if available, otherwise use fallback products
+    const finalRelatedProducts = relatedProducts.length > 0 ? relatedProducts : fallbackProducts
 
     // Calculate percentSale on both server and client to avoid hydration mismatch
     const [percentSale, setPercentSale] = useState(0)
@@ -931,7 +942,7 @@ const Sale: React.FC<Props> = ({ data, productKey }) => {
                     <div className="container">
                         <div className="heading3 text-center">Related Products</div>
                         <div className="list-product hide-product-sold  grid lg:grid-cols-4 grid-cols-2 md:gap-[30px] gap-5 md:mt-10 mt-6">
-                            {relatedProducts.map((item, index) => (
+                            {finalRelatedProducts.map((item, index) => (
                                 <Product key={index} data={item} type='grid' style='style-1' />
                             ))}
                         </div>

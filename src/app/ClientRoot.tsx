@@ -9,11 +9,18 @@ import ModalQuickview from '@/components/Modal/ModalQuickview'
 import ModalCompare from '@/components/Modal/ModalCompare'
 import CountdownTimeType from '@/type/CountdownType'
 import { useEffect } from 'react'
-import { initWebVitals } from '@/monitor/webVitals'
 
 const ClientRoot: React.FC<{ children: React.ReactNode; serverTimeLeft: CountdownTimeType }> = ({ children, serverTimeLeft }) => {
   useEffect(() => {
-    initWebVitals()
+    // 简化的性能监控初始化
+    if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
+      // 动态导入性能监控模块，避免SSR问题
+      import('@/monitor/webVitals').then(({ initPerformanceMonitoring }) => {
+        initPerformanceMonitoring()
+      }).catch(error => {
+        console.warn('Failed to load performance monitoring:', error)
+      })
+    }
   }, [])
   return (
     <GlobalProvider>

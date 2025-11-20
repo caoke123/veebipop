@@ -3,6 +3,9 @@ import { json, error } from '@/utils/apiResponse'
 import { wcArrayToProductTypes } from '@/utils/wcAdapter'
 import { NextRequest } from 'next/server'
 
+// Use Node.js runtime to fix compatibility with Node.js modules
+export const runtime = 'nodejs'
+
 // Cache configuration
 const CACHE_DURATION = 10 * 60
 const STALE_WHILE_REVALIDATE = 20 * 60
@@ -156,7 +159,65 @@ export async function GET(request: NextRequest) {
 
   const wcApi = getWcApi()
   if (!wcApi) {
-    return error(500, 'WooCommerce environment variables are not configured')
+    console.log('WooCommerce API not available, using fallback data')
+    // 回退到本地Product.json数据
+    try {
+      const fs = require('fs')
+      const path = require('path')
+      const productDataPath = path.join(process.cwd(), 'public', 'Product.json')
+      const productData = JSON.parse(fs.readFileSync(productDataPath, 'utf-8'))
+      
+      // 根据类别和标签过滤产品
+      let filteredProducts = Array.isArray(productData) ? productData : []
+      
+      if (category && category !== 'undefined') {
+        filteredProducts = filteredProducts.filter((product: any) => {
+          // 检查产品类别
+          const productCategory = product.category?.toLowerCase() || ''
+          const requestedCategory = category.toLowerCase()
+          
+          // 支持类别别名
+          if (requestedCategory === 'art-toys' && productCategory === 'general') {
+            return true
+          }
+          if (requestedCategory === 'charms' && productCategory === 'general') {
+            return true
+          }
+          if (requestedCategory === 'in-car-accessories' && productCategory === 'general') {
+            return true
+          }
+          
+          return productCategory === requestedCategory
+        })
+      }
+      
+      // 限制返回的产品数量
+      const limitedProducts = filteredProducts.slice(0, per_page)
+      
+      const response = {
+        data: limitedProducts,
+        meta: {
+          count: limitedProducts.length,
+          category: category,
+          tag: tag,
+          timestamp: now,
+          cacheExpiry: now + (CACHE_DURATION * 1000),
+          hasMore: filteredProducts.length > per_page,
+          isFallback: true
+        }
+      }
+      
+      return new Response(JSON.stringify(response), {
+        status: 200,
+        headers: new Headers({
+          'Cache-Control': `public, s-maxage=${CACHE_DURATION}, stale-while-revalidate=${STALE_WHILE_REVALIDATE}`,
+          'Content-Type': 'application/json'
+        })
+      })
+    } catch (fallbackError) {
+      console.error('Fallback data error:', fallbackError)
+      return error(500, 'WooCommerce environment variables are not configured and fallback data failed')
+    }
   }
 
   try {

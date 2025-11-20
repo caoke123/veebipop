@@ -1,11 +1,17 @@
 // server component: no client-side hooks in this page
 import React from 'react'
+import { Metadata } from 'next'
 import Image from 'next/image';
 import Link from 'next/link';
 import TopNavOne from '@/components/Header/TopNav/TopNavOne'
 import MenuEleven from '@/components/Header/Menu/MenuEleven'
 import Breadcrumb from '@/components/Breadcrumb/Breadcrumb';
 import Footer from '@/components/Footer/Footer'
+
+export const metadata: Metadata = {
+  title: 'Contact Selmi - Yiwu Plush Toys & Fashion Accessories Wholesale Supplier',
+  description: 'Get in touch with Selmi, your trusted Yiwu wholesale supplier for plush toys, doll clothes, fashion keychains, and car accessories. Fast response for B2B inquiries.',
+}
 
 const ContactUs = () => {
     return (

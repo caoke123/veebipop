@@ -706,3 +706,11 @@
         }
     }
 }
+
+// 永久终结 sub-img 冲突 - 只针对新类名
+.custom-sub-img-right {
+  img {
+    @apply w-full h-full object-cover object-center;
+    animation: ScaleImg .8s ease !important;
+  }
+}

@@ -1,24 +1,70 @@
-import React from 'react'
 import Image from 'next/image';
 import Link from 'next/link';
 import TopNavOne from '@/components/Header/TopNav/TopNavOne'
 import MenuEleven from '@/components/Header/Menu/MenuEleven'
-import blogData from '@/data/Blog.json'
 import NewsInsight from '@/components/Home3/NewsInsight';
 import Footer from '@/components/Footer/Footer'
 import { buildHref } from '@/utils/url'
 import * as Icon from "@phosphor-icons/react/dist/ssr";
 import Rate from '@/components/Other/Rate';
+import { getPostBySlug, getAllPosts } from '@/lib/woocommerce-posts'
+import { BlogType } from '@/type/BlogType'
+import { Metadata } from 'next'
+import { notFound } from 'next/navigation'
 
-const BlogDetailTwo = ({
-    searchParams,
-}: {
+// 生成SEO metadata
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+    const post = await getPostBySlug(params.slug)
+    
+    if (!post) {
+        return {
+            title: 'Post Not Found',
+            description: 'The requested blog post could not be found.',
+        }
+    }
+
+    return {
+        title: `${post.title} | Selmi Wholesale Industry Insights`,
+        description: post.shortDesc,
+        openGraph: {
+            title: post.title,
+            description: post.shortDesc,
+            images: [post.thumbImg],
+            type: 'article',
+            publishedTime: post.date,
+            authors: [post.author],
+            siteName: 'Selmi Wholesale',
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: post.title,
+            description: post.shortDesc,
+            images: [post.thumbImg],
+        },
+        other: {
+            'pinterest-rich-pin': 'true',
+            'article:section': post.category,
+            'article:author': post.author,
+        },
+        }
+}
+
+interface BlogDetailProps {
+    params: { slug: string }
     searchParams?: { [key: string]: string | string[] | undefined }
-}) => {
-    const idParam = Array.isArray(searchParams?.id) ? searchParams?.id[0] : searchParams?.id
-    const blogId = idParam ?? '14'
+}
 
-    const blogMain = blogData[Number(blogId) - 1]
+const BlogDetailPage = async ({ params, searchParams }: BlogDetailProps) => {
+    // 根据slug获取文章数据
+    const blogMain = await getPostBySlug(params.slug)
+    
+    // 如果文章不存在，返回404
+    if (!blogMain) {
+        notFound()
+    }
+
+    // 获取相关文章（最新文章作为相关文章）
+    const relatedPosts = await getAllPosts(1, 3)
 
     return (
         <>
@@ -58,11 +104,9 @@ const BlogDetailTwo = ({
                                 />
                             </div>
                             <div className="content">
-                                <div className="body1">{blogMain.description}</div>
-                                <div className="heading4 md:mt-8 mt-5">How did SKIMS start?</div>
-                                <div className="body1 mt-2">I’ve always been passionate about underwear and shapewear and have a huge collection from over the years! When it came to shapewear, I could never find exactly what I was looking for and I would cut up pieces and sew them together to create the style and compression I needed.</div>
+                                <div className="body1" dangerouslySetInnerHTML={{ __html: blogMain.description }}></div>
                                 <div className="grid sm:grid-cols-2 gap-[30px] md:mt-8 mt-5">
-                                    {blogMain.subImg.map((item, index) => (
+                                    {blogMain.subImg.map((item: string, index: number) => (
                                         <Image
                                             key={index}
                                             src={item}
@@ -73,30 +117,13 @@ const BlogDetailTwo = ({
                                         />
                                     ))}
                                 </div>
-                                <div className="body1 mt-4">For bras, I love our Cotton Jersey Scoop Bralette – it{String.raw`'s`} lined with this amazing power mesh so you get great support and is so comfy I can sleep in it. I also love our Seamless Sculpt Bodysuit – it{String.raw`'s`} the perfect all in one sculpting, shaping and smoothing shapewear piece with different levels of support woven throughout.</div>
-                                <div className="heading4 md:mt-8 mt-5">How did SKIMS start?</div>
-                                <div className="body1 mt-4">This is such a hard question! Honestly, every time we drop a new collection I get obsessed with it. The pieces that have been my go-tos though are some of our simplest styles that we launched with. I wear our Fits Everybody Thong every single day – it is the only underwear I have now, it{String.raw`'s`} so comfortable and stretchy and light enough that you can wear anything over it.</div>
-                                <div className="quote-block md:mt-8 mt-5 py-6 md:px-10 px-6 border border-line md:rounded-[20px] rounded-2xl flex items-center md:gap-10 gap-6">
-                                    <Icon.Quotes className='text-green text-3xl rotate-180 flex-shrink-0' weight='fill' />
-                                    <div>
-                                        <div className="heading6">{String.raw`"`}For bras, I love our Cotton Jersey Scoop Bralette – it{String.raw`'s`} lined with this amazing power mesh so you get great support and is so comfy I can sleep in it.{String.raw`"`}</div>
-                                        <div className="text-button-uppercase text-secondary mt-4">- Anthony Bourdain</div>
-                                    </div>
-                                </div>
-                                <div className="body1 md:mt-8 mt-5">For bras, I love our Cotton Jersey Scoop Bralette – it{String.raw`'s`} lined with this amazing power mesh so you get great support and is so comfy I can sleep in it. I also love our Seamless Sculpt Bodysuit – it{String.raw`'s`} the perfect all in one sculpting, shaping and smoothing shapewear piece with different levels of support woven throughout.</div>
                             </div>
                             <div className="action flex items-center justify-between flex-wrap gap-5 md:mt-8 mt-5">
                                 <div className="left flex items-center gap-3 flex-wrap">
                                     <p>Tag:</p>
                                     <div className="list flex items-center gap-3 flex-wrap">
-                                        <Link href={'/blog/default?category=fashion'} className={`tags bg-surface py-1.5 px-4 rounded-full text-button-uppercase cursor-pointer duration-300 hover:bg-black hover:text-white`}>
-                                            fashion
-                                        </Link>
-                                        <Link href={'/blog/default?category=yoga'} className={`tags bg-surface py-1.5 px-4 rounded-full text-button-uppercase cursor-pointer duration-300 hover:bg-black hover:text-white`}>
-                                            yoga
-                                        </Link>
-                                        <Link href={'/blog/default?category=organic'} className={`tags bg-surface py-1.5 px-4 rounded-full text-button-uppercase cursor-pointer duration-300 hover:bg-black hover:text-white`}>
-                                            organic
+                                        <Link href={`/blog?category=${blogMain.category}`} className={`tags bg-surface py-1.5 px-4 rounded-full text-button-uppercase cursor-pointer duration-300 hover:bg-black hover:text-white`}>
+                                            {blogMain.category}
                                         </Link>
                                     </div>
                                 </div>
@@ -120,39 +147,6 @@ const BlogDetailTwo = ({
                                         </Link>
                                     </div>
                                 </div>
-                            </div>
-                            <div className="next-pre flex items-center justify-between md:mt-8 mt-5 py-6 border-y border-line">
-                                {blogId === '1' ? (
-                                    <>
-                                        <Link href={buildHref('/blog/detail2', searchParams, { set: { id: String(blogData.length) } })} className="left cursor-pointer">
-                                            <div className="text-button-uppercase text-secondary2">Previous</div>
-                                            <div className="text-title mt-2">{blogData[blogData.length - 1].title}</div>
-                                        </Link>
-                                    </>
-                                ) : (
-                                    <>
-                                        <Link href={buildHref('/blog/detail2', searchParams, { set: { id: String(blogData[Number(blogId) - 2].id) } })} className="left cursor-pointer">
-                                            <div className="text-button-uppercase text-secondary2">Previous</div>
-                                            <div className="text-title mt-2">{blogData[Number(blogId) - 2].title}</div>
-                                        </Link>
-                                    </>
-                                )}
-                                {Number(blogId) === blogData.length ? (
-                                    <>
-                                        <Link href={buildHref('/blog/detail2', searchParams, { set: { id: '1' } })} className="right text-right cursor-pointer">
-                                            <div className="text-button-uppercase text-secondary2">Next</div>
-                                            <div className="text-title mt-2">{blogData[0].title}</div>
-                                        </Link>
-                                    </>
-                                ) : (
-                                    <>
-                                        <Link href={buildHref('/blog/detail2', searchParams, { set: { id: String(blogData[Number(blogId)].id) } })} className="right text-right cursor-pointer">
-                                            <div className="text-button-uppercase text-secondary2">Next</div>
-                                            <div className="text-title mt-2">{blogData[Number(blogId)].title}</div>
-                                        </Link>
-                                    </>
-                                )}
-
                             </div>
                             <div className="list-comment md:mt-[60px] mt-8">
                                 <div className="heading flex items-center justify-between flex-wrap gap-4">
@@ -360,7 +354,7 @@ const BlogDetailTwo = ({
                                         <div className="button-main bg-white text-black px-5 py-1 border border-line text-button rounded-full capitalize mt-2">Follow</div>
                                     </div>
                                 </div>
-                                <div className="text-secondary mt-5">{blogMain.author} is a writer who draws. He’s the Bestselling author of “Number of The Year”. Donec vitae tortor efficitur, convallis lelobortis elit.</div>
+                                <div className="text-secondary mt-5">{blogMain.author} is a writer who draws. He's the Bestselling author of "Number of The Year". Donec vitae tortor efficitur, convallis lelobortis elit.</div>
                                 <div className="list-social mt-4 flex items-center gap-6 flex-wrap">
                                     <Link href={'https://www.facebook.com/'} target='_blank' className=''>
                                         <div className="icon-facebook md:text-xl duration-100"></div>
@@ -382,8 +376,8 @@ const BlogDetailTwo = ({
                             <div className="recent md:mt-10 mt-6">
                                 <div className="heading6">Recent Posts</div>
                                 <div className="list-recent pt-1">
-                                    {blogData.slice(12, 15).map(item => (
-                                        <Link href={buildHref('/blog/detail2', searchParams, { set: { id: String(item.id) } })} className="item flex gap-4 mt-5 cursor-pointer" key={item.id}>
+                                    {relatedPosts.map((item: BlogType) => (
+                                        <Link href={`/blog/${item.slug}`} className="item flex gap-4 mt-5 cursor-pointer" key={item.id}>
                                             <Image
                                                 src={item.thumbImg}
                                                 width={500}
@@ -410,7 +404,7 @@ const BlogDetailTwo = ({
                     </div>
                 </div>
                 <div className='lg:pb-20 md:pb-14 pb-10'>
-                    <NewsInsight data={blogData} start={0} limit={3} />
+                    <NewsInsight data={relatedPosts} start={0} limit={3} />
                 </div>
             </div>
             <Footer />
@@ -418,4 +412,4 @@ const BlogDetailTwo = ({
     )
 }
 
-export default BlogDetailTwo
+export default BlogDetailPage

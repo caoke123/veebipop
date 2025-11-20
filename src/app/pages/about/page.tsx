@@ -1,5 +1,6 @@
 // server component: no client-side hooks in this page
 import React from 'react'
+import { Metadata } from 'next'
 import Image from 'next/image';
 import TopNavOne from '@/components/Header/TopNav/TopNavOne'
 import MenuEleven from '@/components/Header/Menu/MenuEleven'
@@ -8,6 +9,11 @@ import Benefit from '@/components/Home1/Benefit'
 import Newsletter from '@/components/Home11/Newsletter'
 import Brand from '@/components/Home1/Brand'
 import Footer from '@/components/Footer/Footer'
+
+export const metadata: Metadata = {
+  title: 'About Selmi - Yiwu Leading Plush Toys & Fashion Accessories Manufacturer',
+  description: 'Learn about Selmi, Yiwu\'s premier manufacturer of trendy plush toys, doll clothes, fashion keychains, and car accessories. 10+ years OEM/ODM experience serving global B2B wholesalers.',
+}
 
 const AboutUs = () => {
     return (

@@ -36,7 +36,7 @@ async function fetchRelatedProducts(category: string, excludeId?: number, limit:
   const list = await res.json()
   
   // Filter out the current product and convert to ProductType format
-  const filteredList = Array.isArray(list) 
+  const filteredList = Array.isArray(list)
     ? list.filter((product: WooCommerceProduct) => product.id !== excludeId).slice(0, limit)
     : []
     
@@ -46,6 +46,98 @@ async function fetchRelatedProducts(category: string, excludeId?: number, limit:
   )
     
   return convertedProducts
+}
+
+// Function to fetch related products using WooCommerce related_ids
+async function fetchRelatedProductsById(productId: number, limit: number = 8) {
+  try {
+    // First, get the product with related_ids
+    const productRes = await fetch(
+      `${process.env.WOOCOMMERCE_URL}/wp-json/wc/v3/products/${productId}?_fields=id,name,short_description,price,images,related_ids`,
+      {
+        headers: {
+          'Authorization': 'Basic ' + Buffer.from(`${process.env.WOOCOMMERCE_CONSUMER_KEY}:${process.env.WOOCOMMERCE_CONSUMER_SECRET}`).toString('base64'),
+        },
+        next: { revalidate: 1800 }, // 30分钟缓存
+      }
+    )
+    
+    if (!productRes.ok) {
+      console.log('Failed to fetch product for related_ids, falling back to category-based products')
+      return []
+    }
+    
+    const product = await productRes.json()
+    console.log('相关产品IDs:', product.related_ids)
+    
+    if (!product.related_ids || product.related_ids.length === 0) {
+      console.log('No related_ids found, returning empty array for fallback')
+      return []
+    }
+    
+    // Fetch the related products using the IDs
+    const relatedRes = await fetch(
+      `${process.env.WOOCOMMERCE_URL}/wp-json/wc/v3/products?include=${product.related_ids.join(',')}&per_page=${limit}`,
+      {
+        headers: {
+          'Authorization': 'Basic ' + Buffer.from(`${process.env.WOOCOMMERCE_CONSUMER_KEY}:${process.env.WOOCOMMERCE_CONSUMER_SECRET}`).toString('base64'),
+        },
+        next: { revalidate: 1800 },
+      }
+    )
+    
+    if (!relatedRes.ok) {
+      console.log('Failed to fetch related products, returning empty array')
+      return []
+    }
+    
+    const relatedProducts = await relatedRes.json()
+    console.log('实际获取到相关产品:', relatedProducts.length)
+    
+    // Convert each product to ProductType format
+    const convertedProducts = await Promise.all(
+      (Array.isArray(relatedProducts) ? relatedProducts : []).map((product: WooCommerceProduct) => wcToProductType(product))
+    )
+    
+    return convertedProducts
+  } catch (error) {
+    console.error('Error fetching related products by ID:', error)
+    return []
+  }
+}
+
+// Function to fetch fallback products from same category
+async function fetchFallbackProducts(category: string, excludeId?: number, limit: number = 8) {
+  try {
+    const params = new URLSearchParams()
+    params.set('category', category)
+    params.set('per_page', String(limit))
+    params.set(
+      '_fields',
+      'id,name,slug,price,regular_price,sale_price,average_rating,stock_quantity,manage_stock,images,short_description,description,categories,attributes,tags,date_created,meta_data'
+    )
+    
+    const res = await fetch(`/api/woocommerce/products?${params.toString()}`)
+    if (!res.ok) throw new Error('Failed to load fallback products')
+    const list = await res.json()
+    
+    // Filter out the current product and limit results
+    const filteredList = Array.isArray(list)
+      ? list.filter((product: WooCommerceProduct) => product.id !== excludeId).slice(0, limit)
+      : []
+      
+    console.log(`获取到 ${filteredList.length} 个同类目兜底产品`)
+    
+    // Convert each product to ProductType format
+    const convertedProducts = await Promise.all(
+      filteredList.map((product: WooCommerceProduct) => wcToProductType(product))
+    )
+      
+    return convertedProducts
+  } catch (error) {
+    console.error('Error fetching fallback products:', error)
+    return []
+  }
 }
 
 export function useProductDetail(slug: string, initial?: ProductType | null) {
@@ -64,7 +156,23 @@ export function useProductDetail(slug: string, initial?: ProductType | null) {
 export function useRelatedProducts(category: string, excludeId?: number, enabled?: boolean) {
   return useQuery({
     queryKey: ['related-products', category, excludeId],
-    queryFn: () => fetchRelatedProducts(category, excludeId),
+    queryFn: async () => {
+      if (!excludeId) {
+        // If no excludeId provided, fall back to category-based products
+        return await fetchRelatedProducts(category, excludeId)
+      }
+      
+      // First try to get related products by ID
+      let relatedProducts = await fetchRelatedProductsById(excludeId)
+      
+      // If no related products found, use fallback mechanism
+      if (relatedProducts.length === 0) {
+        console.log('No related products found by ID, using fallback mechanism')
+        relatedProducts = await fetchFallbackProducts(category, excludeId)
+      }
+      
+      return relatedProducts
+    },
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
     retry: 1,

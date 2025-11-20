@@ -12,6 +12,9 @@ import { useCart } from '@/context/CartContext'
 import { countdownTime } from '@/store/countdownTime'
 import { formatPrice } from '@/utils/priceFormat'
 
+// Note: Client components cannot export metadata directly
+// The metadata will be inherited from the root layout
+
 const Cart = () => {
     const [timeLeft, setTimeLeft] = useState(countdownTime());
     const router = useRouter()
