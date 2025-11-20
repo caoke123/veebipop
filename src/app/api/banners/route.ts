@@ -1,3 +1,7 @@
+// 强制动态渲染，避免 Vercel DYNAMIC_SERVER_USAGE 错误
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 import { json, error } from '@/utils/apiResponse'
 import { NextRequest } from 'next/server'
 import { getCache, setCache, CacheKeyBuilder } from '@/lib/cache'

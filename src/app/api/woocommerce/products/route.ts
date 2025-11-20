@@ -1,3 +1,7 @@
+// 强制动态渲染，避免 Vercel DYNAMIC_SERVER_USAGE 错误
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 import { getWcApiWithRetry } from '@/utils/woocommerce'
 import crypto from 'crypto'
 import { json, error } from '@/utils/apiResponse'
