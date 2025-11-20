@@ -152,31 +152,22 @@ export function useProductDetail(slug: string, initial?: ProductType | null) {
   })
 }
 
-// Hook for fetching related products
+// Hook for fetching related products - DEPRECATED
+// Use the new product-detail API instead which fetches related products in parallel
 export function useRelatedProducts(category: string, excludeId?: number, enabled?: boolean) {
+  console.warn('useRelatedProducts Hook is deprecated. Use the new product-detail API instead.')
+  
   return useQuery({
     queryKey: ['related-products', category, excludeId],
     queryFn: async () => {
-      if (!excludeId) {
-        // If no excludeId provided, fall back to category-based products
-        return await fetchRelatedProducts(category, excludeId)
-      }
-      
-      // First try to get related products by ID
-      let relatedProducts = await fetchRelatedProductsById(excludeId)
-      
-      // If no related products found, use fallback mechanism
-      if (relatedProducts.length === 0) {
-        console.log('No related products found by ID, using fallback mechanism')
-        relatedProducts = await fetchFallbackProducts(category, excludeId)
-      }
-      
-      return relatedProducts
+      // Return empty array since this hook is deprecated
+      // Related products should now be fetched via the product-detail API
+      return []
     },
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
     retry: 1,
-    enabled: !!category && enabled !== false, // Only run if category is provided and not explicitly disabled
+    enabled: false, // Disable this hook by default
     initialData: [], // Provide empty array as default
   })
 }

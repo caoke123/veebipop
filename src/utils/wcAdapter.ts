@@ -42,7 +42,7 @@ const stripHtml = (input?: string): string => {
     .replace(/<script[\s\S]*?<\/script>/gi, '')
     .replace(/<[^>]+>/g, '')
     .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
+    .replace(/&/g, '&')
     .trim();
 };
 
@@ -59,11 +59,11 @@ const decodeHtmlEntities = (input?: string): string => {
   
   // Fallback for server-side rendering
   return input
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&amp;/g, '&');
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"')
+    .replace(/'/g, "'")
+    .replace(/&/g, '&');
 };
 
 const isNew = (dateStr?: string): boolean => {
@@ -202,7 +202,8 @@ export async function wcToProductType(p: WcProduct): Promise<ProductType> {
     return '';
   }).filter(Boolean);
   
-  const imagesFiltered = imagesRaw.filter((u) => /^https?:\/\//.test(u))
+  // Fixed regex pattern for URL validation
+  const imagesFiltered = imagesRaw.filter((u) => u.startsWith('http'))
   let images = Array.from(new Set(imagesFiltered))
   let imageStatus: 'mapped' | 'fallback' | 'empty' = 'mapped'
   let diagnostics: { srcCount?: number; metaCount?: number } = { srcCount: imagesRaw.length }
@@ -302,6 +303,7 @@ export async function wcArrayToProductTypes(products: WcProduct[]): Promise<Prod
   const productPromises = products.map(p => wcToProductType(p));
   return Promise.all(productPromises);
 }
+
 const extractMetaImages = (p: WcProduct): string[] => {
   const metas = p.meta_data ?? []
   const urls: string[] = []
@@ -322,5 +324,6 @@ const extractMetaImages = (p: WcProduct): string[] => {
       }
     }
   }
-  return Array.from(new Set(urls.filter((u: string) => /^https?:\/\//.test(u))))
+  // Fixed regex pattern for URL validation
+  return Array.from(new Set(urls.filter((u: string) => u.startsWith('http'))))
 }

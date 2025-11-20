@@ -1,18 +1,22 @@
 "use client"
 
 import React from 'react'
-import { useProductDetail, useRelatedProducts } from '@/hooks/useProductDetail'
+import { useProductDetail } from '@/hooks/useProductDetail'
+import { ProductType } from '@/type/ProductType'
 import Sale from './Sale'
 
-const ProductDetailClient: React.FC<{ slug: string; initial?: any }> = ({ slug, initial }) => {
+interface ProductDetailClientProps {
+  slug: string
+  initial?: any
+  relatedProducts?: ProductType[]
+}
+
+const ProductDetailClient: React.FC<ProductDetailClientProps> = ({ 
+  slug, 
+  initial, 
+  relatedProducts: initialRelatedProducts = [] 
+}) => {
   const { data: mainProduct, isLoading: mainLoading, error: mainError } = useProductDetail(slug, initial)
-  
-  // Fetch related products by category - only fetch when main product is available
-  const { data: relatedProducts, isLoading: relatedLoading } = useRelatedProducts(
-    mainProduct?.category || 'general',
-    mainProduct?.id ? parseInt(mainProduct.id) : undefined,
-    !!mainProduct // Only enable when main product is available
-  )
   
   // Show loading state while data is being fetched
   if (mainLoading) {
@@ -35,8 +39,11 @@ const ProductDetailClient: React.FC<{ slug: string; initial?: any }> = ({ slug, 
     )
   }
   
+  // Use provided related products, fallback to empty array
+  const finalRelatedProducts = initialRelatedProducts || []
+  
   // Combine main product with related products
-  const products = [mainProduct, ...(relatedProducts || [])]
+  const products = [mainProduct, ...finalRelatedProducts]
   
   // Only render Sale component when we have the main product
   return <Sale data={products} productKey={slug} />

@@ -397,7 +397,15 @@ export async function GET(req: Request) {
       try { return new URL(v).hostname } catch { return null }
     }).filter(Boolean) as string[]
     const extraDomains = (process.env.IMAGE_ALLOWED_DOMAINS || '').split(',').map(s => s.trim()).filter(Boolean)
-    const allowedDomains = Array.from(new Set(['pixypic.net', 'image.nv315.top', 'localhost', '127.0.0.1', ...envHosts, ...extraDomains]))
+    // 放宽图片域名限制，允许更多图片CDN和域名
+    const allowedDomains = Array.from(new Set([
+      'pixypic.net', 'image.nv315.top', 'localhost', '127.0.0.1',
+      'woocommerce.com', 'wp.com', 'wordpress.org', 'cdn.shopify.com',
+      'i.imgur.com', 'i.redd.it', 'i.ibb.co', 'images.unsplash.com',
+      'cdn.pixabay.com', 'images.pexels.com', 'images.unsplash.com',
+      'picsum.photos', 'placehold.co', 'dummyimage.com',
+      ...envHosts, ...extraDomains
+    ]))
     const byAllowedDomain = (url: string | undefined) => {
       if (!url || typeof url !== 'string') return false
       try {
