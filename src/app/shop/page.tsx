@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 export default async function ShopIndex({
   searchParams,
 }: {
-  searchParams?: { type?: string; gender?: string; category?: string; on_sale?: string; price_min?: string; price_max?: string; per_page?: string }
+  searchParams?: { type?: string; gender?: string; category?: string; on_sale?: string; price_min?: string; price_max?: string; per_page?: string; page?: string }
 }) {
   const type = searchParams?.type ?? null
   const gender = searchParams?.gender ?? null
@@ -31,6 +31,7 @@ export default async function ShopIndex({
   const price_min = searchParams?.price_min ?? null
   const price_max = searchParams?.price_max ?? null
   const perPage = searchParams?.per_page ?? '9'
+  const page = searchParams?.page ?? '1'
 
   let products: ProductType[] = []
   let initialCategories: any[] = []
@@ -49,6 +50,7 @@ export default async function ShopIndex({
     // 使用新的服务端筛选API端点，减少客户端数据处理
     const filterParams = new URLSearchParams({
       per_page: perPage,
+      page: page,
       category: category || '',
       on_sale: on_sale || '',
       price_min: price_min || '',

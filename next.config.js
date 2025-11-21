@@ -18,6 +18,7 @@ const allowedHosts = Array.from(new Set([
   'pixypic.net',
   'image.nv315.top',
   'image.selmi.cc',
+  'image.veebipop.com',
   ...envHosts,
   ...extraDomains
 ]))

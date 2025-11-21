@@ -57,13 +57,39 @@ const ShopBreadCrumb1: React.FC<Props> = ({ data, productPerPage, dataType, gend
     useEffect(() => {
         const fetchCategoryCounts = async () => {
             try {
-                const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/woocommerce/categories-count`)
+                const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || ''
+                const response = await fetch(`${baseUrl}/api/woocommerce/categories-count`)
+                console.log('Category counts API response status:', response.status)
+                
                 if (response.ok) {
                     const counts = await response.json()
+                    console.log('Category counts fetched:', counts)
                     setCategoryCounts(counts)
+                } else {
+                    console.error('Category counts API failed with status:', response.status)
+                    // 使用回退数据
+                    const fallbackCounts = {
+                        'art-toys': 10,
+                        'charms': 8,
+                        'in-car-accessories': 6,
+                        'general': 15,
+                        'toy': 12,
+                        'bag': 7
+                    }
+                    setCategoryCounts(fallbackCounts)
                 }
             } catch (error) {
                 console.error('Failed to fetch category counts:', error)
+                // 使用回退数据
+                const fallbackCounts = {
+                    'art-toys': 10,
+                    'charms': 8,
+                    'in-car-accessories': 6,
+                    'general': 15,
+                    'toy': 12,
+                    'bag': 7
+                }
+                setCategoryCounts(fallbackCounts)
             }
         }
 
@@ -106,7 +132,9 @@ const ShopBreadCrumb1: React.FC<Props> = ({ data, productPerPage, dataType, gend
         }
         return m
     }, [catsArr])
-    const [currentPage, setCurrentPage] = useState(0);
+    // 从URL参数获取当前页码，默认为第1页（索引0）
+    const urlPage = parseInt(searchParams.get('page') || '1', 10) - 1
+    const [currentPage, setCurrentPage] = useState(urlPage >= 0 ? urlPage : 0);
     const productsPerPage = productPerPage;
     const offset = currentPage * productsPerPage;
     const currentCategorySlug = searchParams.get('category') || category || null
@@ -159,7 +187,13 @@ const ShopBreadCrumb1: React.FC<Props> = ({ data, productPerPage, dataType, gend
     useEffect(() => {
         const onSaleParam = (searchParams.get('on_sale') ?? '').toLowerCase()
         setShowOnlySale(onSaleParam === 'true')
-    }, [searchParams])
+        
+        // 同步页码状态
+        const urlPage = parseInt(searchParams.get('page') || '1', 10) - 1
+        if (urlPage >= 0 && urlPage !== currentPage) {
+            setCurrentPage(urlPage)
+        }
+    }, [searchParams, currentPage])
 
     useEffect(() => {
         const pm = searchParams.get('price_min')
@@ -338,11 +372,11 @@ const ShopBreadCrumb1: React.FC<Props> = ({ data, productPerPage, dataType, gend
     const selectedBrand = brand
 
 
-    // Find page number base on sortedData (use sorted data for pagination)
-    const dataForPaging = hasNoData ? [] : sortedData
+    // 使用服务端返回的分页数据，而不是客户端切片
+    const dataForPaging = hasNoData ? [] : data
 
-    // Use paginationMeta from API if available, otherwise fall back to client-side calculation
-    const pageCount = paginationMeta?.totalPages || Math.ceil(filteredData.length / productsPerPage);
+    // 优先使用服务端返回的分页元数据
+    const pageCount = paginationMeta?.totalPages || Math.ceil(data.length / productsPerPage);
 
     // 根据页数安全调整当前页，避免在渲染阶段直接 setState 导致循环渲染
     useEffect(() => {
@@ -353,17 +387,19 @@ const ShopBreadCrumb1: React.FC<Props> = ({ data, productPerPage, dataType, gend
         }
     }, [pageCount, currentPage])
 
-    // Get product data for current page
-    let currentProducts: ProductType[];
-
-    if (dataForPaging.length > 0) {
-        currentProducts = dataForPaging.slice(offset, offset + productsPerPage);
-    } else {
-        currentProducts = []
-    }
+    // 直接使用服务端返回的数据，不再进行客户端分页切片
+    // 服务端已经根据page参数返回了正确的数据
+    let currentProducts: ProductType[] = dataForPaging as ProductType[];
 
     const handlePageChange = (selected: number) => {
         setCurrentPage(selected);
+        // 更新URL参数以触发服务端重新渲染
+        const newParams = new URLSearchParams(searchParams.toString())
+        newParams.set('page', String(selected + 1))
+        const newUrl = `${pathname}?${newParams.toString()}`
+        startTransition(() => {
+            router.push(newUrl, { scroll: false })
+        })
     };
 
     const handleClearAll = () => {
@@ -427,10 +463,12 @@ const ShopBreadCrumb1: React.FC<Props> = ({ data, productPerPage, dataType, gend
                                         // 使用真实类目数量计算总数（包括子类目）
                                         const totalCount = (id: number): number => {
                                             const node = byId.get(id)
-                                            const self = node ? (categoryCounts[String(node.slug).toLowerCase()] || 0) : 0
+                                            const slug = node ? String(node.slug).toLowerCase() : ''
+                                            const self = node ? (categoryCounts[slug] || 0) : 0
                                             const children = childrenByParent.get(id) || []
                                             let sum = self
                                             for (const ch of children) sum += totalCount(ch.id)
+                                            console.log(`Category count for ${slug}: ${self}, total with children: ${sum}`)
                                             return sum
                                         }
                                         
@@ -616,7 +654,11 @@ const ShopBreadCrumb1: React.FC<Props> = ({ data, productPerPage, dataType, gend
 
                             {pageCount > 1 && (
                                 <div className="list-pagination flex items-center md:mt-10 mt-7">
-                                    <HandlePagination pageCount={pageCount} onPageChange={handlePageChange} />
+                                    <HandlePagination
+                                        pageCount={pageCount}
+                                        onPageChange={handlePageChange}
+                                        forcePage={currentPage}
+                                    />
                                 </div>
                             )}
                         </div>

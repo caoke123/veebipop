@@ -102,7 +102,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     }
   }
 
-  const productImage = product.images?.[0] || "https://image.selmi.cc/og-product.jpg"
+  const productImage = product.images?.[0] || "https://image.veebipop.com/og-product.jpg"
   
   return {
     title: `${product.name} - Wholesale from Selmi Factory-Direct Manufacturer | 50pcs MOQ`,

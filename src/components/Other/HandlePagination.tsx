@@ -12,6 +12,7 @@ interface Props {
 const HandlePagination: React.FC<Props> = ({ pageCount, onPageChange, forcePage }) => {
     // 使用useCallback来稳定onPageChange处理函数，避免不必要的重新渲染
     const handlePageChange = useCallback((selectedItem: { selected: number }) => {
+        console.log('Pagination: Changing to page', selectedItem.selected + 1);
         onPageChange(selectedItem.selected);
     }, [onPageChange]);
 
@@ -26,6 +27,7 @@ const HandlePagination: React.FC<Props> = ({ pageCount, onPageChange, forcePage 
             forcePage={forcePage}
             containerClassName={'pagination'}
             activeClassName={'active'}
+            disableInitialCallback={false}
         />
     );
 };
