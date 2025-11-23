@@ -88,10 +88,10 @@ router.push(`/shop?type=${type}`);
                                 </div>
                             </SwiperSlide>
                             <SwiperSlide>
-                                <div className="trending-item block relative cursor-pointer" onClick={() => router.push('/shop?category=top')}>
+                                <div className="trending-item block relative cursor-pointer" onClick={() => router.push('/shop?category=clothing-for-toys')}>
                                     <div className="bg-img rounded-full overflow-hidden">
                                         <BlurImage
-                                            src="https://image.nv315.top/images/art%20toys3-optimized.webp"
+                                            src="https://image.nv315.top/images/clothing3-optimized.webp"
                                             width={1000}
                                             height={1000}
                                             alt='clothes'
@@ -101,7 +101,7 @@ router.push(`/shop?type=${type}`);
                                         />
                                     </div>
                                     <div className="trending-name text-center mt-5 duration-500">
-                                        <span className='heading5'>top</span>
+                                        <span className='heading5'>clothing</span>
                                         {/* <span className='text-secondar2'> (12)</span> */}
                                     </div>
                                 </div>

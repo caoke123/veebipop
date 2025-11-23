@@ -111,7 +111,10 @@ export default async function ProductDetailBySlug({ params }: { params: { slug: 
 
   try {
     // 使用新的专用API一次性获取所有数据
-    const url = `/api/woocommerce/product-detail?slug=${encodeURIComponent(productSlug)}&includeRelated=true`
+    const baseUrl = process.env.NEXTAUTH_URL || process.env.VERCEL_URL || 'http://localhost:3000'
+    const protocol = baseUrl.startsWith('http') ? '' : 'https://'
+    const fullBaseUrl = protocol + baseUrl
+    const url = `${fullBaseUrl}/api/woocommerce/product-detail?slug=${encodeURIComponent(productSlug)}&includeRelated=true`
     console.log('Product detail API URL:', url)
     
     const res = await fetch(url, {

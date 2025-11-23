@@ -5,48 +5,50 @@ const performanceData: any[] = []
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    
-    // 验证必要字段
-    if (!body.metric || typeof body.value !== 'number') {
-      return new Response(JSON.stringify({ error: 'Invalid performance data' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      })
-    }
-    
-    // 添加时间戳
-    const entry = {
-      ...body,
-      timestamp: new Date().toISOString(),
-      userAgent: request.headers.get('user-agent') || '',
-      ip: request.headers.get('x-forwarded-for') || 
-            request.headers.get('x-real-ip') || 
-            request.headers.get('remote-addr') || 'unknown'
-    }
-    
-    // 存储性能数据
-    performanceData.push(entry)
-    
-    // 保持最近1000条记录
-    if (performanceData.length > 1000) {
-      performanceData.splice(0, performanceData.length - 1000)
-    }
-    
-    // 在控制台记录（生产环境应使用日志系统）
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Performance Metric:', entry)
-    }
-    
-    // 返回成功响应
-    return new Response(JSON.stringify({ 
+    // 快速响应，避免超时
+    const response = new Response(JSON.stringify({ 
       success: true, 
-      message: 'Performance data recorded',
-      id: performanceData.length 
+      message: 'Performance data recorded'
     }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' }
     })
+    
+    // 异步处理数据，不阻塞响应
+    request.json().then(body => {
+      // 验证必要字段
+      if (!body.metric || typeof body.value !== 'number') {
+        console.warn('Invalid performance data received')
+        return
+      }
+      
+      // 添加时间戳
+      const entry = {
+        ...body,
+        timestamp: new Date().toISOString(),
+        userAgent: request.headers.get('user-agent') || '',
+        ip: request.headers.get('x-forwarded-for') || 
+              request.headers.get('x-real-ip') || 
+              request.headers.get('remote-addr') || 'unknown'
+      }
+      
+      // 存储性能数据
+      performanceData.push(entry)
+      
+      // 保持最近1000条记录
+      if (performanceData.length > 1000) {
+        performanceData.splice(0, performanceData.length - 1000)
+      }
+      
+      // 在控制台记录（生产环境应使用日志系统）
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Performance Metric:', entry)
+      }
+    }).catch(error => {
+      console.error('Performance analytics error:', error)
+    })
+    
+    return response
     
   } catch (error) {
     console.error('Performance analytics error:', error)
@@ -54,7 +56,7 @@ export async function POST(request: NextRequest) {
       error: 'Failed to process performance data',
       message: error instanceof Error ? error.message : 'Unknown error'
     }), {
-      status: 500,
+      status: 200, // 返回成功状态，避免客户端错误
       headers: { 'Content-Type': 'application/json' }
     })
   }

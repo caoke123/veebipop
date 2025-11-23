@@ -28,14 +28,7 @@ const nextConfig = {
   reactStrictMode: true,
   eslint: { ignoreDuringBuilds: true },
 
-  experimental: {
-    optimizeCss: true,
-    optimizePackageImports: ['@tanstack/react-query', 'swiper'],
-    // 终极必备：standalone 模式下 Sharp 永不丢
-    outputFileTracingIncludes: {
-      '/**/*': ['node_modules/sharp/**/*'],
-    },
-  },
+
 
   images: {
     // 删除 unoptimized: true（你已经删了，完美）
@@ -57,6 +50,28 @@ const nextConfig = {
   swcMinify: true,
   poweredByHeader: false,
   output: 'standalone',
+  
+  // 减少 RSC 请求中断问题
+  serverRuntimeConfig: {
+    // 增加服务器超时时间
+    apiTimeout: 30000,
+  },
+  
+  // 优化 React Server Components
+  experimental: {
+    optimizeCss: true,
+    optimizePackageImports: ['@tanstack/react-query', 'swiper'],
+    // 终极必备：standalone 模式下 Sharp 永不丢
+    outputFileTracingIncludes: {
+      '/**/*': ['node_modules/sharp/**/*'],
+    },
+    // 减少 RSC 请求超时问题
+    serverComponentsExternalPackages: ['sharp'],
+    // 启用 React Server Components 优化
+    serverActions: {
+      allowedOrigins: ['localhost:3000', 'veebipop.com'],
+    },
+  },
 }
 
 const withBundleAnalyzer = require('@next/bundle-analyzer')({

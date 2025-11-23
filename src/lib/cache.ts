@@ -5,13 +5,40 @@ const VERSION = process.env.CACHE_VERSION || '1'
 
 export async function getCache<T>(key: string): Promise<T | null> {
   const fullKey = `cache:${VERSION}:${key}`
-  const raw = await redis.get(fullKey)
-  return raw ? JSON.parse(raw as string) : null
+  try {
+    const raw = await redis.get(fullKey)
+    if (!raw) return null
+    
+    // 处理可能的字符串或对象
+    if (typeof raw === 'string') {
+      try {
+        return JSON.parse(raw)
+      } catch (parseError) {
+        console.warn(`缓存JSON解析失败 for key ${fullKey}:`, parseError)
+        // 如果解析失败，删除无效缓存
+        await redis.del(fullKey)
+        return null
+      }
+    }
+    
+    // 如果已经是对象，直接返回
+    return raw as T
+  } catch (error) {
+    console.error(`缓存获取错误 for key ${fullKey}:`, error)
+    return null
+  }
 }
 
 export async function setCache<T>(key: string, data: T, ttl: number) {
   const fullKey = `cache:${VERSION}:${key}`
-  await redis.set(fullKey, JSON.stringify(data), { ex: ttl })
+  try {
+    // 确保数据是可序列化的
+    const serializedData = JSON.stringify(data)
+    await redis.set(fullKey, serializedData, { ex: ttl })
+  } catch (error) {
+    console.error(`缓存设置错误 for key ${fullKey}:`, error)
+    // 不抛出错误，避免影响主流程
+  }
 }
 
 export async function deleteCache(key: string) {

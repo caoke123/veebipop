@@ -6,8 +6,8 @@ const Newsletter = () => {
             <div className={`newsletter-block bg-green py-7 md:mt-20 mt-10`}>
                 <div className="container flex max-lg:flex-col items-center lg:justify-between justify-center gap-8 gap-y-4">
                     <div className="text-content">
-                        <div className="heading3 max-lg:text-center">Sign up and get 10% off</div>
-                        <div className='mt-2 max-lg:text-center'>Sign up for early sale access, new in, promotions and more</div>
+                        <div className="heading3 max-lg:text-center">Source Factory · Real Wholesale Price</div>
+                        <div className='mt-2 max-lg:text-center'>Get Wholesale Price Now</div>
                     </div>
                     <div className="input-block xl:w-5/12 md:w-1/2 sm:w-3/5 w-full h-[52px]">
                         <form className='w-full h-full relative' action="post">

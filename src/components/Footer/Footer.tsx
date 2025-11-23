@@ -71,7 +71,7 @@ District, Tianjin City, China</span>
                                         <div className="text-button-uppercase pb-3">Quick Shop</div>
 <Link className='caption1 has-line-before duration-300 w-fit' href={'/shop?category=art-toys'}>Art Toys</Link>
 <Link className='caption1 has-line-before duration-300 w-fit pt-2' href={'/shop?category=charms'}>Charms</Link>
-<Link className='caption1 has-line-before duration-300 w-fit pt-2' href={'/shop?category=clothing-for-toys'}>Clothes</Link>
+<Link className='caption1 has-line-before duration-300 w-fit pt-2' href={'/shop?category=clothing-for-toys'}>Clothing for Toys</Link>
 <Link className='caption1 has-line-before duration-300 w-fit pt-2' href={'/shop?category=in-car-accessories'}>Accessories</Link>
                                         <Link className='caption1 has-line-before duration-300 w-fit pt-2' href={'/blog'}>Blog</Link>
                                     </div>
