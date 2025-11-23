@@ -22,8 +22,8 @@ export async function GET() {
       
       return NextResponse.json(fallbackCounts, {
         headers: {
-          'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=7200',
-          'CDN-Cache-Control': 'public, s-maxage=7200, stale-while-revalidate=14400',
+          'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=1200',
+          'CDN-Cache-Control': 'public, s-maxage=120, stale-while-revalidate=240',
           'X-Cache-Source': 'Fallback'
         }
       })
@@ -48,8 +48,8 @@ export async function GET() {
 
     return NextResponse.json(countMap, {
       headers: {
-        'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=7200', // 1小时缓存
-        'CDN-Cache-Control': 'public, s-maxage=7200, stale-while-revalidate=14400'
+        'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=1200', // 10 minute cache
+        'CDN-Cache-Control': 'public, s-maxage=120, stale-while-revalidate=240'
       }
     })
   } catch (err: any) {
@@ -60,4 +60,3 @@ export async function GET() {
   }
 }
 
-export const dynamic = 'force-dynamic'

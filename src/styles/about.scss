@@ -1,0 +1,189 @@
+// About page specific styles
+.about-page {
+  // Feature cards
+  .feature-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--line);
+    transition: all 0.3s ease;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-0.25rem);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  // Timeline styles
+  .timeline-line {
+    position: absolute;
+    left: 1rem;
+    top: 0;
+    bottom: 0;
+    width: 0.125rem;
+    background-color: rgba(210, 239, 154, 0.2);
+    margin-left: -0.0625rem;
+  }
+
+  @media (min-width: 768px) {
+    .timeline-line {
+      left: 50%;
+    }
+  }
+
+  .timeline-dot {
+    position: absolute;
+    left: 1rem;
+    top: 1.5rem;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background-color: var(--green);
+    border: 4px solid white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transform: translateX(-50%);
+  }
+
+  @media (min-width: 768px) {
+    .timeline-dot {
+      left: 50%;
+    }
+  }
+
+  // Team cards
+  .team-card {
+    background: white;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+  }
+
+  .team-card:hover {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  // Trust badges
+  .trust-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0.75rem;
+    background-color: var(--surface);
+    border-radius: 9999px;
+    border: 1px solid var(--line);
+  }
+
+  // Contact form
+  .contact-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--line);
+  }
+
+  @media (min-width: 768px) {
+    .contact-form {
+      padding: 2.5rem;
+    }
+  }
+
+  // Video section
+  .video-container {
+    position: relative;
+    width: 100%;
+    max-width: 24rem;
+    margin: 0 auto;
+    aspect-ratio: 9/16;
+    background-color: black;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--line);
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 767.98px) {
+  .about-page {
+    .feature-card {
+      padding: 1.5rem;
+    }
+  }
+}
+
+// Additional utility classes for About page
+.hover-lift {
+  transition: transform 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-0.25rem);
+}
+
+.text-gradient {
+  background: linear-gradient(to right, var(--green), rgba(210, 239, 154, 0.7));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+// Smooth scroll behavior
+html {
+  scroll-behavior: smooth;
+}
+
+// Custom animations
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+// Focus styles for accessibility
+.focus-visible:focus {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+}
+
+// Print styles
+@media print {
+  .about-page {
+    .hero-gradient,
+    .video-container {
+      display: none;
+    }
+  }
+}
+
+// About Story section specific styles
+#story {
+  .relative.z-10.max-w-sm {
+    max-width: 24rem; // 384px - smaller default size
+    
+    @media (min-width: 768px) {
+      max-width: 24rem; // 384px - maintain size on tablet
+    }
+    
+    @media (min-width: 1024px) {
+      max-width: 28rem; // 448px - slightly larger on desktop
+    }
+    
+    // Ensure the image doesn't get too large
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+  }
+}

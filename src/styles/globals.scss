@@ -80,7 +80,7 @@ input[type="file"] {
   }
 }
 
-/* Main class used in Selmi */
+/* Main class used in VeebiPop */
 .container {
   max-width: 1322px !important;
   width: 100%;
@@ -111,6 +111,65 @@ input[type="file"] {
 
 .bg-linear {
   background: linear-gradient(238deg, #FAF8F1 0%, #F6F3EF 99.66%);
+}
+
+// Breadcrumb styles
+.breadcrumb-block {
+  &.style-shared {
+    .breadcrumb-main {
+      position: relative;
+      background: linear-gradient(238deg, #FAF8F1 0%, #F6F3EF 99.66%);
+      
+      .container {
+        min-height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+         
+        .main-content {
+          text-align: center;
+          
+          .text-content {
+            .heading2 {
+              color: var(--black);
+              margin-bottom: 1rem;
+              font-size: 44px;
+              line-height: 50px;
+              font-weight: 600;
+              text-transform: capitalize;
+            }
+            
+            .link {
+              color: var(--secondary);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 0.25rem;
+              
+              a {
+                color: var(--black);
+                text-decoration: none;
+                transition: color 0.3s ease;
+                font-size: 14px;
+                line-height: 22px;
+                
+                &:hover {
+                  color: var(--secondary);
+                }
+              }
+              
+              .text-secondary2 {
+                color: var(--secondary2);
+                font-size: 14px;
+                line-height: 22px;
+                text-transform: capitalize;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 .box-shadow-xs {
@@ -381,3 +440,6 @@ input[type="file"] {
     border-radius: 8px;
   }
 }
+
+// Import About page specific styles
+@import './about.scss';

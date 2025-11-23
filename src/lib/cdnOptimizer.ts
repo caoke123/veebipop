@@ -348,11 +348,11 @@ export class CDNPerformanceMonitor {
 
 // 默认CDN配置
 export const defaultCDNConfig: CDNConfig = {
-  baseUrl: 'https://cdn.anvogue.com',
+  baseUrl: 'https://cdn.veebipop.com',
   zones: [
-    'https://cdn1.anvogue.com',
-    'https://cdn2.anvogue.com',
-    'https://cdn3.anvogue.com'
+    'https://cdn1.veebipop.com',
+    'https://cdn2.veebipop.com',
+    'https://cdn3.veebipop.com'
   ],
   cacheTTL: 3600, // 1小时
   compressionEnabled: true,

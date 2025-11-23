@@ -38,7 +38,7 @@ export async function GET(request: Request) {
         headers: new Headers({
           'Content-Type': 'application/json',
           'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=1200',
-          'CDN-Cache-Control': 'public, s-maxage=1200, stale-while-revalidate=2400',
+          'CDN-Cache-Control': 'public, s-maxage=120, stale-while-revalidate=240',
           'X-Cache-Source': 'Fallback'
         })
       })
@@ -60,7 +60,7 @@ export async function GET(request: Request) {
     const headers = new Headers({
       'Content-Type': 'application/json',
       'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=1200',
-      'CDN-Cache-Control': 'public, s-maxage=1200, stale-while-revalidate=2400',
+      'CDN-Cache-Control': 'public, s-maxage=120, stale-while-revalidate=240',
       ETag: etag,
     })
     if (request.headers && new URL(request.url) && request.headers instanceof Headers) {

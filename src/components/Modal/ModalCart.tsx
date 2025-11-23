@@ -59,16 +59,7 @@ const ModalCart = ({ serverTimeLeft }: { serverTimeLeft: CountdownTimeType }) =>
     const [products, setProducts] = useState<ProductType[]>([])
     const [creatingOrder, setCreatingOrder] = useState(false)
 
-    useEffect(() => {
-        let mounted = true
-        fetch('/Product.json')
-            .then(res => res.json())
-            .then((data: ProductType[]) => {
-                if (mounted) setProducts(data)
-            })
-            .catch(() => { /* silently ignore */ })
-        return () => { mounted = false }
-    }, [])
+    // No fallback - products will be fetched from WooCommerce API only
 
     const handleCheckout = async () => {
         if (cartState.cartArray.length === 0) {

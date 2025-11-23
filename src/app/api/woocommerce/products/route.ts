@@ -1,5 +1,5 @@
 // 强制动态渲染，避免 Vercel DYNAMIC_SERVER_USAGE 错误
-export const dynamic = 'force-dynamic'
+
 export const revalidate = 0
 
 import { getWcApiWithRetry } from '@/utils/woocommerce'
@@ -135,7 +135,7 @@ export async function GET(req: Request) {
       'x-wc-batch-per_page': String(per_page),
       'Content-Type': 'application/json',
       'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=1200',
-      'CDN-Cache-Control': 'public, s-maxage=1200, stale-while-revalidate=2400',
+      'CDN-Cache-Control': 'public, s-maxage=120, stale-while-revalidate=240',
       ETag: etag,
     }
     if (!no304 && req.headers.get('if-none-match') === etag) {
@@ -457,7 +457,7 @@ export async function GET(req: Request) {
       'x-wc-empty-images': String(emptyImageCount),
       'Content-Type': 'application/json',
       'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=1200',
-      'CDN-Cache-Control': 'public, s-maxage=1200, stale-while-revalidate=2400',
+      'CDN-Cache-Control': 'public, s-maxage=120, stale-while-revalidate=240',
       ETag: etag,
     }
     if (!no304 && req.headers.get('if-none-match') === etag) {

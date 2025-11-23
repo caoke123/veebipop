@@ -1,5 +1,5 @@
 // 强制动态渲染，避免 Vercel DYNAMIC_SERVER_USAGE 错误
-export const dynamic = 'force-dynamic'
+
 export const revalidate = 0
 
 import { getWcApi } from '@/utils/woocommerce'
@@ -12,7 +12,7 @@ import { getCache, setCache, CacheKeyBuilder } from '@/lib/cache'
 export const runtime = 'nodejs'
 
 // Cache configuration
-const CACHE_DURATION = 1800 // 30 minutes cache for filtered products (increased for Upstash Redis)
+const CACHE_DURATION = 600 // 10 minutes cache for filtered products
 const STALE_WHILE_REVALIDATE = 600 // 10 minutes stale while revalidate
 
 // In-memory cache for better performance (fallback)
@@ -167,71 +167,8 @@ export async function GET(request: NextRequest) {
 
   const wcApi = getWcApi()
   if (!wcApi) {
-    console.log('WooCommerce API not available, using fallback data for filtered products')
-    // 回退到本地Product.json数据
-    try {
-      const fs = require('fs')
-      const path = require('path')
-      const productDataPath = path.join(process.cwd(), 'public', 'Product.json')
-      const productData = JSON.parse(fs.readFileSync(productDataPath, 'utf-8'))
-      
-      // 根据过滤条件筛选产品
-      let filteredProducts = Array.isArray(productData) ? productData : []
-      
-      // 类别过滤
-      if (category && category !== '') {
-        filteredProducts = filteredProducts.filter((product: any) => {
-          const productCategory = product.category?.toLowerCase() || ''
-          const requestedCategory = category.toLowerCase()
-          return productCategory === requestedCategory
-        })
-      }
-      
-      // 特价过滤
-      if (onSale) {
-        filteredProducts = filteredProducts.filter((product: any) => product.sale === true)
-      }
-      
-      // 价格过滤
-      if (priceMin || priceMax) {
-        filteredProducts = filteredProducts.filter((product: any) => {
-          const productPrice = Number(product.price) || 0
-          const minPrice = priceMin ? Number(priceMin) : 0
-          const maxPrice = priceMax ? Number(priceMax) : Infinity
-          return productPrice >= minPrice && productPrice <= maxPrice
-        })
-      }
-      
-      // 限制返回的产品数量
-      const limitedProducts = filteredProducts.slice(0, per_page)
-      
-      const response = {
-        data: limitedProducts,
-        meta: {
-          count: limitedProducts.length,
-          page: page,
-          per_page: per_page,
-          total: filteredProducts.length,
-          totalPages: Math.ceil(filteredProducts.length / per_page),
-          timestamp: now,
-          cacheExpiry: now + (CACHE_DURATION * 1000),
-          isFallback: true
-        }
-      }
-      
-      return new Response(JSON.stringify(response), {
-        status: 200,
-        headers: new Headers({
-          'Cache-Control': `public, max-age=${CACHE_DURATION}`,
-          'Content-Type': 'application/json',
-          'X-Cache': 'MISS',
-          'X-Cache-Source': 'Fallback'
-        })
-      })
-    } catch (fallbackError) {
-      console.error('Fallback data error:', fallbackError)
-      return error(500, 'WooCommerce environment variables are not configured and fallback data failed')
-    }
+    console.error('WooCommerce API not available - cannot fetch filtered products')
+    return error(500, 'WooCommerce API not configured')
   }
 
   try {

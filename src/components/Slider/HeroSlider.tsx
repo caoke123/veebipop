@@ -1,9 +1,8 @@
 'use client'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { Navigation, Autoplay, Pagination, EffectFade } from 'swiper/modules'
+import { Autoplay, Pagination, EffectFade } from 'swiper/modules'
 import Image from 'next/image'
 import 'swiper/css'
-import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import 'swiper/css/effect-fade'
 import { useState, useEffect, useRef } from 'react'
@@ -21,13 +20,8 @@ interface Slide {
 }
 
 export default function HeroSlider({ slides }: { slides: Slide[] }) {
-  const [ready, setReady] = useState(false)
-  const [inView, setInView] = useState(false)
-  const [swiperModules, setSwiperModules] = useState<any[]>([Pagination, Navigation])
-  const containerRef = useRef<HTMLDivElement>(null)
-
+  // 预加载关键图片
   useEffect(() => {
-    // 预加载关键图片
     if (typeof window !== 'undefined') {
       const criticalImages = slides.map(slide => slide.image)
       criticalImages.forEach(src => {
@@ -36,45 +30,6 @@ export default function HeroSlider({ slides }: { slides: Slide[] }) {
       })
     }
   }, [slides])
-
-  useEffect(() => {
-    // 在浏览器空闲时再初始化 Swiper，减少主线程阻塞
-    const idle = (cb: () => void) => {
-      // @ts-ignore
-      if (typeof window !== 'undefined' && typeof window.requestIdleCallback === 'function') {
-        // @ts-ignore
-        window.requestIdleCallback(cb, { timeout: 300 });
-      } else {
-        setTimeout(cb, 200);
-      }
-    };
-    idle(() => setReady(true));
-    
-    // Observe visibility to defer heavy modules until visible
-    const el = containerRef.current
-    if (el && typeof IntersectionObserver !== 'undefined') {
-      const io = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
-          setInView(true)
-        }
-      }, { rootMargin: '0px', threshold: 0.1 })
-      io.observe(el)
-      return () => io.disconnect()
-    } else {
-      setInView(true)
-    }
-  }, [])
-
-  useEffect(() => {
-    // Dynamically import Autoplay only when visible and ready
-    if (ready && inView) {
-      import('swiper/modules').then(mod => {
-        if (mod && (mod as any).Autoplay) {
-          setSwiperModules([Pagination, Navigation, (mod as any).Autoplay])
-        }
-      }).catch(() => {})
-    }
-  }, [ready, inView])
 
   if (!slides || slides.length === 0) {
     return (
@@ -91,30 +46,25 @@ export default function HeroSlider({ slides }: { slides: Slide[] }) {
   }
 
   return (
-    <div className="slider-block style-two w-full" ref={containerRef}>
+    <div className="slider-block style-two w-full">
       <div className="container banner-block lg:pt-[30px] flex max-lg:flex-wrap gap-y-5 h-full w-full">
         <div className="slider-main lg:w-2/3 w-full lg:pr-[15px] max-lg:h-[300px] max-[420px]:h-[340px]">
-          {ready ? (
-            <Swiper
-              modules={swiperModules}
-              spaceBetween={0}
-              slidesPerView={1}
-              loop={true}
-              pagination={{ clickable: true }}
-              navigation={{
-                prevEl: '.swiper-button-prev',
-                nextEl: '.swiper-button-next',
-              }}
-              className='w-full h-full relative rounded-3xl overflow-hidden'
-              autoplay={inView ? {
-                delay: 5000,
-                disableOnInteraction: false,
-                pauseOnMouseEnter: true
-              } : false}
-              effect="fade"
-              fadeEffect={{ crossFade: true }}
-              speed={800}
-            >
+          <Swiper
+            modules={[Autoplay, Pagination, EffectFade]}
+            spaceBetween={0}
+            slidesPerView={1}
+            loop={true}
+            pagination={{ clickable: true }}
+            className='w-full h-full relative rounded-3xl overflow-hidden'
+            autoplay={{
+              delay: 5000,
+              disableOnInteraction: false,
+              pauseOnMouseEnter: true
+            }}
+            effect="fade"
+            fadeEffect={{ crossFade: true }}
+            speed={800}
+          >
               {slides.map((slide, index) => (
                 <SwiperSlide key={slide.id}>
                   <div className="slider-item h-full w-full flex items-center bg-linear relative">
@@ -150,43 +100,8 @@ export default function HeroSlider({ slides }: { slides: Slide[] }) {
                 </SwiperSlide>
               ))}
             </Swiper>
-          ) : (
-            // 未就绪时渲染首帧静态内容，保持布局一致
-            <div className='w-full h-full relative rounded-3xl overflow-hidden'>
-              {slides[0] && (
-                <div className="slider-item h-full w-full flex items-center bg-linear relative">
-                  <div className="text-content relative z-[1] md:pl-[60px] pl-5 basis-1/2">
-                    <div className="text-button-uppercase">{slides[0].badge || 'Partner with us'}</div>
-                    <div className="heading2 lg:mt-3 mt-2">{slides[0].title || 'Define the trendy Market'}</div>
-                    <div className="body1 lg:mt-4 mt-3">{slides[0].subtitle || 'Discover the beauty of fashion living'}</div>
-                    <Link href={slides[0].link || '/shop'} prefetch={false} className="button-main lg:mt-8 mt-3">
-                      {slides[0].buttonText || 'Shop Now'}
-                    </Link>
-                  </div>
-                  <div className="sub-img absolute xl:right-[50px] lg:right-[20px] md:right-[40px] sm:right-[20px] -right-10 top-0 bottom-0">
-                    <BlurImage
-                      src={slides[0].image}
-                      width={2000}
-                      height={2000}
-                      alt={slides[0].title || 'slide-1'}
-                      sizes="(min-width: 1024px) 66vw, 100vw"
-                      className='object-cover object-center w-full h-full'
-                      priority
-                      disableBlur
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
 
-          {/* 导航箭头 - 保持原有样式 */}
-          {ready && (
-            <>
-              <div className="swiper-button-prev !text-white !shadow-lg" />
-              <div className="swiper-button-next !text-white !shadow-lg" />
-            </>
-          )}
+          {/* 导航箭头已隐藏 */}
         </div>
         
         {/* 右侧广告区块 - 保持原有设计 */}

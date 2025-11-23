@@ -1,5 +1,5 @@
 // 强制动态渲染，避免 Vercel DYNAMIC_SERVER_USAGE 错误
-export const dynamic = 'force-dynamic'
+
 export const revalidate = 0
 
 import { getWcApiWithRetry } from '@/utils/woocommerce'
@@ -138,7 +138,7 @@ export async function GET(req: NextRequest) {
         headers: {
           'X-Cache': 'HIT',
           'X-Cache-Key': cacheKey,
-          'Cache-Control': 'public, s-maxage=1800, stale-while-revalidate=3600'
+          'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=1200'
         }
       })
     }
@@ -209,7 +209,7 @@ export async function GET(req: NextRequest) {
       headers: {
         'X-Cache': 'MISS',
         'X-Cache-Key': cacheKey,
-        'Cache-Control': 'public, s-maxage=1800, stale-while-revalidate=3600'
+        'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=1200'
       }
     })
 

@@ -24,31 +24,8 @@ const ModalSearch = () => {
     }
 
     useEffect(() => {
-        let mounted = true
-        
-        // 首先尝试使用本地Product.json数据作为后备方案
-        fetch('/Product.json', { cache: 'no-store' })
-            .then(res => {
-                if (!mounted) return null
-                if (!res.ok) throw new Error('Local product data request failed with status ' + res.status)
-                return res.json()
-            })
-            .then((data) => {
-                if (!mounted || !data) return
-                const normalized: ProductType[] = Array.isArray(data) ? data.slice(0, 12) : []
-                setProducts(normalized)
-            })
-            .catch((err) => {
-                // 处理错误，设置空产品数组，防止组件崩溃
-                console.error('Failed to fetch local product data:', err)
-                if (mounted) {
-                    setProducts([])
-                }
-            })
-        
-        return () => {
-            mounted = false
-        }
+        // No fallback - products will be fetched from WooCommerce API only
+        setProducts([])
     }, [])
 
     return (

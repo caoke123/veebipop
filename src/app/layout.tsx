@@ -30,7 +30,7 @@ const icomoon = localFont({
 })
 
 export const metadata: Metadata = {
-  title: 'Selmi Toys - Factory-Direct Custom Plush Toys & Accessories Manufacturer',
+  title: 'VeebiPop - Factory-Direct Custom Plush Toys & Accessories Manufacturer',
   description: 'Leading factory-direct manufacturer of custom plush toys, stuffed animals, and fashion accessories. We provide wholesale OEM/ODM services for global brands. Get a direct quote today.',
   robots: {
     index: true,
@@ -40,28 +40,28 @@ export const metadata: Metadata = {
     canonical: 'https://veebipop.com',
   },
   openGraph: {
-    title: 'Selmi Toys | Your Factory-Direct Partner for Custom Plushies',
+    title: 'VeebiPop | Your Factory-Direct Partner for Custom Plushies',
     description: 'Bring your designs to life! We are a premier manufacturer specializing in high-quality, custom-made plush toys and fashion accessories for brands worldwide. Factory-direct pricing and quality guaranteed.',
     type: 'website',
     url: 'https://www.veebipop.com/',
     images: [
       {
-        url: 'https://image.veebipop.com/og-selmi-wholesale.jpg',
+        url: 'https://image.veebipop.com/og-veebipop-wholesale.jpg',
         width: 1200,
         height: 630,
       },
     ],
-    siteName: 'Selmi Wholesale',
+    siteName: 'VeebiPop Wholesale',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Selmi - Plush Dolls & Charms Wholesale Source Factory',
+    title: 'VeebiPop - Plush Dolls & Charms Wholesale Source Factory',
     description: '50pcs MOQ · Free samples · OEM/ODM · Global shipping from China',
     images: ['https://image.veebipop.com/twitter-og.jpg'],
   },
   other: {
     'pinterest-rich-pin': 'true',
-    'product:brand': 'Selmi',
+    'product:brand': 'VeebiPop',
     'product:availability': 'in stock',
     'product:condition': 'new',
   },

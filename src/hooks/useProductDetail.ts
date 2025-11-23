@@ -144,7 +144,7 @@ export function useProductDetail(slug: string, initial?: ProductType | null) {
   return useQuery({
     queryKey: ['product-detail', slug],
     queryFn: () => fetchProductDetail(slug),
-    staleTime: 5 * 60 * 1000,
+    staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 30 * 60 * 1000,
     retry: 2,
     // Use initial data directly if provided (should be in ProductType format from server)
@@ -164,7 +164,7 @@ export function useRelatedProducts(category: string, excludeId?: number, enabled
       // Related products should now be fetched via the product-detail API
       return []
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 30 * 60 * 1000,
     retry: 1,
     enabled: false, // Disable this hook by default

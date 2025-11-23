@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     }
 
     return {
-        title: `${post.title} | Selmi Wholesale Industry Insights`,
+        title: `${post.title} | VeebiPop Wholesale Industry Insights`,
         description: post.shortDesc,
         openGraph: {
             title: post.title,
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
             type: 'article',
             publishedTime: post.date,
             authors: [post.author],
-            siteName: 'Selmi Wholesale',
+            siteName: 'VeebiPop Wholesale',
         },
         twitter: {
             card: 'summary_large_image',

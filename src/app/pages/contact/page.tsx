@@ -1,69 +1,196 @@
 // server component: no client-side hooks in this page
 import React from 'react'
 import { Metadata } from 'next'
-import Image from 'next/image';
-import Link from 'next/link';
+import Image from 'next/image'
+import Link from 'next/link'
 import TopNavOne from '@/components/Header/TopNav/TopNavOne'
 import MenuEleven from '@/components/Header/Menu/MenuEleven'
 import Breadcrumb from '@/components/Breadcrumb/Breadcrumb';
 import Footer from '@/components/Footer/Footer'
+import { COMPANY_INFO } from '@/constants/aboutConstants';
+import { Envelope, Phone, MapPin, PaperPlaneTilt, Clock } from '@phosphor-icons/react/dist/ssr';
 
 export const metadata: Metadata = {
-  title: 'Contact Selmi - Factory-Direct Plush Toys & Fashion Accessories Wholesale Supplier',
-  description: 'Get in touch with Selmi, your trusted factory-direct wholesale supplier for plush toys, doll clothes, fashion keychains, and car accessories. Fast response for B2B inquiries.',
+  title: 'Contact VeebiPop - Get Direct Factory Quote for Custom Plush Toys',
+  description: 'Direct contact with plush toy factory in China. WhatsApp, email, phone support. Get free samples & quotes for custom plush toys, dolls & accessories.',
 }
 
 const ContactUs = () => {
-    return (
-        <>
-            <TopNavOne props="style-one bg-black" slogan="New customers save 10% with the code GET10" />
-            <div id="header" className='relative w-full'>
-            <MenuEleven />
-                <Breadcrumb heading='Contact us' subHeading='Contact us' />
+  return (
+    <>
+      <TopNavOne props="style-one bg-black" slogan="New customers save 10% with the code GET10" />
+      <div id="header" className='relative w-full'>
+        <MenuEleven />
+        <Breadcrumb heading='Contact us' subHeading='Contact us' />
+      </div>
+      
+      <div className="bg-surface min-h-screen font-sans text-black selection:bg-green selection:text-black">
+        {/* Page Header - AboutHero Style */}
+        <section className="relative h-[60vh] md:h-[70vh] flex items-center justify-center overflow-hidden">
+          <div className="absolute inset-0 z-0">
+            <Image
+              src="https://image.nv315.top/images/contact us-optimized.webp"
+              alt="Contact Hero Background"
+              fill
+              className="object-cover"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/60 to-transparent"></div>
+          </div>
+          
+          <div className="relative z-10 container mx-auto px-6 text-center">
+            <div className="max-w-4xl mx-auto">
+              <div className="inline-block px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-xs font-bold tracking-widest uppercase text-white mb-6">
+                EST. 2015 — CHINA
+              </div>
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 tracking-tight">
+                Let's start a conversation.
+              </h1>
+              <p className="text-lg md:text-xl text-white/90 leading-relaxed mb-8 max-w-2xl mx-auto">
+                Ready to bring your designs to life? Whether you have a question about manufacturing, pricing, or global shipping, our team is ready to answer.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link 
+                  href={COMPANY_INFO.whatsapp}
+                  className="px-8 py-4 font-bold rounded-full transition-all duration-300 flex items-center gap-2"
+                  style={{ backgroundColor: '#D2EF9A', color: 'black' }}
+                >
+                  <Phone className="w-5 h-5" />
+                  WhatsApp Now
+                </Link>
+                <Link 
+                  href={`mailto:${COMPANY_INFO.email}`}
+                  className="px-8 py-4 bg-transparent border-2 border-white text-white font-bold rounded-full hover:bg-white hover:text-black transition-all duration-300 flex items-center gap-2"
+                >
+                  <Envelope className="w-5 h-5" />
+                  Send Email
+                </Link>
+              </div>
             </div>
-            <div className='contact-us md:py-20 py-10'>
-                <div className="container">
-                    <div className="flex justify-between max-lg:flex-col gap-y-10">
-                        <div className="left lg:w-2/3 lg:pr-4">
-                            <div className="heading3">Drop Us A Line</div>
-                            <div className="body1 text-secondary2 mt-3">Use the form below to get in touch with the sales team</div>
-                            <form className="md:mt-6 mt-4">
-                                <div className='grid sm:grid-cols-2 grid-cols-1 gap-4 gap-y-5'>
-                                    <div className="name ">
-                                        <input className="border-line px-4 py-3 w-full rounded-lg" id="username" type="text" placeholder="Your Name *" required />
-                                    </div>
-                                    <div className="email">
-                                        <input className="border-line px-4 pt-3 pb-3 w-full rounded-lg" id="email" type="email" placeholder="Your Email *" required />
-                                    </div>
-                                    <div className="message sm:col-span-2">
-                                        <textarea className="border-line px-4 pt-3 pb-3 w-full rounded-lg" id="message" rows={3} placeholder="Your Message *" required />
-                                    </div>
-                                </div>
-                                <div className="block-button md:mt-6 mt-4">
-                                    <button className="button-main">Send message</button>
-                                </div>
-                            </form>
-                        </div>
-                        <div className="right lg:w-1/4 lg:pl-4">
-                            <div className="item">
-                                <div className="heading4">Our Store</div>
-                                <p className="mt-3">2163 Phillips Gap Rd, West Jefferson, North Carolina, United States</p>
-                                <p className="mt-3">Phone: <span className='whitespace-nowrap'>+1 666 8888</span></p>
-                                <p className="mt-1">Email: <span className='whitespace-nowrap'>hi.avitex@gmail.com</span></p>
-                            </div>
-                            <div className="item mt-10">
-                                <div className="heading4">Open Hours</div>
-                                <p className="mt-3">Mon - Fri: <span className='whitespace-nowrap'>7:30am - 8:00pm PST</span></p>
-                                <p className="mt-3">Saturday: <span className='whitespace-nowrap'>8:00am - 6:00pm PST</span></p>
-                                <p className="mt-3">Sunday: <span className='whitespace-nowrap'>9:00am - 5:00pm PST</span></p>
-                            </div>
-                        </div>
+          </div>
+        </section>
+
+        <div className="container mx-auto px-6 py-12 md:py-20">
+          <div className="grid lg:grid-cols-12 gap-12">
+            
+            {/* Left Column: Contact Info */}
+            <div className="lg:col-span-5 space-y-8">
+              
+              {/* Cards */}
+              <div className="bg-white p-8 rounded-3xl shadow-sm border border-line transition-transform hover:-translate-y-1 duration-300">
+                 <div className="flex items-start justify-between mb-4">
+                   <div className="w-12 h-12 bg-green rounded-2xl flex items-center justify-center rotate-3">
+                     <Phone className="w-6 h-6 text-black" />
+                   </div>
+                   <span className="px-3 py-1 bg-surface rounded-full text-xs font-bold text-secondary">Fastest Response</span>
+                 </div>
+                 <h3 className="text-xl font-bold mb-2">WhatsApp / WeChat</h3>
+                 <p className="text-secondary mb-6 text-sm">Direct line to our sales manager for urgent inquiries.</p>
+                 <div className="flex flex-col gap-1">
+                   <a href={COMPANY_INFO.whatsapp} className="text-lg font-bold border-b-2 border-green hover:bg-green/20 transition-colors inline-block self-start pb-0.5">
+                     {COMPANY_INFO.phone}
+                   </a>
+                   <span className="text-xs text-secondary2">WeChat ID: {COMPANY_INFO.wechat}</span>
+                 </div>
+              </div>
+
+              <div className="bg-white p-8 rounded-3xl shadow-sm border border-line transition-transform hover:-translate-y-1 duration-300">
+                 <div className="w-12 h-12 bg-purple/10 rounded-2xl flex items-center justify-center mb-6 -rotate-3">
+                   <Envelope className="w-6 h-6 text-purple" />
+                 </div>
+                 <h3 className="text-xl font-bold mb-2">Email Inquiries</h3>
+                 <p className="text-secondary mb-6 text-sm">Send us your design files (AI, PDF) for a quick quote.</p>
+                 <a href={`mailto:${COMPANY_INFO.email}`} className="text-lg font-bold border-b-2 border-purple/30 hover:text-purple transition-colors inline-block pb-0.5">
+                   {COMPANY_INFO.email}
+                 </a>
+              </div>
+
+              <div className="bg-white p-8 rounded-3xl shadow-sm border border-line">
+                 <div className="flex items-center gap-3 mb-6">
+                   <Clock className="w-5 h-5 text-secondary" />
+                   <h3 className="font-bold text-lg">Office Hours</h3>
+                 </div>
+                 <div className="space-y-3 text-secondary">
+                   <div className="flex justify-between border-b border-line pb-2">
+                     <span>Monday - Friday</span>
+                     <span className="font-medium text-black">9:00 - 18:30</span>
+                   </div>
+                   <div className="flex justify-between border-b border-line pb-2">
+                     <span>Saturday</span>
+                     <span className="font-medium text-black">10:00 - 16:00</span>
+                   </div>
+                   <div className="flex justify-between">
+                     <span>Sunday</span>
+                     <span>Closed</span>
+                   </div>
+                 </div>
+                 <p className="mt-4 text-xs text-secondary2">*Time Zone: GMT+8 (Beijing Time)</p>
+              </div>
+            </div>
+
+            {/* Right Column: Form */}
+            <div className="lg:col-span-7">
+              <div className="bg-white p-8 md:p-12 rounded-[2rem] shadow-xl shadow-black/5 border border-line relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-green/20 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+                
+                <h2 className="text-3xl font-bold mb-8 relative z-10">Send us a message</h2>
+                
+                <form className="space-y-6 relative z-10">
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold text-black ml-1">Name</label>
+                      <input type="text" className="w-full px-5 py-4 rounded-xl bg-surface border-2 border-transparent focus:bg-white focus:border-black focus:outline-none transition-all font-medium placeholder:text-secondary2" placeholder="Your name" />
                     </div>
-                </div>
+                     <div className="space-y-2">
+                      <label className="text-sm font-bold text-black ml-1">Company</label>
+                      <input type="text" className="w-full px-5 py-4 rounded-xl bg-surface border-2 border-transparent focus:bg-white focus:border-black focus:outline-none transition-all font-medium placeholder:text-secondary2" placeholder="Your company" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-black ml-1">Email</label>
+                    <input type="email" className="w-full px-5 py-4 rounded-xl bg-surface border-2 border-transparent focus:bg-white focus:border-black focus:outline-none transition-all font-medium placeholder:text-secondary2" placeholder="name@example.com" />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-black ml-1">Project Details</label>
+                    <textarea rows={5} className="w-full px-5 py-4 rounded-xl bg-surface border-2 border-transparent focus:bg-white focus:border-black focus:outline-none transition-all font-medium placeholder:text-secondary2 resize-none" placeholder="Tell us about your product type, estimated quantity, and timeline..."></textarea>
+                  </div>
+
+                  <button type="button" className="w-full py-4 bg-black text-white font-bold text-lg rounded-xl hover:bg-green hover:text-black transition-all duration-300 flex items-center justify-center gap-2 group shadow-lg shadow-black/10">
+                    Send Message
+                    <PaperPlaneTilt className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </button>
+
+                  <p className="text-center text-xs text-secondary2 mt-4">
+                    By sending this message, you agree to our privacy policy. We respect your inbox.
+                  </p>
+                </form>
+              </div>
+
+              {/* Map / Location Visual */}
+              <div className="mt-8 p-6 bg-black rounded-3xl text-white flex items-center justify-between flex-wrap gap-4">
+                 <div className="flex items-center gap-4">
+                   <div className="p-3 bg-surface1 rounded-full">
+                     <MapPin className="w-6 h-6 text-green" />
+                   </div>
+                   <div>
+                     <p className="text-sm text-secondary2">Our Headquarters</p>
+                     <p className="font-medium max-w-md">{COMPANY_INFO.address}</p>
+                   </div>
+                 </div>
+                 <button className="px-6 py-2 bg-white text-black rounded-full text-sm font-bold hover:bg-green transition-colors">
+                   Open in Maps
+                 </button>
+              </div>
             </div>
-            <Footer />
-        </>
-    )
+
+          </div>
+        </div>
+      </div>
+      <Footer />
+    </>
+  )
 }
 
 export default ContactUs

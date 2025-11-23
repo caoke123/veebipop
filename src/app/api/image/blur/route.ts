@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 
 // Force this route to be dynamic
-export const dynamic = 'force-dynamic'
+
 export const runtime = 'edge'
 
 // 简单的 SVG 模糊占位符，替代 plaiceholder 生成的模糊图

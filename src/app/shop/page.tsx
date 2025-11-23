@@ -1,6 +1,4 @@
-// 强制动态渲染，避免 Vercel DYNAMIC_SERVER_USAGE 错误
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
+export const revalidate = 900 // 15 minutes cache for shop pages
 
 import React from 'react'
 import { Metadata } from 'next'
@@ -12,10 +10,10 @@ import { wcArrayToProductTypes } from '@/utils/wcAdapter'
 import { buildProductParams } from '@/utils/wcQuery'
 import { ProductType } from '@/type/ProductType'
 import { headers } from 'next/headers'
-import ProductData from '@/data/Product.json'
+// Removed Product.json import - no fallback data
 
 export const metadata: Metadata = {
-  title: 'Wholesale Trendy Plush Toys, Doll Outfits, Car Charms | Selmi Factory-Direct Manufacturer',
+  title: 'Wholesale Trendy Plush Toys, Doll Outfits, Car Charms | VeebiPop Factory-Direct Manufacturer',
   description: 'Bulk buy from factory-direct manufacturer: Labubu, plush dolls, fashion accessories, seatbelt covers. 50pcs MOQ · Free samples · Custom logo welcome.',
 }
 
@@ -103,10 +101,6 @@ export default async function ShopIndex({
       initialBrands = Array.isArray(brands) ? brands : []
     }
   } catch (e) {
-    const isDev = process.env.NODE_ENV !== 'production'
-    const isPreview = (process.env.VERCEL_ENV || '').toLowerCase() === 'preview' || (process.env.APP_ENV || '').toLowerCase() === 'staging'
-    // 临时启用回退数据，即使是在开发环境中，以便在没有 WooCommerce 配置时也能正常显示
-    const disableFallback = (process.env.DISABLE_FALLBACK_JSON || '').toLowerCase() === 'true' || isPreview
     console.error('Failed to load products from WooCommerce API', e)
     console.error('Error details:', {
       message: e instanceof Error ? e.message : String(e),
@@ -115,15 +109,8 @@ export default async function ShopIndex({
       host: host,
       protocol: protocol
     })
-    if (disableFallback) {
-      throw e instanceof Error ? e : new Error(String(e))
-    } else {
-      console.log('Using fallback product data from Product.json')
-      products = Array.isArray(ProductData) ? ProductData.slice(0, parseInt(perPage)).map(product => ({
-        ...product,
-        imageStatus: product.imageStatus as 'mapped' | 'fallback' | 'empty' | undefined
-      })) : []
-    }
+    // No fallback - rethrow the error
+    throw e instanceof Error ? e : new Error(String(e))
   }
 
   // Helper function to resolve category name for empty state display

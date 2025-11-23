@@ -30,13 +30,12 @@ const Newsletter = nextDynamic(() => import('@/components/Home11/Newsletter'))
 const Footer = nextDynamic(() => import('@/components/Footer/Footer'))
 // ModalNewsletter removed per request to hide popup
 
-import productData from '@/data/Product.json'
+// Removed Product.json import - no fallback data
 
-// 强制动态渲染，确保数据获取优先级控制生效
-export const dynamic = 'force-dynamic'
+export const revalidate = 1800 // 30 minutes cache for homepage
 
 export const metadata: Metadata = {
-  title: 'Selmi Toys - Factory-Direct Custom Plush Toys & Accessories Manufacturer',
+  title: 'VeebiPop - Factory-Direct Custom Plush Toys & Accessories Manufacturer',
   description: 'Leading factory-direct manufacturer of custom plush toys, stuffed animals, and fashion accessories. We provide wholesale OEM/ODM services for global brands. Get a direct quote today.',
 }
 
@@ -127,10 +126,10 @@ export default async function HomeEleven() {
         }
     } else {
         console.log('Using fallback data for home page due to API error')
-        // 使用产品数据作为回退
-        artInitial = Array.isArray(productData) ? productData.slice(0, 3) : []
-        charmsInitial = Array.isArray(productData) ? productData.slice(3, 6) : []
-        carInitial = Array.isArray(productData) ? productData.slice(6, 9) : []
+        // No fallback - initialize with empty arrays
+        artInitial = []
+        charmsInitial = []
+        carInitial = []
     }
     
     return (

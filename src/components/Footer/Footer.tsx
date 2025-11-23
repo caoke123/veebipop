@@ -41,7 +41,7 @@ const Footer = () => {
                         <div className="content-footer py-[60px] flex justify-between flex-wrap gap-y-8">
                             <div className="company-infor basis-1/4 max-lg:basis-full pr-7">
                                 <Link href={'/'} className="logo">
-                                    <div className="heading4">Selmi</div>
+                                    <div className="heading4">VeebiPop</div>
                                 </Link>
                                 <div className='flex gap-3 mt-3'>
                                     <div className="flex flex-col ">
@@ -50,9 +50,10 @@ const Footer = () => {
                                         <span className="text-button mt-3">Address:</span>
                                     </div>
                                     <div className="flex flex-col ">
-                                        <span className=''>hi.avitex@gmail.com</span>
-                                        <span className='mt-3'>1-333-345-6868</span>
-                                        <span className='mt-3 pt-px'>549 Oak St.Crystal Lake, IL 60014</span>
+                                        <span className=''>sales@veebipop.com</span>
+                                        <span className='mt-3'>+86 13821385220</span>
+                                        <span className='mt-3 pt-px'>2nd Floor, City Center Building, Xiqing
+District, Tianjin City, China</span>
                                     </div>
                                 </div>
                             </div>
@@ -61,17 +62,17 @@ const Footer = () => {
                                     <div className="item flex flex-col basis-1/3 ">
                                         <div className="text-button-uppercase pb-3">Infomation</div>
                                         <Link className='caption1 has-line-before duration-300 w-fit' href={'/pages/contact'}>Contact us</Link>
-                                        <Link className='caption1 has-line-before duration-300 w-fit pt-2' href={'#!'}>Career</Link>
+                                        <Link className='caption1 has-line-before duration-300 w-fit pt-2' href={'/pages/about'}>About us</Link>
                                         <Link className='caption1 has-line-before duration-300 w-fit pt-2' href={'/my-account'}>My Account</Link>
                                         <Link className='caption1 has-line-before duration-300 w-fit pt-2' href={'/order-tracking'}>Order  & Returns</Link>
                                         <Link className='caption1 has-line-before duration-300 w-fit pt-2' href={'/pages/faqs'}>FAQs</Link>
                                     </div>
                                     <div className="item flex flex-col basis-1/3 ">
                                         <div className="text-button-uppercase pb-3">Quick Shop</div>
-<Link className='caption1 has-line-before duration-300 w-fit' href={'/shop'}>Women</Link>
-<Link className='caption1 has-line-before duration-300 w-fit pt-2' href={'/shop'}>Men</Link>
-<Link className='caption1 has-line-before duration-300 w-fit pt-2' href={'/shop'}>Clothes</Link>
-<Link className='caption1 has-line-before duration-300 w-fit pt-2' href={'/shop'}>Accessories</Link>
+<Link className='caption1 has-line-before duration-300 w-fit' href={'/shop?category=art-toys'}>Art Toys</Link>
+<Link className='caption1 has-line-before duration-300 w-fit pt-2' href={'/shop?category=charms'}>Charms</Link>
+<Link className='caption1 has-line-before duration-300 w-fit pt-2' href={'/shop?category=clothing-for-toys'}>Clothes</Link>
+<Link className='caption1 has-line-before duration-300 w-fit pt-2' href={'/shop?category=in-car-accessories'}>Accessories</Link>
                                         <Link className='caption1 has-line-before duration-300 w-fit pt-2' href={'/blog'}>Blog</Link>
                                     </div>
                                     <div className="item flex flex-col basis-1/3 ">
@@ -115,13 +116,12 @@ const Footer = () => {
                         </div>
                         <div className="footer-bottom py-3 flex items-center justify-between gap-5 max-lg:justify-center max-lg:flex-col border-t border-line">
                             <div className="left flex items-center gap-8">
-                                <div className="copyright caption1 text-secondary">©2023 Selmi. All Rights Reserved.</div>
+                                <div className="copyright caption1 text-secondary">©2023 VeebiPop. All Rights Reserved.</div>
                                 <div className="select-block flex items-center gap-5 max-md:hidden">
                                     <div className="choose-language flex items-center gap-1.5">
                                         <select name="language" id="chooseLanguageFooter" className='caption2 bg-transparent'>
                                             <option value="English">English</option>
-                                            <option value="Espana">Espana</option>
-                                            <option value="France">France</option>
+                                           
                                         </select>
                                         <Icon.CaretDown size={12} color='#1F1F1F' />
                                     </div>
@@ -192,12 +192,6 @@ const Footer = () => {
                                     />
                                 </div>
                             </div>
-                        </div>
-                        {/* 品牌清晰化免责声明 */}
-                        <div className="disclaimer" style={{textAlign: 'center', padding: '15px', backgroundColor: '#f8f8f8', borderTop: '1px solid #eee'}}>
-                            <p style={{fontSize: '12px', color: '#666', margin: '0'}}>
-                                *Disclaimer: Selmi Toys is an independent manufacturer of plush toys and accessories. We are not affiliated with, endorsed by, or in any way officially connected with Selmi Group (Chocolate Machinery), Pastifício Selmi, or any of their subsidiaries or affiliates.
-                            </p>
                         </div>
                     </div>
                 </div>

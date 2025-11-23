@@ -38,12 +38,30 @@ export async function GET(_req: NextRequest) {
     const headers = new Headers({
       'Content-Type': 'application/json',
       'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=1200',
-      'CDN-Cache-Control': 'public, s-maxage=1200, stale-while-revalidate=2400',
+      'CDN-Cache-Control': 'public, s-maxage=120, stale-while-revalidate=240',
       ETag: etag,
     })
     return new Response(body, { status: 200, headers })
-  } catch (err) {
+  } catch (err: any) {
     console.error('brands route error', err)
-    return new Response(JSON.stringify([]), { status: 200, headers: { 'Content-Type': 'application/json' } })
+    
+    // 如果是 401 错误，说明认证失败，返回空数组但记录详细信息
+    if (err.response?.status === 401) {
+      console.error('WooCommerce API 认证失败 - 检查环境变量:', {
+        url: process.env.WOOCOMMERCE_URL,
+        hasConsumerKey: !!process.env.WOOCOMMERCE_CONSUMER_KEY,
+        hasConsumerSecret: !!process.env.WOOCOMMERCE_CONSUMER_SECRET,
+        errorDetails: err.response?.data
+      })
+    }
+    
+    // 返回空数组而不是错误，确保前端能正常工作
+    return new Response(JSON.stringify([]), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=1200'
+      }
+    })
   }
 }

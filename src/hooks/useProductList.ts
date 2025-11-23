@@ -21,7 +21,7 @@ export function useProductList(category: string, parentCategory: string, limit: 
   return useQuery({
     queryKey: ['products', category, tag, limit],
     queryFn: () => fetchProducts(category, parentCategory, limit, tag),
-    staleTime: 5 * 60 * 1000,
+    staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 30 * 60 * 1000,
     retry: 2,
   })

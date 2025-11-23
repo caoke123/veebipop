@@ -1,6 +1,4 @@
-// 强制动态渲染，避免 Vercel DYNAMIC_SERVER_USAGE 错误
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
+export const revalidate = 3600 // 1 hour cache for blog pages
 
 import { Metadata } from 'next'
 import Link from 'next/link'
@@ -18,7 +16,7 @@ interface BlogPageProps {
 }
 
 export const metadata: Metadata = {
-  title: 'Wholesale Industry News & Market Insights | Selmi Blog',
+  title: 'Wholesale Industry News & Market Insights | VeebiPop Blog',
   description: 'Latest trends in plush toys, fashion accessories & wholesale market insights from China. Industry news, business tips & sourcing guides.',
 }
 import { BlogType } from '@/type/BlogType'

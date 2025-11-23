@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import { ProductType } from '@/type/ProductType'
 import { fetchProductById } from '@/utils/productService'
-import productData from '@/data/Product.json'
+// Removed Product.json import - no fallback data
 import { formatPrice } from '@/utils/priceFormat'
 
 interface ProductThumbnailBottomProps {
@@ -14,8 +14,8 @@ interface ProductThumbnailBottomProps {
 const ProductThumbnailBottomContent: React.FC<ProductThumbnailBottomProps> = ({ productId }) => {
     const searchParams = useSearchParams()
     
-    // 初始化为本地 Product.json 列表，保证 Related Products 有数据可用
-    const [products, setProducts] = useState<ProductType[]>(productData as ProductType[])
+    // No fallback - initialize with empty array
+    const [products, setProducts] = useState<ProductType[]>([])
     const [loading, setLoading] = useState(true)
     const [product, setProduct] = useState<ProductType | null>(null)
 

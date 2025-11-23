@@ -26,12 +26,8 @@ const ModalNewsletter = () => {
     }, [])
 
     useEffect(() => {
-        let mounted = true
-        fetch('/Product.json')
-            .then(res => res.json())
-            .then((data: ProductType[]) => { if (mounted) setProducts(data) })
-            .catch(() => { /* ignore */ })
-        return () => { mounted = false }
+        // No fallback - products will be fetched from WooCommerce API only
+        setProducts([])
     }, [])
 
     return (

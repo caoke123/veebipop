@@ -4,9 +4,7 @@ import MenuEleven from '@/components/Header/Menu/MenuEleven'
 import Footer from '@/components/Footer/Footer'
 import ProductThumbnailBottomContent from './ProductThumbnailBottomContent'
 
-// 强制动态渲染
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
+export const revalidate = 3600 // 1 hour cache for product pages
 
 const ProductThumbnailBottom = ({ searchParams }: { searchParams: { id?: string } }) => {
     const productId = String(searchParams?.id ?? '1')

@@ -1,6 +1,4 @@
-// 强制动态渲染，避免 Vercel DYNAMIC_SERVER_USAGE 错误
-export const dynamic = 'force-dynamic'
-export const revalidate = 1800 // 30分钟重新验证
+export const revalidate = 3600 // 1 hour cache for product pages
 
 import React from 'react'
 import { Metadata } from 'next'
@@ -71,33 +69,11 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     console.error('Failed to load product from WooCommerce', e)
   }
 
-  // Fallback to local Product.json
-  if (!product) {
-    try {
-      const res = await fetch(`/Product.json`, {
-        next: { revalidate: 60 },
-        cache: 'no-store'
-      })
-      if (res.ok) {
-        const text = await res.text()
-        if (text.trim()) {
-          try {
-            const arr = JSON.parse(text)
-            const list: ProductType[] = Array.isArray(arr) ? arr : []
-            product = list.find(p => String(p.slug) === productSlug) || null
-          } catch (parseError) {
-            console.error('Failed to parse Product.json:', parseError)
-          }
-        }
-      }
-    } catch (e) {
-      console.error('Failed to load product from local Product.json', e)
-    }
-  }
+  // No fallback - only use WooCommerce API
 
   if (!product) {
     return {
-      title: 'Product Not Found | Selmi',
+      title: 'Product Not Found | VeebiPop',
       description: 'The requested product could not be found.',
     }
   }
@@ -105,10 +81,10 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const productImage = product.images?.[0] || "https://image.veebipop.com/og-product.jpg"
   
   return {
-    title: `${product.name} - Wholesale from Selmi Factory-Direct Manufacturer | 50pcs MOQ`,
+    title: `${product.name} - Wholesale from VeebiPop Factory-Direct Manufacturer | 50pcs MOQ`,
     description: `Bulk wholesale ${product.name} directly from China factory. MOQ 50pcs · Free samples · OEM/ODM available.`,
     openGraph: {
-      title: `${product.name} - Selmi Factory-Direct Wholesale`,
+      title: `${product.name} - VeebiPop Factory-Direct Wholesale`,
       images: [
         {
           url: productImage,
@@ -119,7 +95,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${product.name} - Selmi Factory-Direct Wholesale`,
+      title: `${product.name} - VeebiPop Factory-Direct Wholesale`,
       description: `Bulk wholesale ${product.name} from China factory. MOQ 50pcs · Free samples · OEM/ODM available.`,
       images: [productImage],
     },
@@ -200,32 +176,7 @@ export default async function ProductDetailBySlug({ params }: { params: { slug: 
       console.error('Failed to load product from WooCommerce (fallback)', e)
     }
 
-    // 最后回退到本地Product.json
-    if (!mainProduct) {
-      try {
-        const res = await fetch(`/Product.json`, {
-          next: { revalidate: 60 },
-          cache: 'no-store'
-        })
-        if (res.ok) {
-          const text = await res.text()
-          if (text.trim()) {
-            try {
-              const arr = JSON.parse(text)
-              const list: ProductType[] = Array.isArray(arr) ? arr : []
-              mainProduct = list.find(p => String(p.slug) === productSlug) || null
-              if (mainProduct) {
-                console.log('Product loaded from local Product.json (fallback):', mainProduct.name)
-              }
-            } catch (parseError) {
-              console.error('Failed to parse Product.json (fallback):', parseError)
-            }
-          }
-        }
-      } catch (e) {
-        console.error('Failed to load product from local Product.json (fallback)', e)
-      }
-    }
+    // No fallback - only use WooCommerce API
   }
 
   // 合并相关产品和兜底产品

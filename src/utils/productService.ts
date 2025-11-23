@@ -3,7 +3,6 @@ import { ProductType } from '@/type/ProductType'
 
 // Fetch a single product by ID.
 // Primary source: WooCommerce proxy API
-// Fallback: local Product.json served by Next API route
 export async function fetchProductById(id: string | number): Promise<ProductType | null> {
   const pid = String(id)
   try {
@@ -18,21 +17,8 @@ export async function fetchProductById(id: string | number): Promise<ProductType
       // API already returns converted ProductType data
       return data as ProductType
     }
-  } catch {
-    // ignore and try fallback
-  }
-
-  // Fallback to local Product.json
-  try {
-    const res = await fetch('/Product.json')
-    if (res.ok) {
-      const arr = await res.json()
-      const list: ProductType[] = Array.isArray(arr) ? arr : []
-      const found = list.find(p => String(p.id) === pid) || null
-      return found
-    }
-  } catch {
-    // ignore
+  } catch (error) {
+    console.error('fetchProductById: Error fetching product:', error);
   }
 
   return null
@@ -40,7 +26,6 @@ export async function fetchProductById(id: string | number): Promise<ProductType
 
 // Fetch a single product by slug.
 // Primary source: WooCommerce proxy list endpoint filtered by slug
-// Fallback: local Product.json by matching slug
 export async function fetchProductBySlug(slug: string): Promise<ProductType | null> {
   const s = String(slug).trim()
   if (!s) return null
@@ -59,21 +44,8 @@ export async function fetchProductBySlug(slug: string): Promise<ProductType | nu
         return wcToProductType(p)
       }
     }
-  } catch {
-    // ignore and try fallback
-  }
-
-  // Fallback to local Product.json
-  try {
-    const res = await fetch('/Product.json')
-    if (res.ok) {
-      const arr = await res.json()
-      const list: ProductType[] = Array.isArray(arr) ? arr : []
-      const found = list.find(p => String(p.slug) === s) || null
-      return found
-    }
-  } catch {
-    // ignore
+  } catch (error) {
+    console.error('fetchProductBySlug: Error fetching product:', error);
   }
 
   return null

@@ -7,7 +7,6 @@ import { useRouter } from 'next/navigation'
 import * as Icon from "@phosphor-icons/react/dist/ssr";
 import { usePathname } from 'next/navigation';
 import Product from '@/components/Product/Product';
-import productData from '@/data/Product.json'
 import { useAuth } from '@/contexts/AuthContext';
 import useShopDepartmentPopup from '@/store/useShopDepartmentPopup';
 import useMenuMobile from '@/store/useMenuMobile';
@@ -101,7 +100,7 @@ const MenuEleven = () => {
                                                 <li key={item.key} className="group relative">
                                                     <Link
                                                         href={item.children[0].href}
-                                                        className={`inline-flex items-center py-2 text-sm ${
+                                                        className={`inline-flex items-center py-2 text-base ${
                                                             isActiveItem(item) ? 'text-black font-semibold' : 'text-secondary'
                                                         }`}
                                                     >
@@ -114,7 +113,7 @@ const MenuEleven = () => {
                                                                 <li key={`${item.key}-${child.key}`}>
                                                                     <Link
                                                                         href={child.href}
-                                                                        className={`block px-4 py-2 text-sm hover:bg-surface ${
+                                                                        className={`block px-4 py-2 text-base hover:bg-surface ${
                                                                             isActiveHref(child.href) ? 'text-black font-semibold' : 'text-secondary'
                                                                         }`}
                                                                     >
@@ -129,7 +128,7 @@ const MenuEleven = () => {
                                                 <li key={item.key}>
                                                     <Link
                                                         href={item.href || '#'}
-                                                        className={`inline-flex items-center py-2 text-sm ${
+                                                        className={`inline-flex items-center py-2 text-base ${
                                                             isActiveItem(item) ? 'text-black font-semibold' : 'text-secondary'
                                                         }`}
                                                     >

@@ -1,5 +1,5 @@
 // 强制动态渲染，避免 Vercel DYNAMIC_SERVER_USAGE 错误
-export const dynamic = 'force-dynamic'
+
 export const revalidate = 0
 
 import { getWcApi } from '@/utils/woocommerce'
@@ -12,7 +12,7 @@ import { getCache, setCache, CacheKeyBuilder } from '@/lib/cache'
 export const runtime = 'nodejs'
 
 // Cache configuration
-const CACHE_DURATION = 3600 // 1 hour cache for home data (increased for Upstash Redis)
+const CACHE_DURATION = 600 // 10 minutes cache for home data
 const STALE_WHILE_REVALIDATE = 300 // 5 minutes stale while revalidate
 
 // In-memory cache for better performance (fallback)
@@ -123,42 +123,8 @@ export async function GET(request: NextRequest) {
 
   const wcApi = getWcApi()
   if (!wcApi) {
-    console.log('WooCommerce API not available, using fallback home data')
-    // 回退到本地Product.json数据
-    try {
-      const fs = require('fs')
-      const path = require('path')
-      const productDataPath = path.join(process.cwd(), 'public', 'Product.json')
-      const productData = JSON.parse(fs.readFileSync(productDataPath, 'utf-8'))
-      
-      // 分配产品到不同类别
-      const allProducts = Array.isArray(productData) ? productData : []
-      const artToys = allProducts.slice(0, 3) // 前3个产品作为Art Toys
-      const charms = allProducts.slice(3, 6) // 接下来3个产品作为Charms
-      const inCarAccessories = allProducts.slice(6, 9) // 再接下来3个产品作为In-Car Accessories
-      
-      const responseData = {
-        artToys,
-        charms,
-        inCarAccessories,
-        timestamp: now,
-        cacheExpiry: now + (CACHE_DURATION * 1000),
-        isFallback: true
-      }
-      
-      return new Response(JSON.stringify(responseData), {
-        status: 200,
-        headers: new Headers({
-          'Cache-Control': `public, max-age=${CACHE_DURATION}`,
-          'Content-Type': 'application/json',
-          'X-Cache': 'MISS',
-          'X-Cache-Source': 'Fallback'
-        })
-      })
-    } catch (fallbackError) {
-      console.error('Fallback home data error:', fallbackError)
-      return error(500, 'WooCommerce environment variables are not configured and fallback data failed')
-    }
+    console.error('WooCommerce API not available - cannot fetch home data')
+    return error(500, 'WooCommerce API not configured')
   }
 
   try {

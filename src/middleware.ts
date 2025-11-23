@@ -23,19 +23,7 @@ export async function middleware(req: NextRequest) {
         }
       } catch {}
 
-      // 2) Fallback to local Product.json
-      if (!slug) {
-        try {
-          const res = await fetch(`${origin}/Product.json`, { headers: { accept: 'application/json' }, cache: 'no-store' })
-          if (res.ok) {
-            const arr = await res.json()
-            const list: any[] = Array.isArray(arr) ? arr : []
-            const found = list.find((p) => String(p?.id) === String(id))
-            const s = String(found?.slug || '').trim()
-            if (s) slug = s
-          }
-        } catch {}
-      }
+      // No fallback - only use WooCommerce API
 
       // If we resolved a slug, redirect permanently to the new path
       if (slug) {
