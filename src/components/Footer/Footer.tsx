@@ -108,7 +108,7 @@ District, Tianjin City, China</span>
                                     </div>
                                 </div>
                                 <div className="newsletter basis-1/3 pl-7 max-md:basis-full max-md:pl-0">
-                                    <div className="text-button-uppercase">Newletter</div>
+                                    <div className="text-button-uppercase">Newsletter</div>
                                     <div className="caption1 mt-3">Sign up for our newsletter and get 10% off your first purchase</div>
                                     <div className="input-block w-full h-[52px] mt-4">
                                         <form className='w-full h-full relative' action="/api/subscribe" method="POST" onSubmit={handleSubmit(onSubmit)}>
