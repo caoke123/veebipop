@@ -9,6 +9,7 @@ import Breadcrumb from '@/components/Breadcrumb/Breadcrumb';
 import Footer from '@/components/Footer/Footer'
 import { COMPANY_INFO } from '@/constants/aboutConstants';
 import { Envelope, Phone, MapPin, PaperPlaneTilt, Clock } from '@phosphor-icons/react/dist/ssr';
+import InlineContactForm from './components/InlineContactForm'
 
 export const metadata: Metadata = {
   title: 'Contact VeebiPop - Get Direct Factory Quote for Custom Plush Toys',
@@ -134,38 +135,8 @@ const ContactUs = () => {
                 <div className="absolute top-0 right-0 w-32 h-32 bg-green/20 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
                 
                 <h2 className="text-3xl font-bold mb-8 relative z-10">Send us a message</h2>
-                
-                <form className="space-y-6 relative z-10">
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-sm font-bold text-black ml-1">Name</label>
-                      <input type="text" className="w-full px-5 py-4 rounded-xl bg-surface border-2 border-transparent focus:bg-white focus:border-black focus:outline-none transition-all font-medium placeholder:text-secondary2" placeholder="Your name" />
-                    </div>
-                     <div className="space-y-2">
-                      <label className="text-sm font-bold text-black ml-1">Company</label>
-                      <input type="text" className="w-full px-5 py-4 rounded-xl bg-surface border-2 border-transparent focus:bg-white focus:border-black focus:outline-none transition-all font-medium placeholder:text-secondary2" placeholder="Your company" />
-                    </div>
-                  </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-black ml-1">Email</label>
-                    <input type="email" className="w-full px-5 py-4 rounded-xl bg-surface border-2 border-transparent focus:bg-white focus:border-black focus:outline-none transition-all font-medium placeholder:text-secondary2" placeholder="name@example.com" />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-black ml-1">Project Details</label>
-                    <textarea rows={5} className="w-full px-5 py-4 rounded-xl bg-surface border-2 border-transparent focus:bg-white focus:border-black focus:outline-none transition-all font-medium placeholder:text-secondary2 resize-none" placeholder="Tell us about your product type, estimated quantity, and timeline..."></textarea>
-                  </div>
-
-                  <button type="button" className="w-full py-4 bg-black text-white font-bold text-lg rounded-xl hover:bg-green hover:text-black transition-all duration-300 flex items-center justify-center gap-2 group shadow-lg shadow-black/10">
-                    Send Message
-                    <PaperPlaneTilt className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                  </button>
-
-                  <p className="text-center text-xs text-secondary2 mt-4">
-                    By sending this message, you agree to our privacy policy. We respect your inbox.
-                  </p>
-                </form>
+                <InlineContactForm />
               </div>
 
               {/* Map / Location Visual */}

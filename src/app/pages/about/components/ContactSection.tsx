@@ -1,6 +1,7 @@
 import React from 'react';
 import { COMPANY_INFO } from '@/constants/aboutConstants';
 import { Phone, Envelope, MapPin, WhatsappLogo, PaperPlaneTilt } from '@phosphor-icons/react/dist/ssr';
+import InlineAboutContactForm from './InlineAboutContactForm'
 
 const ContactSection: React.FC = () => {
   return (
@@ -69,44 +70,7 @@ const ContactSection: React.FC = () => {
           {/* Form */}
           <div className="bg-white p-8 md:p-10 rounded-2xl shadow-lg border border-line">
             <h3 className="heading4 text-black mb-6">Send us a Message</h3>
-            <form className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-black mb-2">First Name</label>
-                  <input type="text" className="w-full px-4 py-3 rounded-lg border border-line focus:ring-2 focus:ring-green focus:border-green outline-none transition-all" placeholder="John" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-black mb-2">Last Name</label>
-                  <input type="text" className="w-full px-4 py-3 rounded-lg border border-line focus:ring-2 focus:ring-green focus:border-green outline-none transition-all" placeholder="Doe" />
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-black mb-2">Email Address</label>
-                <input type="email" className="w-full px-4 py-3 rounded-lg border border-line focus:ring-2 focus:ring-green focus:border-green outline-none transition-all" placeholder="john@company.com" />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-black mb-2">Project Type</label>
-                <select className="w-full px-4 py-3 rounded-lg border border-line focus:ring-2 focus:ring-green focus:border-green outline-none transition-all bg-white">
-                  <option>Custom Plush Toys</option>
-                  <option>Bag Charms / Keychains</option>
-                  <option>Blind Box Series</option>
-                  <option>Car Accessories</option>
-                  <option>Wholesale Inquiry</option>
-                  <option>Other</option>
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-black mb-2">Message</label>
-                <textarea rows={4} className="w-full px-4 py-3 rounded-lg border border-line focus:ring-2 focus:ring-green focus:border-green outline-none transition-all" placeholder="Tell us about your project requirements, estimated quantity, etc."></textarea>
-              </div>
-              
-              <button type="submit" className="w-full py-4 bg-black hover:bg-green text-white font-bold rounded-lg transition-all flex items-center justify-center gap-2">
-                Send Inquiry <PaperPlaneTilt size={18} />
-              </button>
-            </form>
+            <InlineAboutContactForm />
           </div>
         </div>
       </div>
