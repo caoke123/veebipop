@@ -4,7 +4,6 @@ import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import * as Icon from "@phosphor-icons/react/dist/ssr";
-import { useForm } from 'react-hook-form'
 
 // 安全的图片组件，处理加载错误
 const SafeImage = ({ src, alt, ...props }: any) => {
@@ -34,28 +33,6 @@ const SafeImage = ({ src, alt, ...props }: any) => {
 };
 
 const Footer = () => {
-    const { register, handleSubmit, reset } = useForm<{ email: string }>({ mode: 'onChange' })
-
-    const onSubmit = async (data: { email: string }) => {
-      try {
-        const res = await fetch('/api/contact-forward', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: 'Newsletter',
-            email: data.email,
-            phone: '',
-            message: 'Newsletter subscription request',
-            page_url: typeof window !== 'undefined' ? window.location.href : ''
-          })
-        })
-        if (!res.ok) throw new Error('Sorry, something went wrong. Please try again later.')
-        alert('Thank you! Your message has been sent successfully.')
-        reset()
-      } catch (e: any) {
-        alert(e?.message || 'Sorry, something went wrong. Please try again later.')
-      }
-    }
 
     return (
         <>
@@ -111,8 +88,8 @@ District, Tianjin City, China</span>
                                     <div className="text-button-uppercase">Newsletter</div>
                                     <div className="caption1 mt-3">Sign up for our newsletter and get 10% off your first purchase</div>
                                     <div className="input-block w-full h-[52px] mt-4">
-                                        <form className='w-full h-full relative' action="/api/subscribe" method="POST" onSubmit={handleSubmit(onSubmit)}>
-                                            <input type="email" placeholder='Enter your e-mail' className='caption1 w-full h-full pl-4 pr-14 rounded-xl border border-line' required {...register('email', { required: true, pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ })} />
+                                        <form className='w-full h-full relative' action="post">
+                                            <input type="email" placeholder='Enter your e-mail' className='caption1 w-full h-full pl-4 pr-14 rounded-xl border border-line' required />
                                             <button type='submit' className='w-[44px] h-[44px] bg-black flex items-center justify-center rounded-xl absolute top-1 right-1'>
                                                 <Icon.ArrowRight size={24} color='#fff' />
                                             </button>
