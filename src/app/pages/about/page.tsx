@@ -40,8 +40,9 @@ const AboutUs = () => {
                 <div className="container mx-auto px-6">
                     <h1 className="text-4xl font-bold text-center mb-8">About Veebipop</h1>
                     <p className="text-lg text-center max-w-3xl mx-auto">
-                        Your trusted original manufacturer of Pop Toys, Plush Keychains, and Car Accessories.
-                        Serving global brands with speed, quality, and innovation.
+                        Veebipop is the international trade brand of Tianjin Caoke Information Technology Co., Ltd. We are a specialized original manufacturer (OEM/ODM) of Pop Toys, Plush Keychains, and Car Accessories.
+
+We partner with global brands and retailers to provide reliable, high-quality production, custom design services, and factory-direct pricing. Our commitment is to quality, speed, and building lasting partnerships.
                     </p>
                 </div>
             </section>
