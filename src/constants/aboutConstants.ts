@@ -1,12 +1,12 @@
 import { FeatureItem, MilestoneItem, TeamMember, CompanyInfo } from '@/types/aboutTypes';
 
 export const COMPANY_INFO: CompanyInfo = {
-  name: "Veebipop Manufacturing",
+  name: "Tianjin Caoke Information Technology Co., Ltd.",
   phone: "+86 13821385220",
   email: "sales@veebipop.com",
   address: "2nd Floor, City Center Building, Xiqing District, Tianjin City, China",
   whatsapp: "https://wa.me/8613821385220", 
-  wechat: "veebipop_official" 
+  wechat: "+86 13821385220" 
 };
 
 export const FEATURES: FeatureItem[] = [
@@ -52,7 +52,7 @@ export const MILESTONES: MilestoneItem[] = [
   {
     year: "2015",
     title: "Inception",
-    description: "Founded in Dongguan with a dedicated focus on plush manufacturing and trendy accessories."
+    description: "Founded in TinJin with a dedicated focus on plush manufacturing and trendy accessories."
   },
   {
     year: "2018",

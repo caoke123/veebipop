@@ -1,6 +1,6 @@
 import React from 'react';
 import { COMPANY_INFO } from '@/constants/aboutConstants';
-import { Phone, Envelope, MapPin, WhatsappLogo, PaperPlaneTilt } from '@phosphor-icons/react/dist/ssr';
+import { Phone, Envelope, MapPin, WhatsappLogo, PaperPlaneTilt, Buildings } from '@phosphor-icons/react/dist/ssr';
 import InlineAboutContactForm from './InlineAboutContactForm'
 
 const ContactSection: React.FC = () => {
@@ -18,6 +18,15 @@ const ContactSection: React.FC = () => {
             </p>
             
             <div className="space-y-8">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm shrink-0">
+                  <Buildings className="w-5 h-5 text-green" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-black mb-1">Company</h4>
+                  <p className="text-secondary">{COMPANY_INFO.name}</p>
+                </div>
+              </div>
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm shrink-0">
                   <Phone className="w-5 h-5 text-green" />

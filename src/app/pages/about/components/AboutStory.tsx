@@ -31,7 +31,7 @@ const AboutStory: React.FC = () => {
           </h2>
           <div className="space-y-4 text-secondary leading-relaxed body1">
             <p>
-              Founded in 2015 and headquartered in Dongguan — the world's toy manufacturing capital — we are a leading original manufacturer specializing in trendy collectible dolls, plush doll clothing, fashion bag charms, phone straps, car rearview mirror hangings, and blind box series.
+              Founded in 2015 and headquartered in TanJin — the world's toy manufacturing capital — we are a leading original manufacturer specializing in trendy collectible dolls, plush doll clothing, fashion bag charms, phone straps, car rearview mirror hangings, and blind box series.
             </p>
             <p>
               With over a decade of deep expertise, we proudly serve wholesalers, brands, and retailers across Europe, North America, Japan, Korea, and the Middle East. From viral monster-style plushies to kawaii car charms that dominate social media feeds, our products define the trends you see worldwide.

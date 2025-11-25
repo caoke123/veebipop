@@ -67,13 +67,16 @@ const Footer = () => {
                                 <Link href={'/'} className="logo">
                                     <div className="heading4">VeebiPop</div>
                                 </Link>
+                                <div className="text-button mt-2">Tianjin Caoke Information Technology Co., Ltd.</div>
                                 <div className='flex gap-3 mt-3'>
                                     <div className="flex flex-col ">
+                                       
                                         <span className="text-button">Mail:</span>
                                         <span className="text-button mt-3">Phone:</span>
                                         <span className="text-button mt-3">Address:</span>
                                     </div>
                                     <div className="flex flex-col ">
+                                       
                                         <span className=''>sales@veebipop.com</span>
                                         <span className='mt-3'>+86 13821385220</span>
                                         <span className='mt-3 pt-px'>2nd Floor, City Center Building, Xiqing
