@@ -201,8 +201,8 @@ export async function runPerformanceTests(): Promise<PerformanceTestResult[]> {
   
   // 测试图片加载
   const imageTests = [
-    { name: 'Slider Image 1', url: 'https://image.nv315.top/art%20toys4-optimized.webp' },
-    { name: 'Slider Image 2', url: 'https://image.nv315.top/images/slide-3-optimized.webp' },
+    { name: 'Slider Image 1', url: 'https://assets.veebipop.com/art%20toys4-optimized.webp' },
+    { name: 'Slider Image 2', url: 'https://assets.veebipop.com/images/slide-3-optimized.webp' },
     { name: 'Product Image', url: 'https://pixypic.net/wp-content/uploads/2025/11/2_ab6e2e21-10e4-451e-90d9-7dcf1130a9dc_1763295097921.webp' }
   ]
   

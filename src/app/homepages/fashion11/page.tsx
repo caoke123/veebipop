@@ -80,7 +80,7 @@ export default async function HomeEleven() {
         banners = [
             {
                 id: 1,
-                image: "https://image.nv315.top/art%20toys4-optimized.webp",
+                image: "https://assets.veebipop.com/art%20toys4-optimized.webp",
                 title: "Partner with us",
                 subtitle: "Define the trendy Market",
                 buttonText: "Shop Now",
@@ -90,7 +90,7 @@ export default async function HomeEleven() {
             },
             {
                 id: 2,
-                image: "https://image.nv315.top/images/slide-3-optimized.webp",
+                image: "https://assets.veebipop.com/images/slide-3-optimized.webp",
                 title: "Unmatched Quality",
                 subtitle: "Every detail is perfect",
                 buttonText: "Shop Now",
@@ -100,7 +100,7 @@ export default async function HomeEleven() {
             },
             {
     id: 3,
-    image: "https://image.nv315.top/images/s11-3-optimized.webp",
+    image: "https://assets.veebipop.com/images/s11-3-optimized.webp",
     title: "Factory-Direct Manufacturer",
     subtitle: "Free Samples",
     buttonText: "Start Wholesale",

@@ -12,7 +12,7 @@ const Banner = () => {
 <Link href={'/shop'} prefetch={false} className="banner-item relative block duration-500">
                             <div className="banner-img w-full rounded-2xl overflow-hidden">
                                 <BlurImage
-                                  src="https://image.nv315.top/images/banner1-optimized.webp"
+                                  src="https://assets.veebipop.com/images/banner1-optimized.webp"
                                   width={600}
                                   height={400}
                                   alt='bg-img'
@@ -27,7 +27,7 @@ const Banner = () => {
 <Link href={'/shop'} prefetch={false} className="banner-item relative block duration-500">
                             <div className="banner-img w-full rounded-2xl overflow-hidden">
                                 <BlurImage
-                                  src="https://image.nv315.top/images/banner2-optimized.webp"
+                                  src="https://assets.veebipop.com/images/banner2-optimized.webp"
                                   width={600}
                                   height={400}
                                   alt='bg-img'
@@ -42,7 +42,7 @@ const Banner = () => {
 <Link href={'/shop'} prefetch={false} className="banner-item relative block duration-500 max-lg:hidden">
                             <div className="banner-img w-full rounded-2xl overflow-hidden">
                                 <BlurImage
-                                  src="https://image.nv315.top/images/find-optimized.webp"
+                                  src="https://assets.veebipop.com/images/find-optimized.webp"
                                   width={600}
                                   height={400}
                                   alt='bg-img'

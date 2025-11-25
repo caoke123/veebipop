@@ -7,9 +7,9 @@ const AboutHero: React.FC = () => {
     <section className="relative w-full h-[85vh] min-h-[600px] flex items-center justify-center overflow-hidden">
       {/* Background Image with Overlay */}
       <div className="absolute inset-0 z-0">
-        <Image 
-          src="https://image.nv315.top/2149686863.jpg" 
-          alt="Factory Workshop" 
+        <Image
+          src="https://assets.veebipop.com/2149686863.jpg"
+          alt="Factory Workshop"
           fill
           className="object-cover"
           priority

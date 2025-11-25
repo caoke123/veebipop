@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
   const defaultBanners = [
     {
       id: 1,
-      image: "https://image.nv315.top/art%20toys4-optimized.webp",
+      image: "https://assets.veebipop.com/art%20toys4-optimized.webp",
       title: "Partner with us",
       subtitle: "Define the trendy Market",
       buttonText: "Shop Now",
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
     },
     {
       id: 2,
-      image: "https://image.nv315.top/images/slide-3-optimized.webp",
+      image: "https://assets.veebipop.com/images/slide-3-optimized.webp",
       title: "Unmatched Quality",
       subtitle: "Every detail is perfect",
       buttonText: "Shop Now",
@@ -62,7 +62,7 @@ export async function GET(request: NextRequest) {
     },
     {
       id: 3,
-      image: "https://image.nv315.top/images/s11-3-optimized.webp",
+      image: "https://assets.veebipop.com/images/s11-3-optimized.webp",
       title: "Fresh and Tasty",
       subtitle: "Summer Sale Collections",
       buttonText: "Shop Now",

@@ -219,9 +219,9 @@ export const lazyLoadConfig = {
 export function preloadCriticalImages(): void {
   const criticalImages = [
     // 首页轮播图
-    'https://image.nv315.top/art%20toys4-optimized.webp',
-    'https://image.nv315.top/images/slide-3-optimized.webp',
-    'https://image.nv315.top/images/s11-3-optimized.webp',
+    'https://assets.veebipop.com/art%20toys4-optimized.webp',
+    'https://assets.veebipop.com/images/slide-3-optimized.webp',
+    'https://assets.veebipop.com/images/s11-3-optimized.webp',
     // Logo和品牌图片
     '/images/favicon.ico',
   ]

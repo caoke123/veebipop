@@ -36,11 +36,6 @@ const TopNavThree: React.FC<Props> = ({ props }) => {
                                         Store Location
                                     </Link>
                                 </li>
-                                <li>
-                                    <Link href={'/pages/faqs'} className='caption2 hover:underline'>
-                                        Help
-                                    </Link>
-                                </li>
                             </ul>
                         </div>
                         <div className="right-content flex items-center gap-5 max-md:hidden">

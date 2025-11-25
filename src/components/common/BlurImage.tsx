@@ -12,7 +12,7 @@ type Props = Omit<ImageProps, 'placeholder' | 'blurDataURL'> & {
   preloadPriority?: 'high' | 'low' | 'auto'
 }
 
-const allowHosts = new Set(['pixypic.net', 'image.nv315.top', 'localhost', '127.0.0.1'])
+const allowHosts = new Set(['pixypic.net', 'assets.veebipop.com', 'localhost', '127.0.0.1'])
 
 // 预定义的模糊占位符，避免动态生成
 const defaultBlurDataURL = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMTAwJyBoZWlnaHQ9JzEwMCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJz48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9J2cnIHgxPScwJyB5MT0nMCcgeDI9JzEnIHkyPScxJz48c3RvcCBvZmZzZXQ9JzAnIHN0b3AtY29sb3I9JyNmNWY1ZjUnLz48c3RvcCBvZmZzZXQ9JzEnIHN0b3AtY29sb3I9JyNlZWVlZWUnLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0nMTAwJyBoZWlnaHQ9JzEwMCcgeD0nMCcgeT0nMCcgcng9JzgnIGZpbGw9J3VybCgjZyknIC8+PC9zdmc+'

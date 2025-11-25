@@ -30,7 +30,7 @@ const ContactUs = () => {
         <section className="relative h-[60vh] md:h-[70vh] flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0 z-0">
             <Image
-              src="https://image.nv315.top/images/contact us-optimized.webp"
+              src="https://assets.veebipop.com/images/contact us-optimized.webp"
               alt="Contact Hero Background"
               fill
               className="object-cover"

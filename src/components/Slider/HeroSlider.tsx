@@ -115,7 +115,7 @@ export default function HeroSlider({ slides }: { slides: Slide[] }) {
               </div>
             </div>
             <BlurImage
-              src="https://image.nv315.top/images/s4-optimized.webp"
+              src="https://assets.veebipop.com/images/s4-optimized.webp"
               width={200}
               height={100}
               alt='bg-img'
@@ -132,7 +132,7 @@ export default function HeroSlider({ slides }: { slides: Slide[] }) {
               </div>
             </div>
             <BlurImage
-              src="https://image.nv315.top/images/s5-3-optimized.webp"
+              src="https://assets.veebipop.com/images/s5-3-optimized.webp"
               width={200}
               height={100}
               alt='bg-img'

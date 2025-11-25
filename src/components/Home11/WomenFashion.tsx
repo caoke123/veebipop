@@ -16,7 +16,7 @@ const WomenFashion: React.FC<WomenFashionProps> = ({ start = 0, limit = 3, initi
             categorySlug="charms"
             parentCategorySlug="charms"
             tag="home"
-            bannerImage="https://image.nv315.top/images/banner-charm-optimized.webp"
+            bannerImage="https://assets.veebipop.com/images/banner-charm-optimized.webp"
             bannerTitle="Fashion For Women"
             bannerLink="/shop"
             defaultTab="Top"

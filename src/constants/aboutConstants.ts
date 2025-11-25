@@ -81,24 +81,24 @@ export const TEAM: TeamMember[] = [
     role: "General Manager",
     name: "Allen",
     bio: "With 20 years in toy manufacturing, David ensures our vision aligns with global market demands and ethical standards.",
-    imagePath: "https://image.nv315.top/images/allen-optimized.webp"
+    imagePath: "https://assets.veebipop.com/images/allen-optimized.webp"
   },
   {
     role: "Operations Director",
     name: "Hong Li",
     bio: "Sarah orchestrates our 500k/month production line, ensuring precision, efficiency, and on-time delivery for every order.",
-    imagePath: "https://image.nv315.top/images/hong-optimized.webp"
+    imagePath: "https://assets.veebipop.com/images/hong-optimized.webp"
   },
   {
     role: "Design Director",
     name: "Anie",
     bio: "Leading our creative studio, Michael bridges the gap between artistic trends and manufacturable products.",
-    imagePath: "https://image.nv315.top/images/anni2-optimized.webp"
+    imagePath: "https://assets.veebipop.com/images/anni2-optimized.webp"
   },
   {
     role: "Factory Manager",
     name: "Master Yang",
     bio: "A veteran craftsman who oversees quality control and technical implementation on the factory floor.",
-    imagePath: "https://image.nv315.top/images/yang1.jpg-optimized.webp"
+    imagePath: "https://assets.veebipop.com/images/yang1.jpg-optimized.webp"
   }
 ];

@@ -29,9 +29,9 @@ const SliderEleven = () => {
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const criticalImages = [
-                'https://image.nv315.top/art%20toys4-optimized.webp',
-                'https://image.nv315.top/images/slide-3-optimized.webp',
-                'https://image.nv315.top/images/s11-3-optimized.webp'
+                'https://assets.veebipop.com/art%20toys4-optimized.webp',
+                'https://assets.veebipop.com/images/slide-3-optimized.webp',
+                'https://assets.veebipop.com/images/s11-3-optimized.webp'
             ]
             
             criticalImages.forEach(src => {
@@ -111,7 +111,7 @@ router.push(`/shop?type=${type}`);
                                         </div>
                                         <div className="sub-img absolute lg:right-0 xl:right-0 md:right-0 sm:right-0 right-0 top-0 bottom-0 w-1/2 lg:w-full">
                                             <BlurImage
-                                              src="https://image.nv315.top/art%20toys4-optimized.webp"
+                                              src="https://assets.veebipop.com/art%20toys4-optimized.webp"
                                               width={2000}
                                               height={1936}
                                               alt='bg11-1'
@@ -133,7 +133,7 @@ router.push(`/shop?type=${type}`);
                                         </div>
                                         <div className="sub-img absolute lg:right-0 xl:right-0 md:right-0 sm:right-0 right-0 top-0 bottom-0 w-1/2 lg:w-full">
                                             <BlurImage
-                                              src="https://image.nv315.top/images/slide-3-optimized.webp"
+                                              src="https://assets.veebipop.com/images/slide-3-optimized.webp"
                                               width={2000}
                                               height={1936}
                                               alt='bg11-2'
@@ -154,7 +154,7 @@ router.push(`/shop?type=${type}`);
                                         </div>
                                         <div className="absolute top-1/2 -translate-y-1/2 right-0 w-[45%] md:w-[40%] lg:w-[38%] xl:w-[40%] h-full hidden lg:block overflow-hidden rounded-l-3xl shadow-2xl">
                                             <BlurImage
-                                              src="https://image.nv315.top/images/s11-3-optimized.webp"
+                                              src="https://assets.veebipop.com/images/s11-3-optimized.webp"
                                               width={2000}
                                               height={2000}
                                               alt='bg11-3'
@@ -178,7 +178,7 @@ router.push(`/shop?type=${type}`);
                                     </div>
                                     <div className="sub-img absolute lg:right-0 xl:right-0 md:right-0 sm:right-0 right-0 top-0 bottom-0 w-1/2 lg:w-full">
                                         <BlurImage
-                                          src="https://image.nv315.top/art%20toys4.png"
+                                          src="https://assets.veebipop.com/art%20toys4.png"
                                           width={2000}
                                           height={1936}
                                           alt='bg11-1'
@@ -202,7 +202,7 @@ router.push(`/shop?type=${type}`);
                                 </div>
                             </div>
                             <BlurImage
-                              src="https://image.nv315.top/images/s4-optimized.webp"
+                              src="https://assets.veebipop.com/images/s4-optimized.webp"
                               width={200}
                               height={100}
                               alt='bg-img'
@@ -219,7 +219,7 @@ router.push(`/shop?type=${type}`);
                                 </div>
                             </div>
                             <BlurImage
-                              src="https://image.nv315.top/images/s5-3-optimized.webp"
+                              src="https://assets.veebipop.com/images/s5-3-optimized.webp"
                               width={200}
                               height={100}
                               alt='bg-img'

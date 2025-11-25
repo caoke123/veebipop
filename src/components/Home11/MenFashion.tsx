@@ -16,7 +16,7 @@ const MenFashion: React.FC<MenFashionProps> = ({ start = 0, limit = 3, initialDa
             categorySlug="art-toy"
             parentCategorySlug="art-toys"
             tag="home"
-            bannerImage="https://image.nv315.top/images/art toy3-optimized.webp"
+            bannerImage="https://assets.veebipop.com/images/art toy3-optimized.webp"
             bannerTitle="Art Toys Collection"
             bannerLink="/shop"
             defaultTab="Top"

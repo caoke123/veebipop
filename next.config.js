@@ -16,9 +16,9 @@ const extraDomains = (process.env.IMAGE_ALLOWED_DOMAINS || '')
 // 只留你的 3 个真实域名 + 环境变量
 const allowedHosts = Array.from(new Set([
   'pixypic.net',
-  'image.nv315.top',
-  'image.selmi.cc',
-  'image.veebipop.com',
+  'assets.veebipop.com',
+  'assets.veebipop.com',
+  'assets.veebipop.com',
   'picsum.photos',
   ...envHosts,
   ...extraDomains

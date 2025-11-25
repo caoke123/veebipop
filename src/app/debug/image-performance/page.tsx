@@ -59,9 +59,9 @@ export default function ImagePerformancePage() {
 
   const testImageLoad = async () => {
     const testImages = [
-      'https://image.nv315.top/art%20toys4-optimized.webp',
-      'https://image.nv315.top/images/slide-3-optimized.webp',
-      'https://image.nv315.top/images/s11-3-optimized.webp',
+      'https://assets.veebipop.com/art%20toys4-optimized.webp',
+      'https://assets.veebipop.com/images/slide-3-optimized.webp',
+      'https://assets.veebipop.com/images/s11-3-optimized.webp',
       'https://picsum.photos/800/600?random=1',
       'https://picsum.photos/600/400?random=2'
     ]

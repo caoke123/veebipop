@@ -11,9 +11,9 @@ const AboutStory: React.FC = () => {
            <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-surface rounded-full z-0"></div>
            
            <div className="relative z-10 max-w-sm mx-auto md:mx-0 lg:max-w-md">
-                <Image 
-                  src="https://image.nv315.top/images/team-optimized.webp" 
-                  alt="Design Studio" 
+                <Image
+                  src="https://assets.veebipop.com/images/team-optimized.webp"
+                  alt="Design Studio"
                   width={400}
                   height={300}
                   className="w-full rounded-2xl shadow-xl transform transition-transform hover:scale-[1.01]" 

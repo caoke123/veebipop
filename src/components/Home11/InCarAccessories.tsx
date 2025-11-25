@@ -10,7 +10,7 @@ const InCarAccessories: React.FC<{ initialData?: any[] }> = ({ initialData }) =>
             categorySlug="in-car-accessories"
             parentCategorySlug="in-car-accessories"
             tag="home"
-            bannerImage="https://image.nv315.top/images/seatbelt1-optimized.webp"
+            bannerImage="https://assets.veebipop.com/images/seatbelt1-optimized.webp"
             bannerTitle="In-Car Accessories Collection"
             bannerLink="/shop"
             defaultTab="Top"

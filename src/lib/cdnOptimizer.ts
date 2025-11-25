@@ -374,8 +374,8 @@ export const cdnUtils = {
   shouldUseCDN: (url: string): boolean => {
     try {
       const parsedUrl = new URL(url)
-      return parsedUrl.protocol === 'https:' && 
-             (parsedUrl.hostname.includes('image.nv315.top') ||
+      return parsedUrl.protocol === 'https:' &&
+             (parsedUrl.hostname.includes('assets.veebipop.com') ||
               parsedUrl.hostname.includes('pixypic.net') ||
               parsedUrl.hostname.includes('localhost'))
     } catch {

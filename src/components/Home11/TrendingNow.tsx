@@ -53,7 +53,7 @@ router.push(`/shop?type=${type}`);
                                 <div className="trending-item block relative cursor-pointer" onClick={() => router.push('/shop?category=art-toys')}>
                                     <div className="bg-img rounded-full overflow-hidden">
                                         <BlurImage
-                                            src="https://image.nv315.top/images/art%20toys1-optimized.webp"
+                                            src="https://assets.veebipop.com/images/art%20toys1-optimized.webp"
                                             width={1000}
                                             height={1000}
                                             alt='outerwear'
@@ -72,7 +72,7 @@ router.push(`/shop?type=${type}`);
                                 <div className="trending-item block relative cursor-pointer" onClick={() => router.push('/shop?category=charms')}>
                                     <div className="bg-img rounded-full overflow-hidden">
                                         <BlurImage
-                                            src="https://image.nv315.top/images/charm-optimized.webp"
+                                            src="https://assets.veebipop.com/images/charm-optimized.webp"
                                             width={1000}
                                             height={1000}
                                             alt='swimwear'
@@ -91,7 +91,7 @@ router.push(`/shop?type=${type}`);
                                 <div className="trending-item block relative cursor-pointer" onClick={() => router.push('/shop?category=clothing-for-toys')}>
                                     <div className="bg-img rounded-full overflow-hidden">
                                         <BlurImage
-                                            src="https://image.nv315.top/images/clothing3-optimized.webp"
+                                            src="https://assets.veebipop.com/images/clothing3-optimized.webp"
                                             width={1000}
                                             height={1000}
                                             alt='clothes'
@@ -110,7 +110,7 @@ router.push(`/shop?type=${type}`);
                                 <div className="trending-item block relative cursor-pointer" onClick={() => router.push('/shop?category=seatbelt')}>
                                     <div className="bg-img rounded-full overflow-hidden">
                                         <BlurImage
-                                            src="https://image.nv315.top/images/seatbelt-optimized.webp"
+                                            src="https://assets.veebipop.com/images/seatbelt-optimized.webp"
                                             width={1000}
                                             height={1000}
                                             alt='sets'
@@ -129,7 +129,7 @@ router.push(`/shop?type=${type}`);
                                 <div className="trending-item block relative cursor-pointer" onClick={() => router.push('/shop?category=grab-handle-covers')}>
                                     <div className="bg-img rounded-full overflow-hidden">
                                         <BlurImage
-                                            src="https://image.nv315.top/images/handle%20covers-optimized.webp"
+                                            src="https://assets.veebipop.com/images/handle%20covers-optimized.webp"
                                             width={1000}
                                             height={1000}
                                             alt='accessories'
@@ -148,7 +148,7 @@ router.push(`/shop?type=${type}`);
                                 <div className="trending-item block relative cursor-pointer" onClick={() => router.push('/shop?category=clothing-for-toys')}>
                                     <div className="bg-img rounded-full overflow-hidden">
                                         <BlurImage
-                                            src="https://image.nv315.top/images/wayi-optimized.webp"
+                                            src="https://assets.veebipop.com/images/wayi-optimized.webp"
                                             width={1000}
                                             height={1000}
                                             alt='lingerie'
@@ -167,7 +167,7 @@ router.push(`/shop?type=${type}`);
                                 <div className="trending-item block relative cursor-pointer" onClick={() => router.push('/shop?category=steering-wheel-cover')}>
                                     <div className="bg-img rounded-full overflow-hidden">
                                         <BlurImage
-                                            src="https://image.nv315.top/images/fangxingpan-optimized.webp"
+                                            src="https://assets.veebipop.com/images/fangxingpan-optimized.webp"
                                             width={1000}
                                             height={1000}
                                             alt='lingerie'

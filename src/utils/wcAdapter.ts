@@ -66,6 +66,14 @@ const decodeHtmlEntities = (input?: string): string => {
     .replace(/&/g, '&');
 };
 
+// Function to replace old image domains with new one
+const replaceImageDomain = (url: string): string => {
+  if (typeof url !== 'string') return url;
+  return url
+    .replace(/https?:\/\/image\.nv315\.top/g, 'https://assets.veebipop.com')
+    .replace(/https?:\/\/image\.selmi\.cc/g, 'https://assets.veebipop.com');
+};
+
 const isNew = (dateStr?: string): boolean => {
   if (!dateStr) return false;
   const created = new Date(dateStr).getTime();
@@ -138,12 +146,12 @@ const extractACFFields = (p: WcProduct): ProductACF | undefined => {
     
     // Handle product_markdown_content
     if (meta.key === 'product_markdown_content') {
-      acf.product_markdown_content = typeof meta.value === 'string' ? meta.value : undefined;
+      acf.product_markdown_content = typeof meta.value === 'string' ? replaceImageDomain(meta.value) : undefined;
     }
     
     // Handle product_markdown_description
     if (meta.key === 'product_markdown_description') {
-      acf.product_markdown_description = typeof meta.value === 'string' ? meta.value : undefined;
+      acf.product_markdown_description = typeof meta.value === 'string' ? replaceImageDomain(meta.value) : undefined;
     }
     
     // Handle product_image_gallery (ACF gallery field)
@@ -154,7 +162,7 @@ const extractACFFields = (p: WcProduct): ProductACF | undefined => {
           if (item.image_url !== undefined) {
             return {
               id: item.id,
-              url: item.image_url,
+              url: replaceImageDomain(item.image_url),
               alt: item.image_alt || '',
               caption: item.caption || ''
             };
@@ -163,7 +171,7 @@ const extractACFFields = (p: WcProduct): ProductACF | undefined => {
           else if (item.url !== undefined) {
             return {
               id: item.id,
-              url: item.url,
+              url: replaceImageDomain(item.url),
               alt: item.alt || '',
               caption: item.caption || ''
             };
@@ -172,7 +180,7 @@ const extractACFFields = (p: WcProduct): ProductACF | undefined => {
         // Handle case where gallery is just an array of URLs
         if (typeof item === 'string') {
           return {
-            url: item,
+            url: replaceImageDomain(item),
             alt: '',
             caption: ''
           };
@@ -271,8 +279,8 @@ export async function wcToProductType(p: WcProduct): Promise<ProductType> {
     imageDiagnostics: diagnostics,
     // Preserve original HTML to allow rich text rendering on the page
     // Use full description instead of short description
-    // Decode HTML entities to fix rendering issues
-    description: decodeHtmlEntities(p.description ?? p.short_description ?? ''),
+    // Decode HTML entities to fix rendering issues and replace image domains
+    description: replaceImageDomain(decodeHtmlEntities(p.description ?? p.short_description ?? '')),
     action: 'quick shop',
     slug: p.slug ?? String(p.id ?? ''),
     // Include tags if available
@@ -315,12 +323,12 @@ const extractMetaImages = (p: WcProduct): string[] => {
       const deal = v?.prod_deal_img || {}
       const maybeUrls = [featured?.url, featured?.thumbnail, deal?.url, deal?.thumbnail]
       for (const u of maybeUrls) {
-        if (typeof u === 'string' && u) urls.push(u)
+        if (typeof u === 'string' && u) urls.push(replaceImageDomain(u))
       }
       const gallery = v?.['product-gallery']
       if (typeof gallery === 'string' && gallery.trim()) {
         const parts = gallery.split(/[,\s]+/).filter(Boolean)
-        urls.push(...parts)
+        urls.push(...parts.map(replaceImageDomain))
       }
     }
   }

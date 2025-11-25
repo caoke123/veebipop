@@ -298,7 +298,7 @@ const ModalQuickview = () => {
                                             <div className="list grid grid-cols-6">
                                                 <div className="item flex items-center justify-center lg:px-3 px-1">
                                                     <Image
-                                                        src={'https://image.nv315.top/images/payment (3)-optimized.webp'}
+                                                        src={'https://assets.veebipop.com/images/payment (3)-optimized.webp'}
                                                         width={500}
                                                         height={450}
                                                         alt='payment'
@@ -307,7 +307,7 @@ const ModalQuickview = () => {
                                                 </div>
                                                 <div className="item flex items-center justify-center lg:px-3 px-1">
                                                     <Image
-                                                        src={'https://image.nv315.top/images/payment (2)-optimized.webp'}
+                                                        src={'https://assets.veebipop.com/images/payment (2)-optimized.webp'}
                                                         width={500}
                                                         height={450}
                                                         alt='payment'
@@ -316,7 +316,7 @@ const ModalQuickview = () => {
                                                 </div>
                                                 <div className="item flex items-center justify-center lg:px-3 px-1">
                                                     <Image
-                                                        src={'https://image.nv315.top/images/payment (1)-optimized.webp'}
+                                                        src={'https://assets.veebipop.com/images/payment (1)-optimized.webp'}
                                                         width={500}
                                                         height={450}
                                                         alt='payment'
@@ -325,7 +325,7 @@ const ModalQuickview = () => {
                                                 </div>
                                                 <div className="item flex items-center justify-center lg:px-3 px-1">
                                                     <Image
-                                                        src={'https://image.nv315.top/images/payment (6)-optimized.webp'}
+                                                        src={'https://assets.veebipop.com/images/payment (6)-optimized.webp'}
                                                         width={500}
                                                         height={450}
                                                         alt='payment'
@@ -334,7 +334,7 @@ const ModalQuickview = () => {
                                                 </div>
                                                 <div className="item flex items-center justify-center lg:px-3 px-1">
                                                     <Image
-                                                        src={'https://image.nv315.top/images/payment (5)-optimized.webp'}
+                                                        src={'https://assets.veebipop.com/images/payment (5)-optimized.webp'}
                                                         width={500}
                                                         height={450}
                                                         alt='payment'
@@ -343,7 +343,7 @@ const ModalQuickview = () => {
                                                 </div>
                                                 <div className="item flex items-center justify-center lg:px-3 px-1">
                                                     <Image
-                                                        src={'https://image.nv315.top/images/payment (4)-optimized.webp'}
+                                                        src={'https://assets.veebipop.com/images/payment (4)-optimized.webp'}
                                                         width={500}
                                                         height={450}
                                                         alt='payment'

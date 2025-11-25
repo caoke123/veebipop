@@ -17,9 +17,9 @@ const VideoSection: React.FC = () => {
           {!isPlaying ? (
             <div className="absolute inset-0 flex items-center justify-center cursor-pointer" onClick={() => setIsPlaying(true)}>
               {/* Thumbnail Placeholder - using vertical dimensions */}
-              <Image 
-                src="https://image.nv315.top/images/image (1)-optimized.webp" 
-                alt="Video Thumbnail" 
+              <Image
+                src="https://assets.veebipop.com/images/image (1)-optimized.webp"
+                alt="Video Thumbnail"
                 fill
                 className="object-cover opacity-60 group-hover:opacity-75 transition-opacity duration-300"
               />
@@ -38,7 +38,7 @@ const VideoSection: React.FC = () => {
                 className="w-full h-full object-contain"
                 controls
                 autoPlay
-                src="https://image.nv315.top/veebipop-aboutus.mp4"
+                src="https://assets.veebipop.com/veebipop-aboutus.mp4"
                 onEnded={() => setIsPlaying(false)}
               >
                 您的浏览器不支持视频播放。
