@@ -57,8 +57,10 @@ const ShopBreadCrumb1: React.FC<Props> = ({ data, productPerPage, dataType, gend
     useEffect(() => {
         const fetchCategoryCounts = async () => {
             try {
-                const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || ''
-                const response = await fetch(`${baseUrl}/api/woocommerce/categories-count`)
+                // 在生产环境中使用相对路径，避免CORS问题
+                const isProduction = process.env.NODE_ENV === 'production'
+                const apiUrl = isProduction ? '/api/woocommerce/categories-count' : `${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/woocommerce/categories-count`
+                const response = await fetch(apiUrl)
                 console.log('Category counts API response status:', response.status)
                 
                 if (response.ok) {

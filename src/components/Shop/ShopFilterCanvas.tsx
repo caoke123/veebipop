@@ -464,7 +464,9 @@ const ShopFilterCanvas: React.FC<Props> = ({ data, productPerPage, dataType, pro
         const fetchTypeCounts = async () => {
             try {
                 // 获取所有产品来计算真实的产品类型数量
-                const response = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/woocommerce/products?per_page=100&_fields=type`)
+                const isProduction = process.env.NODE_ENV === 'production'
+                const apiUrl = isProduction ? '/api/woocommerce/products?per_page=100&_fields=type' : `${process.env.NEXT_PUBLIC_SITE_URL || ''}/api/woocommerce/products?per_page=100&_fields=type`
+                const response = await fetch(apiUrl)
                 if (response.ok) {
                     const products = await response.json()
                     const counts = products.reduce((acc: Record<string, number>, product: any) => {
