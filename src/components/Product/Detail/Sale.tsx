@@ -744,7 +744,15 @@ const Sale: React.FC<Props> = ({ data, productKey }) => {
                                             <div className="image-grid">
                                                 {imageGallery.map((image, index) => (
                                                     <div key={index} className="grid-item">
-                                                        <img src={image.url} alt={image.alt} />
+                                                        <BlurImage
+                                                            src={image.url}
+                                                            width={500}
+                                                            height={500}
+                                                            alt={image.alt || `Gallery image ${index + 1}`}
+                                                            className='w-full aspect-square object-cover rounded-lg'
+                                                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 200px"
+                                                            quality={75}
+                                                        />
                                                     </div>
                                                 ))}
                                             </div>

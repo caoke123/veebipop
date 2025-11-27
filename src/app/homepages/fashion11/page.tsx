@@ -151,6 +151,7 @@ export default async function HomeEleven() {
             <Newsletter />
             <Footer />
             {/* ModalNewsletter hidden */}
+            
         </>
     )
 }

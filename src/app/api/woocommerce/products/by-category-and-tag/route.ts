@@ -63,14 +63,16 @@ export async function GET(request: NextRequest) {
       }
     }
     
-    // Set cache headers for browser caching
+    // Set cache headers for browser caching - simplified to reduce header size
     const headers = new Headers()
-    headers.set('Cache-Control', `public, s-maxage=${CACHE_DURATION}, stale-while-revalidate=${STALE_WHILE_REVALIDATE}`)
-    headers.set('CDN-Cache-Control', `public, s-maxage=${CACHE_DURATION * 2}, stale-while-revalidate=${STALE_WHILE_REVALIDATE * 2}`)
+    headers.set('Cache-Control', `public, max-age=${CACHE_DURATION}`)
     headers.set('Content-Type', 'application/json')
+    
+    // Use a simpler ETag to reduce header size
     const body = JSON.stringify(response)
-    const etag = `W/"${Buffer.from(body).toString('base64url')}"`
+    const etag = `"${Buffer.from(body).toString('base64').slice(0, 32)}"` // Limit ETag length
     headers.set('ETag', etag)
+    
     if (request.headers.get('if-none-match') === etag) {
       return new Response(null, { status: 304, headers })
     }
@@ -103,12 +105,14 @@ export async function GET(request: NextRequest) {
       }
       
       const headers = new Headers()
-      headers.set('Cache-Control', `public, s-maxage=${CACHE_DURATION}, stale-while-revalidate=${STALE_WHILE_REVALIDATE}`)
-      headers.set('CDN-Cache-Control', `public, s-maxage=${CACHE_DURATION * 2}, stale-while-revalidate=${STALE_WHILE_REVALIDATE * 2}`)
+      headers.set('Cache-Control', `public, max-age=${CACHE_DURATION}`)
       headers.set('Content-Type', 'application/json')
+      
+      // Use a simpler ETag to reduce header size
       const body = JSON.stringify(response)
-      const etag = `W/"${Buffer.from(body).toString('base64url')}"`
+      const etag = `"${Buffer.from(body).toString('base64').slice(0, 32)}"` // Limit ETag length
       headers.set('ETag', etag)
+      
       if (request.headers.get('if-none-match') === etag) {
         return new Response(null, { status: 304, headers })
       }
@@ -142,8 +146,7 @@ export async function GET(request: NextRequest) {
       return new Response(JSON.stringify(response), {
         status: 200,
         headers: new Headers({
-          'Cache-Control': `public, s-maxage=${CACHE_DURATION}, stale-while-revalidate=${STALE_WHILE_REVALIDATE}`,
-          'CDN-Cache-Control': `public, s-maxage=${CACHE_DURATION * 2}, stale-while-revalidate=${STALE_WHILE_REVALIDATE * 2}`,
+          'Cache-Control': `public, max-age=${CACHE_DURATION}`,
           'Content-Type': 'application/json'
         })
       })
@@ -363,14 +366,16 @@ export async function GET(request: NextRequest) {
       updatedCache.isFetching = false
     }
 
-    // Set cache headers for better caching
+    // Set cache headers for better caching - simplified to reduce header size
     const headers = new Headers()
-    headers.set('Cache-Control', `public, s-maxage=${CACHE_DURATION}, stale-while-revalidate=${STALE_WHILE_REVALIDATE}`)
-    headers.set('CDN-Cache-Control', `public, s-maxage=${CACHE_DURATION * 2}, stale-while-revalidate=${STALE_WHILE_REVALIDATE * 2}`)
+    headers.set('Cache-Control', `public, max-age=${CACHE_DURATION}`)
     headers.set('Content-Type', 'application/json')
+    
+    // Use a simpler ETag to reduce header size
     const body = JSON.stringify(response)
-    const etag = `W/"${Buffer.from(body).toString('base64url')}"`
+    const etag = `"${Buffer.from(body).toString('base64').slice(0, 32)}"` // Limit ETag length
     headers.set('ETag', etag)
+    
     if (request.headers.get('if-none-match') === etag) {
       return new Response(null, { status: 304, headers })
     }

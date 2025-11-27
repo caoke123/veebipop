@@ -7,6 +7,8 @@ import ModalWishlist from '@/components/Modal/ModalWishlist'
 import ModalSearch from '@/components/Modal/ModalSearch'
 import ModalQuickview from '@/components/Modal/ModalQuickview'
 import ModalCompare from '@/components/Modal/ModalCompare'
+import FloatingChatWidget from '@/components/Chat/FloatingChatWidget'
+import { CHAT_CHANNELS } from '@/constants/chatChannels'
 import CountdownTimeType from '@/type/CountdownType'
 import { useEffect } from 'react'
 
@@ -30,6 +32,7 @@ const ClientRoot: React.FC<{ children: React.ReactNode; serverTimeLeft: Countdow
       <ModalSearch />
       <ModalQuickview />
       <ModalCompare />
+      <FloatingChatWidget channels={CHAT_CHANNELS} />
     </GlobalProvider>
   )
 }

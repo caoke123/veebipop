@@ -69,6 +69,17 @@ const decodeHtmlEntities = (input?: string): string => {
 // Function to replace old image domains with new one
 const replaceImageDomain = (url: string): string => {
   if (typeof url !== 'string') return url;
+  
+  // If URL already starts with https://assets.veebipop.com, return as is
+  if (url.startsWith('https://assets.veebipop.com')) return url;
+  
+  // If URL starts with just assets.veebipop.com, add https://
+  if (url.startsWith('assets.veebipop.com')) return `https://${url}`;
+  
+  // If URL starts with //assets.veebipop.com, add https:
+  if (url.startsWith('//assets.veebipop.com')) return `https:${url}`;
+  
+  // Replace old domains
   return url
     .replace(/https?:\/\/image\.nv315\.top/g, 'https://assets.veebipop.com')
     .replace(/https?:\/\/image\.selmi\.cc/g, 'https://assets.veebipop.com');
