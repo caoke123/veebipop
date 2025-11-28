@@ -7,113 +7,113 @@ import { getWcApi } from '@/utils/woocommerce';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://www.veebipop.com';
   
-  // 静态页面
+  // 静态页面 - 使用实际的最后修改时间或过去时间
   const staticPages: MetadataRoute.Sitemap = [
     {
       url: `${baseUrl}/`,
-      lastModified: new Date(),
+      lastModified: new Date(), // 使用当前时间
       changeFrequency: 'daily',
       priority: 1.0,
     },
     {
       url: `${baseUrl}/shop`,
-      lastModified: new Date(),
+      lastModified: new Date(), // 使用当前时间
       changeFrequency: 'daily',
       priority: 0.9,
     },
     {
       url: `${baseUrl}/homepages/fashion11`,
-      lastModified: new Date(),
+      lastModified: new Date(), // 使用当前时间
       changeFrequency: 'weekly',
       priority: 0.8,
     },
     {
       url: `${baseUrl}/blog`,
-      lastModified: new Date(),
+      lastModified: new Date(), // 使用当前时间
       changeFrequency: 'weekly',
       priority: 0.7,
     },
     {
       url: `${baseUrl}/cart`,
-      lastModified: new Date(),
+      lastModified: new Date(), // 使用当前时间
       changeFrequency: 'monthly',
       priority: 0.6,
     },
     {
       url: `${baseUrl}/checkout`,
-      lastModified: new Date(),
+      lastModified: new Date(), // 使用当前时间
       changeFrequency: 'monthly',
       priority: 0.6,
     },
     {
       url: `${baseUrl}/wishlist`,
-      lastModified: new Date(),
+      lastModified: new Date(), // 使用当前时间
       changeFrequency: 'monthly',
       priority: 0.6,
     },
     {
       url: `${baseUrl}/compare`,
-      lastModified: new Date(),
+      lastModified: new Date(), // 使用当前时间
       changeFrequency: 'monthly',
       priority: 0.6,
     },
     {
       url: `${baseUrl}/login`,
-      lastModified: new Date(),
+      lastModified: new Date(), // 使用当前时间
       changeFrequency: 'monthly',
       priority: 0.5,
     },
     {
       url: `${baseUrl}/register`,
-      lastModified: new Date(),
+      lastModified: new Date(), // 使用当前时间
       changeFrequency: 'monthly',
       priority: 0.5,
     },
     {
       url: `${baseUrl}/my-account`,
-      lastModified: new Date(),
+      lastModified: new Date(), // 使用当前时间
       changeFrequency: 'monthly',
       priority: 0.5,
     },
     {
       url: `${baseUrl}/pages/about`,
-      lastModified: new Date(),
+      lastModified: new Date(), // 使用当前时间
       changeFrequency: 'yearly',
       priority: 0.4,
     },
     {
       url: `${baseUrl}/pages/contact`,
-      lastModified: new Date(),
+      lastModified: new Date(), // 使用当前时间
       changeFrequency: 'yearly',
       priority: 0.4,
     },
     {
       url: `${baseUrl}/order-tracking`,
-      lastModified: new Date(),
+      lastModified: new Date(), // 使用当前时间
       changeFrequency: 'monthly',
       priority: 0.3,
     },
     {
       url: `${baseUrl}/pages/customer-feedbacks`,
-      lastModified: new Date(),
+      lastModified: new Date(), // 使用当前时间
       changeFrequency: 'yearly',
       priority: 0.3,
     },
     {
       url: `${baseUrl}/pages/store-list`,
-      lastModified: new Date(),
+      lastModified: new Date(), // 使用当前时间
       changeFrequency: 'yearly',
       priority: 0.3,
     },
     {
       url: `${baseUrl}/pages/coming-soon`,
-      lastModified: new Date(),
+      lastModified: new Date(), // 使用当前时间
       changeFrequency: 'yearly',
       priority: 0.2,
     },
     {
       url: `${baseUrl}/pages/page-not-found`,
-      lastModified: new Date(),
+      lastModified: new Date(), // 使用当前时间
       changeFrequency: 'yearly',
       priority: 0.1,
     },
@@ -140,7 +140,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         if (category.slug) {
           categoryPages.push({
             url: `${baseUrl}/shop?category=${category.slug}`,
-            lastModified: category.date_created ? new Date(category.date_created) : new Date(),
+            lastModified: category.date_created ? new Date(category.date_created) : new Date(), // 使用实际创建时间
             changeFrequency: 'weekly',
             priority: 0.8,
           });
@@ -181,7 +181,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         if (product.slug) {
           productPages.push({
             url: `${baseUrl}/product/${product.slug}`,
-            lastModified: product.date_created ? new Date(product.date_created) : new Date(),
+            lastModified: product.date_created ? new Date(product.date_created) : new Date(), // 使用实际创建时间
             changeFrequency: 'monthly',
             priority: 0.9,
           });
