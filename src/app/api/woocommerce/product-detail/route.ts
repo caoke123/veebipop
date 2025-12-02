@@ -145,101 +145,86 @@ export async function GET(req: NextRequest) {
 
     console.log(`[CACHE MISS] product-detail for slug: ${slug}`)
 
-    // 快速返回响应，避免 RSC 超时
-    const response = json({
-      mainProduct: null,
-      relatedProducts: [],
-      fallbackProducts: []
-    }, {
+    // 并行获取所有数据
+    const promises: Promise<any>[] = [fetchMainProduct(slug)]
+    
+    if (includeRelated) {
+      promises.push(
+        fetchMainProduct(slug).then(async (mainProduct) => {
+          let relatedProducts: any[] = []
+          let fallbackProducts: any[] = []
+
+          try {
+            // 获取相关产品
+            if (mainProduct?.related_ids && mainProduct.related_ids.length > 0) {
+              relatedProducts = await fetchRelatedProductsByIds(mainProduct.related_ids, parseInt(mainProduct.id))
+            }
+
+            // 如果没有相关产品，获取兜底产品
+            if (relatedProducts.length === 0 && mainProduct?.category) {
+              const categoryId = await resolveCategoryId(mainProduct.category)
+              if (categoryId) {
+                fallbackProducts = await fetchFallbackProducts(String(categoryId), parseInt(mainProduct.id))
+              }
+            }
+          } catch (error) {
+            console.error('Error fetching related products:', error)
+            // 如果相关产品获取失败，尝试获取兜底产品
+            if (mainProduct?.category) {
+              const categoryId = await resolveCategoryId(mainProduct.category)
+              if (categoryId) {
+                fallbackProducts = await fetchFallbackProducts(String(categoryId), parseInt(mainProduct.id))
+              }
+            }
+          }
+
+          return { relatedProducts, fallbackProducts }
+        })
+      )
+    }
+
+    const results = await Promise.all(promises)
+    const mainProduct = results[0]
+    
+    let relatedProducts: any[] = []
+    let fallbackProducts: any[] = []
+
+    if (includeRelated && results[1]) {
+      relatedProducts = results[1].relatedProducts || []
+      fallbackProducts = results[1].fallbackProducts || []
+    }
+
+    const responseData: ProductDetailResponse = {
+      mainProduct,
+      relatedProducts,
+      fallbackProducts
+    }
+
+    // 缓存结果
+    await cacheClient.set(cacheKey, responseData, MAIN_PRODUCT_TTL)
+
+    console.log(`[CACHE SET] product-detail for slug: ${slug} with TTL: ${MAIN_PRODUCT_TTL}s`)
+
+    return json(responseData, {
       headers: {
-        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
-        'X-Response-Type': 'placeholder'
+        'X-Cache': 'MISS',
+        'X-Cache-Key': cacheKey,
+        'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=1200'
       }
     })
-    
-    // 异步获取真实数据并更新缓存
-    setTimeout(async () => {
-      try {
-        // 并行获取所有数据
-        const promises: Promise<any>[] = [fetchMainProduct(slug)]
-        
-        if (includeRelated) {
-          promises.push(
-            fetchMainProduct(slug).then(async (mainProduct) => {
-              let relatedProducts: any[] = []
-              let fallbackProducts: any[] = []
 
-              try {
-                // 获取相关产品
-                if (mainProduct?.related_ids && mainProduct.related_ids.length > 0) {
-                  relatedProducts = await fetchRelatedProductsByIds(mainProduct.related_ids, parseInt(mainProduct.id))
-                }
-
-                // 如果没有相关产品，获取兜底产品
-                if (relatedProducts.length === 0 && mainProduct?.category) {
-                  const categoryId = await resolveCategoryId(mainProduct.category)
-                  if (categoryId) {
-                    fallbackProducts = await fetchFallbackProducts(String(categoryId), parseInt(mainProduct.id))
-                  }
-                }
-              } catch (error) {
-                console.error('Error fetching related products:', error)
-                // 如果相关产品获取失败，尝试获取兜底产品
-                if (mainProduct?.category) {
-                  const categoryId = await resolveCategoryId(mainProduct.category)
-                  if (categoryId) {
-                    fallbackProducts = await fetchFallbackProducts(String(categoryId), parseInt(mainProduct.id))
-                  }
-                }
-              }
-
-              return { relatedProducts, fallbackProducts }
-            })
-          )
-        }
-
-        const results = await Promise.all(promises)
-        const mainProduct = results[0]
-        
-        let relatedProducts: any[] = []
-        let fallbackProducts: any[] = []
-
-        if (includeRelated && results[1]) {
-          relatedProducts = results[1].relatedProducts || []
-          fallbackProducts = results[1].fallbackProducts || []
-        }
-        
-        const finalData = {
-          mainProduct,
-          relatedProducts,
-          fallbackProducts
-        }
-        
-        // 更新缓存
-        await cacheClient.set(cacheKey, finalData, MAIN_PRODUCT_TTL)
-        console.log(`[CACHE UPDATE] product-detail updated for slug: ${slug}`)
-        
-      } catch (error) {
-        console.error(`[CACHE UPDATE FAILED] product-detail for slug: ${slug}`, error)
-      }
-    }, 100) // 100ms 后异步执行
-    
-    return response
-    
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in product-detail API:', error)
     
-    // 返回错误但保持 200 状态码，避免 RSC 错误
+    // 返回错误响应
     return json({
-      mainProduct: null,
-      relatedProducts: [],
-      fallbackProducts: [],
-      error: 'Failed to load product data'
-    }, {
-      status: 200,
+      error: 'Failed to fetch product details',
+      message: error.message,
+      slug
+    }, { 
+      status: 500,
       headers: {
-        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
-        'X-Error': 'true'
+        'Cache-Control': 'no-cache, no-store, must-revalidate'
       }
     })
   }
