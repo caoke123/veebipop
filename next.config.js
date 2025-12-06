@@ -49,7 +49,7 @@ const nextConfig = {
   compress: true,
   swcMinify: true,
   poweredByHeader: false,
-  output: 'standalone',
+  // output: 'standalone',
   
   // 减少 RSC 请求中断问题
   serverRuntimeConfig: {
