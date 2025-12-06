@@ -74,7 +74,7 @@ export default async function ProductDetailBySlug({ params }: { params: { slug: 
   }
 
   // Combine related and fallback products
-  const finalRelatedProducts = relatedProducts.length > 0 ? relatedProducts : fallbackProducts
+  const finalRelatedProducts = [...relatedProducts, ...fallbackProducts]
 
   return (
     <>

@@ -149,11 +149,26 @@ export async function fetchProductDetail(slug: string, includeRelated: boolean =
           relatedProducts = await fetchRelatedProductsByIds(mainProduct.related_ids, Number(mainProduct.id))
         }
 
-        // If no related products, fetch fallback products from category
-        if (relatedProducts.length === 0 && mainProduct.category) {
+        // 2. Check if we need more products to fill up to 8
+        const TARGET_COUNT = 8
+        if (relatedProducts.length < TARGET_COUNT && mainProduct.category) {
           const categoryId = await resolveCategoryId(mainProduct.category)
+          
           if (categoryId) {
-            fallbackProducts = await fetchFallbackProducts(String(categoryId), Number(mainProduct.id))
+            // Calculate how many more we need
+            const needed = TARGET_COUNT - relatedProducts.length
+            
+            // Fetch enough potential candidates (limit + some buffer for duplicates)
+            // We fetch TARGET_COUNT + 2 to ensure we have enough after filtering
+            const candidates = await fetchFallbackProducts(String(categoryId), Number(mainProduct.id), TARGET_COUNT + 2)
+            
+            // Filter out products that are already in relatedProducts
+            const relatedIds = new Set(relatedProducts.map(p => p.id))
+            const newFallbacks = candidates
+              .filter(p => !relatedIds.has(p.id))
+              .slice(0, needed)
+              
+            fallbackProducts = newFallbacks
           }
         }
       } catch (error) {
