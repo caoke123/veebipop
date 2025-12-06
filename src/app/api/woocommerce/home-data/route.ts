@@ -130,34 +130,36 @@ export async function GET(request: NextRequest) {
   try {
     console.log('Fetching home data from WooCommerce')
     
-    // Get category IDs first
-    const [artToysRes, charmsRes, inCarRes] = await Promise.allSettled([
+    // Get category IDs and Home tag ID first
+    const [artToysRes, charmsRes, inCarRes, homeTagRes] = await Promise.allSettled([
       wcApi.get('products/categories', { per_page: 1, slug: 'art-toys' }),
       wcApi.get('products/categories', { per_page: 1, slug: 'charms' }),
-      wcApi.get('products/categories', { per_page: 1, slug: 'in-car-accessories' })
+      wcApi.get('products/categories', { per_page: 1, slug: 'in-car-accessories' }),
+      wcApi.get('products/tags', { per_page: 1, slug: 'home' })
     ])
     
     const artToysId = artToysRes.status === 'fulfilled' && artToysRes.value?.data?.[0]?.id
     const charmsId = charmsRes.status === 'fulfilled' && charmsRes.value?.data?.[0]?.id
     const inCarId = inCarRes.status === 'fulfilled' && inCarRes.value?.data?.[0]?.id
+    const homeTagId = homeTagRes.status === 'fulfilled' && homeTagRes.value?.data?.[0]?.id
     
     // Fetch products for each category with home tag
     const [artProducts, charmProducts, carProducts] = await Promise.allSettled([
-      artToysId ? wcApi.get('products', { 
+      artToysId && homeTagId ? wcApi.get('products', { 
         category: artToysId, 
-        tag: 'home', 
+        tag: homeTagId, 
         per_page: 3,
         status: 'publish'
       }) : Promise.resolve({ data: [] }),
-      charmsId ? wcApi.get('products', { 
+      charmsId && homeTagId ? wcApi.get('products', { 
         category: charmsId, 
-        tag: 'home', 
+        tag: homeTagId, 
         per_page: 3,
         status: 'publish'
       }) : Promise.resolve({ data: [] }),
-      inCarId ? wcApi.get('products', { 
+      inCarId && homeTagId ? wcApi.get('products', { 
         category: inCarId, 
-        tag: 'home', 
+        tag: homeTagId, 
         per_page: 3,
         status: 'publish'
       }) : Promise.resolve({ data: [] })

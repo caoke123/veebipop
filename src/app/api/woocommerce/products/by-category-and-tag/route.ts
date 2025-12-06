@@ -189,6 +189,22 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // Resolve tag ID from slug
+    let tagId: number | undefined
+    const maybeTagId = Number(tag)
+    if (!Number.isNaN(maybeTagId) && maybeTagId > 0) {
+        tagId = maybeTagId
+    } else {
+        try {
+             const tagRes = await wcApi.get('products/tags', { per_page: 1, slug: tag })
+             if (tagRes.data && tagRes.data.length > 0) {
+                 tagId = tagRes.data[0].id
+             }
+        } catch (e) {
+            console.error('Error fetching tag ID:', e)
+        }
+    }
+
     // Get all subcategories of the requested category
     let allCategoryIds: number[] = []
     if (categoryId) {
@@ -269,7 +285,7 @@ export async function GET(request: NextRequest) {
       const productParams: Record<string, unknown> = { 
         per_page,
         category: categoryId,
-        tag: tag,
+        tag: tagId || tag, // Use ID if available, fallback to original (though likely to fail if slug)
         status: 'publish',
         _fields: fieldsParam ?? defaultFields
       }
