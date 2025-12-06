@@ -8,68 +8,18 @@ import BreadcrumbProduct from '@/components/Breadcrumb/BreadcrumbProduct'
 import ProductDetailClient from '@/components/Product/Detail/ProductDetailClient'
 import Footer from '@/components/Footer/Footer'
 import { ProductType } from '@/type/ProductType'
-import { wcToProductType, WcProduct } from '@/utils/wcAdapter'
-import { getWcApiWithRetry } from '@/utils/woocommerce'
+import { fetchProductDetail } from '@/lib/data/productData'
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const productSlug = String(params?.slug ?? '')
   let product: ProductType | null = null
   
   try {
-    // Try direct API call with retry
-    const wcApi = await getWcApiWithRetry()
-    if (wcApi) {
-      try {
-        const response = await wcApi.get('products', {
-          slug: productSlug,
-          per_page: 1,
-          _fields: 'id,name,slug,price,regular_price,sale_price,average_rating,stock_quantity,manage_stock,images,short_description,description,categories,attributes,tags,date_created,meta_data',
-        })
-        if (response.data && Array.isArray(response.data) && response.data.length > 0) {
-          product = await wcToProductType(response.data[0])
-        }
-      } catch (apiError) {
-        console.error('Direct WooCommerce API call failed:', apiError)
-      }
-    }
-    
-    // Fallback to local API endpoint if direct API fails
-    if (!product) {
-      try {
-        const url = `/api/woocommerce/products?slug=${encodeURIComponent(
-          productSlug,
-        )}&per_page=1&_fields=id,name,slug,price,regular_price,sale_price,average_rating,stock_quantity,manage_stock,images,short_description,description,categories,attributes,tags,date_created,meta_data`
-        const res = await fetch(url, {
-          next: { revalidate: 300 },
-          cache: 'no-store'
-        })
-        
-        if (res.ok) {
-          const contentType = res.headers.get('content-type')
-          if (contentType && contentType.includes('application/json')) {
-            const text = await res.text()
-            if (text.trim()) {
-              try {
-                const data = JSON.parse(text)
-                const list = Array.isArray(data) ? (data as WcProduct[]) : []
-                if (list.length > 0) {
-                  product = await wcToProductType(list[0])
-                }
-              } catch (parseError) {
-                console.error('Failed to parse JSON from API:', parseError)
-              }
-            }
-          }
-        }
-      } catch (apiRouteError) {
-        console.error('API route call failed:', apiRouteError)
-      }
-    }
+    const result = await fetchProductDetail(productSlug, false) // No need for related products for metadata
+    product = result.mainProduct
   } catch (e) {
-    console.error('Failed to load product from WooCommerce', e)
+    console.error('Failed to load product metadata', e)
   }
-
-  // No fallback - only use WooCommerce API
 
   if (!product) {
     return {
@@ -110,79 +60,20 @@ export default async function ProductDetailBySlug({ params }: { params: { slug: 
   let fallbackProducts: ProductType[] = []
 
   try {
-    // 使用新的专用API一次性获取所有数据
-    const baseUrl = process.env.NEXTAUTH_URL || process.env.VERCEL_URL || 'http://localhost:3000'
-    const protocol = baseUrl.startsWith('http') ? '' : 'https://'
-    const fullBaseUrl = protocol + baseUrl
-    const url = `${fullBaseUrl}/api/woocommerce/product-detail?slug=${encodeURIComponent(productSlug)}&includeRelated=true`
-    console.log('Product detail API URL:', url)
+    // Use direct function call instead of internal API fetch
+    const result = await fetchProductDetail(productSlug, true)
+    mainProduct = result.mainProduct
+    relatedProducts = result.relatedProducts || []
+    fallbackProducts = result.fallbackProducts || []
     
-    const res = await fetch(url, {
-      next: { revalidate: 1800 },
-      headers: {
-        'Cache-Control': 'public, s-maxage=1800, stale-while-revalidate=3600'
-      }
-    })
-
-    console.log('Product detail API Response status:', res.status)
-
-    if (res.ok) {
-      const contentType = res.headers.get('content-type')
-      if (contentType && contentType.includes('application/json')) {
-        const text = await res.text()
-        console.log('Product detail API response length:', text.length)
-        
-        if (text.trim()) {
-          try {
-            const data = JSON.parse(text)
-            mainProduct = data.mainProduct
-            relatedProducts = data.relatedProducts || []
-            fallbackProducts = data.fallbackProducts || []
-            
-            console.log('Product loaded from new API:', mainProduct?.name)
-            console.log('Related products count:', relatedProducts.length)
-            console.log('Fallback products count:', fallbackProducts.length)
-          } catch (parseError) {
-            console.error('Failed to parse JSON from product detail API:', parseError)
-          }
-        }
-      }
-    } else {
-      console.error('Product detail API request failed with status:', res.status)
-    }
+    console.log('Product loaded directly:', mainProduct?.name)
+    console.log('Related products count:', relatedProducts.length)
+    console.log('Fallback products count:', fallbackProducts.length)
   } catch (error) {
     console.error('Failed to load product detail:', error)
   }
 
-  // 如果新API失败，回退到原来的逻辑
-  if (!mainProduct) {
-    console.log('Falling back to original product loading logic')
-    try {
-      // Try direct API call with retry
-      const wcApi = await getWcApiWithRetry()
-      if (wcApi) {
-        try {
-          const response = await wcApi.get('products', {
-            slug: productSlug,
-            per_page: 1,
-            _fields: 'id,name,slug,price,regular_price,sale_price,average_rating,stock_quantity,manage_stock,images,short_description,description,categories,attributes,tags,date_created,meta_data',
-          })
-          if (response.data && Array.isArray(response.data) && response.data.length > 0) {
-            mainProduct = await wcToProductType(response.data[0])
-            console.log('Product loaded from WooCommerce API (fallback):', mainProduct.name)
-          }
-        } catch (apiError) {
-          console.error('Direct WooCommerce API call failed:', apiError)
-        }
-      }
-    } catch (e) {
-      console.error('Failed to load product from WooCommerce (fallback)', e)
-    }
-
-    // No fallback - only use WooCommerce API
-  }
-
-  // 合并相关产品和兜底产品
+  // Combine related and fallback products
   const finalRelatedProducts = relatedProducts.length > 0 ? relatedProducts : fallbackProducts
 
   return (
