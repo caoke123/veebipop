@@ -3,6 +3,7 @@ import { Metadata } from 'next'
 import nextDynamic from 'next/dynamic'
 import MenFashion from '@/components/Home11/MenFashion'
 import blogData from '@/data/Blog.json'
+import { fetchHomeData } from '@/lib/data/homeData'
 
 // 首屏必要组件保持 SSR，其他组件采用动态导入以减少首屏 JS
 const TopNavOne = nextDynamic(() => import('@/components/Header/TopNav/TopNavOne'))
@@ -42,14 +43,14 @@ export const metadata: Metadata = {
 export default async function HomeEleven() {
     const host = process.env.NEXT_PUBLIC_SITE_URL ? new URL(process.env.NEXT_PUBLIC_SITE_URL).host : 'localhost:3000'
     const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http'
-    const homeDataUrl = `${protocol}://${host}/api/woocommerce/home-data`
     const bannersUrl = `${protocol}://${host}/api/banners`
     
     // Step 1: 并行获取首页数据和轮播数据
     const [homeRes, bannersRes] = await Promise.allSettled([
-        fetch(homeDataUrl, {
-            next: { revalidate: 1800 }, // 30分钟缓存
-        }).catch(() => null),
+        fetchHomeData().catch(err => {
+            console.error('Failed to fetch home data directly:', err)
+            throw err
+        }),
         fetch(bannersUrl, {
             next: { revalidate: 3600 }, // 1小时缓存
         }).catch(() => null)
@@ -99,22 +100,22 @@ export default async function HomeEleven() {
                 textPosition: "left"
             },
             {
-    id: 3,
-    image: "https://assets.veebipop.com/images/s11-3-optimized.webp",
-    title: "Factory-Direct Manufacturer",
-    subtitle: "Free Samples",
-    buttonText: "Start Wholesale",
-    link: "/shop",
-    badge: "Factory Direct",
-    textPosition: "left"
-}
+                id: 3,
+                image: "https://assets.veebipop.com/images/s11-3-optimized.webp",
+                title: "Factory-Direct Manufacturer",
+                subtitle: "Free Samples",
+                buttonText: "Start Wholesale",
+                link: "/shop",
+                badge: "Factory Direct",
+                textPosition: "left"
+            }
         ]
     }
     
     // 处理首页数据
-    if (homeRes.status === 'fulfilled' && homeRes.value && homeRes.value.ok) {
+    if (homeRes.status === 'fulfilled' && homeRes.value) {
         try {
-            homeData = await homeRes.value.json()
+            homeData = homeRes.value.data
             // Step 2: 高优先级 - 立即提取并渲染 MenFashion（最上方板块）
             artInitial = homeData?.artToys || []
             
@@ -122,7 +123,7 @@ export default async function HomeEleven() {
             charmsInitial = homeData?.charms || []
             carInitial = homeData?.inCarAccessories || []
         } catch (error) {
-            console.error('Failed to parse home data from API:', error)
+            console.error('Failed to parse home data:', error)
         }
     } else {
         console.log('Using fallback data for home page due to API error')
