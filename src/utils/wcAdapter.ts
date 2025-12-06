@@ -217,12 +217,26 @@ export async function wcToProductType(p: WcProduct): Promise<ProductType> {
     if (typeof img === 'string') return img;
     // If image is an object with src property, use src
     if (typeof img === 'object' && img !== null && img.src) return img.src;
+    // Check for 'url' property as fallback (some APIs might use it)
+    if (typeof img === 'object' && img !== null && (img as any).url) return (img as any).url;
     // Otherwise return empty string
     return '';
   }).filter(Boolean);
   
-  // Fixed regex pattern for URL validation
-  const imagesFiltered = imagesRaw.filter((u) => u.startsWith('http'))
+  // Process images: fix protocol and replace domain
+  const imagesProcessed = imagesRaw.map(u => {
+    let url = u;
+    // Fix protocol-relative URLs
+    if (url.startsWith('//')) {
+        url = `https:${url}`;
+    }
+    // Apply domain replacement
+    url = replaceImageDomain(url);
+    return url;
+  });
+  
+  // Filter valid URLs (must start with http or https)
+  const imagesFiltered = imagesProcessed.filter((u) => u.startsWith('http'))
   let images = Array.from(new Set(imagesFiltered))
   let imageStatus: 'mapped' | 'fallback' | 'empty' = 'mapped'
   let diagnostics: { srcCount?: number; metaCount?: number } = { srcCount: imagesRaw.length }
