@@ -92,6 +92,40 @@ export async function POST(request: NextRequest) {
       // Continue even if WooCommerce customer creation fails
     }
 
+    // Send Welcome Email
+    try {
+      const { sendEmail } = await import('@/lib/email')
+      
+      // To User
+      await sendEmail({
+        to: email,
+        subject: 'Welcome to VeebiPoP!',
+        html: `
+          <div style="font-family: Arial, sans-serif; padding: 20px;">
+            <h2>Welcome, ${firstNameValue || 'Customer'}!</h2>
+            <p>Thank you for creating an account with VeebiPoP.</p>
+            <p>You can now log in and start shopping.</p>
+            <br>
+            <p>Best regards,</p>
+            <p>VeebiPoP Team</p>
+          </div>
+        `
+      })
+
+      // To Admin
+      await sendEmail({
+        to: process.env.MAIL_TO_ADMIN || 'info@veebipop.com',
+        subject: `[New User] ${email}`,
+        html: `
+          <h3>New User Registration</h3>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Name:</strong> ${firstNameValue} ${lastNameValue}</p>
+        `
+      })
+    } catch (emailError) {
+      console.error('Failed to send welcome emails:', emailError)
+    }
+
     // Return success response
     return timedJson({ success: true, user: mockUser, token: mockToken, message: 'User registered successfully (Demo Mode)' })
 

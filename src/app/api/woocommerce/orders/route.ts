@@ -97,6 +97,51 @@ export async function POST(request: NextRequest) {
     const response = await wcApi.post('orders', orderData)
     
     if (response.data) {
+      // Send Order Confirmation Emails
+      try {
+        const { sendEmail } = await import('@/lib/email')
+        const order = response.data
+        const itemsList = order.line_items.map((item: any) => 
+          `<li>${item.name} x ${item.quantity} - $${item.total}</li>`
+        ).join('')
+
+        // To Customer
+        await sendEmail({
+          to: orderData.billing.email,
+          subject: `Order Confirmation #${order.id}`,
+          html: `
+            <div style="font-family: Arial, sans-serif; padding: 20px;">
+              <h2>Order Confirmation</h2>
+              <p>Hi ${orderData.billing.first_name},</p>
+              <p>Thank you for your order! We've received it and are processing it.</p>
+              <h3>Order #${order.id}</h3>
+              <ul>${itemsList}</ul>
+              <p><strong>Total:</strong> ${order.currency_symbol || '$'}${order.total}</p>
+              <br>
+              <p>Best regards,</p>
+              <p>VeebiPoP Team</p>
+            </div>
+          `
+        })
+
+        // To Admin
+        await sendEmail({
+          to: process.env.MAIL_TO_ADMIN || 'info@veebipop.com',
+          subject: `[New Order] #${order.id} - ${order.total}`,
+          html: `
+            <h3>New Order Received</h3>
+            <p><strong>Order ID:</strong> ${order.id}</p>
+            <p><strong>Customer:</strong> ${orderData.billing.first_name} ${orderData.billing.last_name}</p>
+            <p><strong>Email:</strong> ${orderData.billing.email}</p>
+            <p><strong>Total:</strong> ${order.total}</p>
+            <h4>Items:</h4>
+            <ul>${itemsList}</ul>
+          `
+        })
+      } catch (emailError) {
+        console.error('Failed to send order emails:', emailError)
+      }
+
       return json({
         success: true,
         order: response.data,

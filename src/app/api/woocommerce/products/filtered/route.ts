@@ -12,7 +12,8 @@ import { getCache, setCache, CacheKeyBuilder } from '@/lib/cache'
 export const runtime = 'nodejs'
 
 // Cache configuration
-const CACHE_DURATION = 600 // 10 minutes cache for filtered products
+const CACHE_DURATION = 3600 // 1 hour cache for filtered products
+const CATEGORY_CACHE_DURATION = 86400 // 24 hours cache for category mapping
 const STALE_WHILE_REVALIDATE = 600 // 10 minutes stale while revalidate
 
 // In-memory cache for better performance (fallback)
@@ -81,6 +82,7 @@ export async function GET(request: NextRequest) {
       headers.set('Content-Type', 'application/json')
       headers.set('X-Cache', 'HIT')
       headers.set('X-Cache-Source', 'Upstash Redis')
+      headers.set('X-Cache-Debug', `TTL:${CACHE_DURATION}`)
       
       const body = JSON.stringify(redisCached)
       
@@ -182,14 +184,29 @@ export async function GET(request: NextRequest) {
         categoryId = maybeId
       } else {
         const slug = category.toLowerCase()
+        const catCacheKey = `category_id_map:${slug}`
+        
+        // Try cache first
         try {
-          const catRes = await wcApi.get('products/categories', { per_page: 1, slug })
-          const cats = Array.isArray(catRes.data) ? catRes.data : []
-          if (cats.length && typeof cats[0]?.id === 'number') {
-            categoryId = cats[0].id
-          }
-        } catch {
-          // ignore; fallback to no category filter
+           const cachedId = await getCache<number>(catCacheKey)
+           if (cachedId) {
+             categoryId = cachedId
+             console.log(`Cache hit for category slug: ${slug} -> ${categoryId}`)
+           }
+        } catch (e) { console.error('Category cache read error', e) }
+
+        if (!categoryId) {
+            try {
+              const catRes = await wcApi.get('products/categories', { per_page: 1, slug })
+              const cats = Array.isArray(catRes.data) ? catRes.data : []
+              if (cats.length && typeof cats[0]?.id === 'number') {
+                categoryId = cats[0].id
+                // Set cache
+                await setCache(catCacheKey, categoryId, CATEGORY_CACHE_DURATION)
+              }
+            } catch {
+              // ignore; fallback to no category filter
+            }
         }
       }
     }
