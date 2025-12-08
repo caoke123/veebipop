@@ -1,7 +1,7 @@
 // src/lib/cache.ts
 import { redis } from './redis'
 
-const VERSION = process.env.CACHE_VERSION || '2'
+const VERSION = process.env.CACHE_VERSION || '3'
 
 export async function getCache<T>(key: string): Promise<T | null> {
   const fullKey = `cache:${VERSION}:${key}`

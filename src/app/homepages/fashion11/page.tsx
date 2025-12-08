@@ -81,7 +81,7 @@ export default async function HomeEleven() {
         banners = [
             {
                 id: 1,
-                image: "https://assets.veebipop.com/art%20toys4-optimized.webp",
+                image: "https://assets.veebipop.com/Doll_Crochet_Outfit_Set_1.webp",
                 title: "Partner with us",
                 subtitle: "Define the trendy Market",
                 buttonText: "Shop Now",

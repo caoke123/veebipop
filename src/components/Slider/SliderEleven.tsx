@@ -29,7 +29,7 @@ const SliderEleven = () => {
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const criticalImages = [
-                'https://assets.veebipop.com/art%20toys4-optimized.webp',
+                'https://assets.veebipop.com/Doll_Crochet_Outfit_Set_1.webp',
                 'https://assets.veebipop.com/images/slide-3-optimized.webp',
                 'https://assets.veebipop.com/images/s11-3-optimized.webp'
             ]
@@ -111,7 +111,7 @@ router.push(`/shop?type=${type}`);
                                         </div>
                                         <div className="sub-img absolute lg:right-0 xl:right-0 md:right-0 sm:right-0 right-0 top-0 bottom-0 w-1/2 lg:w-full">
                                             <BlurImage
-                                              src="https://assets.veebipop.com/art%20toys4-optimized.webp"
+                                              src="https://assets.veebipop.com/Doll_Crochet_Outfit_Set_1.webp"
                                               width={2000}
                                               height={1936}
                                               alt='bg11-1'
@@ -178,7 +178,7 @@ router.push(`/shop?type=${type}`);
                                     </div>
                                     <div className="sub-img absolute lg:right-0 xl:right-0 md:right-0 sm:right-0 right-0 top-0 bottom-0 w-1/2 lg:w-full">
                                         <BlurImage
-                                          src="https://assets.veebipop.com/art%20toys4.png"
+                                          src="https://assets.veebipop.com/Doll_Crochet_Outfit_Set_1.webp"
                                           width={2000}
                                           height={1936}
                                           alt='bg11-1'
