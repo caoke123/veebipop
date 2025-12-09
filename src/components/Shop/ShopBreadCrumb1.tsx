@@ -231,6 +231,7 @@ const ShopBreadCrumb1: React.FC<Props> = ({ data, productPerPage, dataType, gend
             updateUrlParams(qs => {
                 if (next) qs.set('on_sale', 'true')
                 else qs.delete('on_sale')
+                qs.delete('page')
             })
             return next
         })
@@ -247,6 +248,7 @@ const ShopBreadCrumb1: React.FC<Props> = ({ data, productPerPage, dataType, gend
             updateUrlParams(qs => {
                 if (next) qs.set('type', String(next))
                 else qs.delete('type')
+                qs.delete('page')
             })
             return next
         })
@@ -272,6 +274,7 @@ const ShopBreadCrumb1: React.FC<Props> = ({ data, productPerPage, dataType, gend
             updateUrlParams(qs => {
                 qs.set('price_min', String(next.min))
                 qs.set('price_max', String(next.max))
+                qs.delete('page')
             })
         }
     }
@@ -287,6 +290,7 @@ const ShopBreadCrumb1: React.FC<Props> = ({ data, productPerPage, dataType, gend
             updateUrlParams(qs => {
                 if (next) qs.set('brand', String(next))
                 else qs.delete('brand')
+                qs.delete('page')
             })
             return next
         })
@@ -294,53 +298,66 @@ const ShopBreadCrumb1: React.FC<Props> = ({ data, productPerPage, dataType, gend
     }
 
 
-    // 简化客户端过滤逻辑，因为大部分工作已移至服务端
-    const filteredData = useMemo(() => {
-        // 数据已经在服务端过滤，这里只做基本的客户端过滤
-        return (data || [])
-            .filter(product => {
-                // 确保产品有图片
-                const hasImage = (Array.isArray((product as any).images) && (product as any).images.length > 0)
-                    || (Array.isArray((product as any).thumbImage) && (product as any).thumbImage.length > 0)
-                
-                // 只保留有图片的产品
-                return hasImage
-            })
-            // 移除复杂的服务端筛选逻辑，这些已在API端处理
-    }, [data]);
-
-    // Sort the filtered data using useMemo for performance optimization
-    const sortedData = useMemo(() => {
-        const onlyRealImages = filteredData.filter(p => Array.isArray(p.images) && p.images.length > 0 && (p.imageStatus ?? 'mapped') === 'mapped')
-        const base = onlyRealImages.length > 0 ? onlyRealImages : filteredData
-        const sorted = [...base];
-        // Primary: items with images first
-        sorted.sort((a, b) => {
-            const ai = Array.isArray(a.images) && a.images.length > 0 ? 1 : 0;
-            const bi = Array.isArray(b.images) && b.images.length > 0 ? 1 : 0;
-            return bi - ai;
-        })
-        // Secondary: apply user-selected sort
-        switch (sortOption) {
-            case 'soldQuantityHighToLow':
-                sorted.sort((a, b) => (b.sold - a.sold));
-                break;
-            case 'discountHighToLow':
-                sorted.sort((a, b) => (
-                    (Math.floor(100 - ((b.price / b.originPrice) * 100))) - (Math.floor(100 - ((a.price / a.originPrice) * 100)))
-                ));
-                break;
-            case 'priceHighToLow':
-                sorted.sort((a, b) => (b.price - a.price));
-                break;
-            case 'priceLowToHigh':
-                sorted.sort((a, b) => (a.price - b.price));
-                break;
-            default:
-                break;
+    // Filter product data by dataType
+    let filteredData = data.filter(product => {
+        let isShowOnlySaleMatched = true;
+        if (showOnlySale) {
+            isShowOnlySaleMatched = product.sale
         }
-        return sorted;
-    }, [filteredData, sortOption])
+
+        let isTypeMatched = true;
+        if (dataType) {
+            isTypeMatched = product.type === dataType
+        }
+
+        let isSizeMatched = true;
+        if (size) {
+            isSizeMatched = product.sizes.includes(size)
+        }
+
+        let isPriceRangeMatched = true;
+        // if (priceRange.min !== 0 || priceRange.max !== 100) {
+        //     isPriceRangeMatched = product.price >= priceRange.min && product.price <= priceRange.max;
+        // }
+
+        let isColorMatched = true;
+        if (color) {
+            isColorMatched = product.variation.some(item => item.color === color)
+        }
+
+        let isBrandMatched = true;
+        if (brand) {
+            isBrandMatched = product.brand === brand;
+        }
+
+        return isShowOnlySaleMatched && isTypeMatched && isSizeMatched && isColorMatched && isBrandMatched && isPriceRangeMatched
+    })
+
+    // Create a copy array filtered to sort
+    let sortedData = [...filteredData];
+
+    if (sortOption === 'soldQuantityHighToLow') {
+        sortedData = sortedData.sort((a, b) => b.sold - a.sold)
+    }
+
+    if (sortOption === 'discountHighToLow') {
+        sortedData = sortedData
+            .sort((a, b) => (
+                (Math.floor(100 - ((b.price / b.originPrice) * 100))) - (Math.floor(100 - ((a.price / a.originPrice) * 100)))
+            ))
+
+    }
+
+    if (sortOption === 'priceHighToLow') {
+        sortedData = sortedData.sort((a, b) => b.price - a.price)
+    }
+
+    if (sortOption === 'priceLowToHigh') {
+        sortedData = sortedData.sort((a, b) => a.price - b.price)
+    }
+    
+    // Update filteredData with sorted results for correct pagination logic below
+    filteredData = sortedData;
 
     const hasNoData = filteredData.length === 0
     const effectiveFilteredData = hasNoData ? [{
@@ -374,34 +391,35 @@ const ShopBreadCrumb1: React.FC<Props> = ({ data, productPerPage, dataType, gend
     const selectedBrand = brand
 
 
-    // 使用服务端返回的分页数据，而不是客户端切片
-    const dataForPaging = hasNoData ? [] : data
+    // Find page number base on filteredData
+    const pageCount = paginationMeta?.totalPages ?? Math.ceil(filteredData.length / productsPerPage);
 
-    // 优先使用服务端返回的分页元数据
-    const pageCount = paginationMeta?.totalPages || Math.ceil(data.length / productsPerPage);
+    // Get product data for current page
+    let currentProducts: ProductType[];
 
-    // 根据页数安全调整当前页，避免在渲染阶段直接 setState 导致循环渲染
-    useEffect(() => {
-        if (pageCount === 0 && currentPage !== 0) {
-            setCurrentPage(0)
-        } else if (currentPage >= pageCount && pageCount > 0) {
-            setCurrentPage(0)
-        }
-    }, [pageCount, currentPage])
-
-    // 直接使用服务端返回的数据，不再进行客户端分页切片
-    // 服务端已经根据page参数返回了正确的数据
-    let currentProducts: ProductType[] = dataForPaging as ProductType[];
+    if (paginationMeta) {
+        // If we have pagination meta, it means data is already paginated from server
+        currentProducts = filteredData;
+    } else if (filteredData.length > 0) {
+        // Client-side pagination logic
+        currentProducts = filteredData.slice(offset, offset + productsPerPage);
+    } else {
+        currentProducts = []
+    }
 
     const handlePageChange = (selected: number) => {
-        setCurrentPage(selected);
-        // 更新URL参数以触发服务端重新渲染
-        const newParams = new URLSearchParams(searchParams.toString())
-        newParams.set('page', String(selected + 1))
-        const newUrl = `${pathname}?${newParams.toString()}`
+        // Convert 0-based index to 1-based page number
+        const newPage = selected + 1
+        
+        // Update URL with new page parameter
+        const params = new URLSearchParams(searchParams?.toString())
+        params.set('page', newPage.toString())
+        
         startTransition(() => {
-            router.push(newUrl, { scroll: false })
+            router.push(`${pathname}?${params.toString()}`, { scroll: true })
         })
+        
+        setCurrentPage(selected);
     };
 
     const handleClearAll = () => {
@@ -502,6 +520,7 @@ const ShopBreadCrumb1: React.FC<Props> = ({ data, productPerPage, dataType, gend
                                                                 updateUrlParams(qs => {
                                                                     if (currentCategorySlug === slug) qs.delete('category')
                                                                     else qs.set('category', slug)
+                                                                    qs.delete('page')
                                                                 })
                                                                 setCurrentPage(0)
                                                             }}>
