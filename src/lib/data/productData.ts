@@ -1,5 +1,5 @@
 import { getWcApiWithRetry } from '@/utils/woocommerce'
-import { getCacheClient, getNamespaceVersion } from '@/utils/cache'
+import { getCache, setCache } from '@/lib/cache'
 import { wcArrayToProductTypes, wcToProductType } from '@/utils/wcAdapter'
 import { ProductType } from '@/type/ProductType'
 
@@ -118,17 +118,15 @@ export async function fetchProductDetail(slug: string, includeRelated: boolean =
   }
 
   // Build cache key
-  const cacheClient = getCacheClient()
-  const nsVersion = await getNamespaceVersion('product-detail')
-  const cacheKey = `product-detail-${slug}-${includeRelated ? 'with-related' : 'no-related'}-${nsVersion}`
+  const cacheKey = `product-detail-${slug}-${includeRelated ? 'with-related' : 'no-related'}`
 
   try {
     // Try cache first
-    const cached = await cacheClient.get(cacheKey)
+    const cached = await getCache<ProductDetailResult>(cacheKey)
     if (cached) {
       console.log(`[CACHE HIT] product-detail for slug: ${slug}`)
       return {
-        ...cached as any,
+        ...cached,
         cacheStatus: 'HIT',
         cacheKey
       }
@@ -194,7 +192,7 @@ export async function fetchProductDetail(slug: string, includeRelated: boolean =
     }
 
     // Set cache
-    await cacheClient.set(cacheKey, responseData, MAIN_PRODUCT_TTL)
+    await setCache(cacheKey, responseData, MAIN_PRODUCT_TTL)
     console.log(`[CACHE SET] product-detail for slug: ${slug} with TTL: ${MAIN_PRODUCT_TTL}s`)
 
     return {
@@ -202,8 +200,7 @@ export async function fetchProductDetail(slug: string, includeRelated: boolean =
       cacheStatus: 'SET',
       cacheKey
     }
-
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error in fetchProductDetail:', error)
     throw error
   }

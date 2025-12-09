@@ -5,8 +5,14 @@ const VERSION = process.env.CACHE_VERSION || '3'
 
 export async function getCache<T>(key: string): Promise<T | null> {
   const fullKey = `cache:${VERSION}:${key}`
+  const start = Date.now()
   try {
     const raw = await redis.get(fullKey)
+    const duration = Date.now() - start
+    if (duration > 100) {
+      console.warn(`[Redis] Slow read for ${fullKey}: ${duration}ms`)
+    }
+    
     if (!raw) return null
     
     // 处理可能的字符串或对象
@@ -31,10 +37,15 @@ export async function getCache<T>(key: string): Promise<T | null> {
 
 export async function setCache<T>(key: string, data: T, ttl: number) {
   const fullKey = `cache:${VERSION}:${key}`
+  const start = Date.now()
   try {
     // 确保数据是可序列化的
     const serializedData = JSON.stringify(data)
     await redis.set(fullKey, serializedData, { ex: ttl })
+    const duration = Date.now() - start
+    if (duration > 100) {
+      console.warn(`[Redis] Slow write for ${fullKey}: ${duration}ms`)
+    }
   } catch (error) {
     console.error(`缓存设置错误 for key ${fullKey}:`, error)
     // 不抛出错误，避免影响主流程

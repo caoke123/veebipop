@@ -37,7 +37,19 @@ export default async function ShopIndex({
   let paginationMeta: any = null
   let host = 'localhost:3002'
   let protocol = 'http'
-  let url = ''
+  
+  // Directly fetch filtered products without HTTP overhead
+  const productPromise = import('@/lib/data/filteredProducts').then(mod => {
+    return mod.fetchFilteredProducts({
+      per_page: Number(perPage),
+      page: Number(page),
+      category: category || undefined,
+      on_sale: on_sale ? true : undefined,
+      price_min: price_min || undefined,
+      price_max: price_max || undefined
+    })
+  })
+
   try {
     const hdrs = headers()
     const forwardedHost = hdrs.get('x-forwarded-host')
@@ -45,45 +57,12 @@ export default async function ShopIndex({
     const forwardedProto = hdrs.get('x-forwarded-proto')
     host = forwardedHost ?? hostHdr ?? 'localhost:3000'
     protocol = forwardedProto ?? 'http'
-    // 使用新的服务端筛选API端点，减少客户端数据处理
-    const filterParams = new URLSearchParams({
-      per_page: perPage,
-      page: page,
-      category: category || '',
-      on_sale: on_sale || '',
-      price_min: price_min || '',
-      price_max: price_max || '',
-    })
-    url = `${protocol}://${host}/api/woocommerce/products/filtered?${filterParams.toString()}`
+    
     const catUrl = `${protocol}://${host}/api/woocommerce/categories?per_page=100&hide_empty=false`
     const brandsUrl = `${protocol}://${host}/api/woocommerce/brands`
 
-    console.log('ShopIndex fetch url:', url)
-    const res = await fetch(url, {
-      next: { revalidate: 300 } // 5分钟重新验证缓存
-    })
-    console.log('ShopIndex fetch status:', res.status)
-    
-    // Handle 204 No Content response
-    if (res.status === 204) {
-      console.log('ShopIndex: API returned 204 No Content - no products available for this category')
-      products = []
-    } else if (!res.ok) {
-      const text = await res.text()
-      console.error('ShopIndex fetch failed body snippet:', text.slice(0, 500))
-      throw new Error(`API request failed with status ${res.status}`)
-    } else {
-      const data = await res.json()
-      const raw = Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : [])
-      products = Array.isArray(raw) ? (raw as ProductType[]) : []
-      
-      // Extract pagination metadata
-      if (data?.meta) {
-        paginationMeta = data.meta
-      }
-    }
-
-    const [catResult, brandResult] = await Promise.allSettled([
+    const [productResult, catResult, brandResult] = await Promise.allSettled([
+      productPromise,
       fetch(catUrl, {
         next: { revalidate: 600, tags: ['categories:all'] }
       }),
@@ -92,12 +71,31 @@ export default async function ShopIndex({
       })
     ])
 
+    // Process Product Result
+    if (productResult.status === 'fulfilled') {
+      const res = productResult.value
+      // @ts-ignore - The structure is known
+      const data = res.data?.data || []
+      products = Array.isArray(data) ? (data as ProductType[]) : []
+      
+      if (res.data?.meta) {
+        paginationMeta = res.data.meta
+      }
+      console.log(`ShopIndex: Loaded ${products.length} products from ${res.source}`)
+    } else {
+      console.error('ShopIndex: Product fetch failed', productResult.reason)
+    }
+
+    // Process Categories Result
     if (catResult.status === 'fulfilled' && catResult.value.ok) {
       const cats = await catResult.value.json()
       initialCategories = Array.isArray(cats) ? cats : []
     }
+    
+    // Process Brands Result
     if (brandResult.status === 'fulfilled' && brandResult.value.ok) {
       const brands = await brandResult.value.json()
+
       initialBrands = Array.isArray(brands) ? brands : []
     }
   } catch (e) {
@@ -105,7 +103,6 @@ export default async function ShopIndex({
     console.error('Error details:', {
       message: e instanceof Error ? e.message : String(e),
       stack: e instanceof Error ? e.stack : 'No stack trace',
-      url: url,
       host: host,
       protocol: protocol
     })
