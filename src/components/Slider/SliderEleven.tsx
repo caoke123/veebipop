@@ -42,7 +42,7 @@ const SliderEleven = () => {
     }, [])
 
     const handleTypeClick = (type: string) => {
-router.push(`/shop?type=${type}`);
+router.push(`/shop?category=${type}`);
     };
 
     useEffect(() => {
@@ -210,7 +210,7 @@ router.push(`/shop?type=${type}`);
                               className='basis-1/3 absolute right-0 top-0'
                             />
                         </div>
-                        <div className="banner-ads-item bg-linear rounded-2xl relative overflow-hidden cursor-pointer lg:mt-8" onClick={() => handleTypeClick('accessories')}>
+                        <div className="banner-ads-item bg-linear rounded-2xl relative overflow-hidden cursor-pointer lg:mt-8" onClick={() => router.push('/shop?category=in-car-accessories')}>
                             <div className="text-content relative z-[1] py-12 pl-8">
                                 <div className="text-button-uppercase text-white bg-red px-2 py-0.5 inline-block rounded-sm">China Direct</div>
                                 <div className="heading6 mt-2"> Premium Accessories<br/>For Driver</div>

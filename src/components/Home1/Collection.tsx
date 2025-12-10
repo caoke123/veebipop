@@ -13,7 +13,7 @@ const Collection = () => {
     const router = useRouter()
 
     const handleTypeClick = (type: string) => {
-router.push(`/shop?type=${type}`);
+router.push(`/shop?category=${type}`);
     };
 
     return (

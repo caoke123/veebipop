@@ -90,7 +90,7 @@ async function fetchFallbackProducts(category: string, excludeId?: number, limit
 }
 
 // Helper: Resolve category ID from slug
-async function resolveCategoryId(categorySlug: string): Promise<number | undefined> {
+export async function resolveCategoryId(categorySlug: string): Promise<number | undefined> {
   const wcApi = await getWcApiWithRetry()
   if (!wcApi) {
     return undefined
@@ -110,6 +110,61 @@ async function resolveCategoryId(categorySlug: string): Promise<number | undefin
   }
 
   return undefined
+}
+
+// New Helper: Fetch combined related products (for API use)
+export async function fetchCombinedRelatedProducts(
+  mainProductId: number,
+  categorySlug: string | undefined,
+  relatedIds: number[] = []
+): Promise<ProductType[]> {
+  const TARGET_COUNT = 8
+  
+  // Strategy: 
+  // 1. If we have enough related_ids (>= 8), just fetch those.
+  // 2. Otherwise, fetch related_ids AND fallback category products in parallel to save time.
+  
+  const tasks: Promise<ProductType[]>[] = []
+  
+  // Task 1: Fetch by related IDs
+  if (relatedIds.length > 0) {
+    tasks.push(fetchRelatedProductsByIds(relatedIds, mainProductId))
+  } else {
+    tasks.push(Promise.resolve([]))
+  }
+  
+  // Task 2: Fetch by Category (if needed)
+  // We fetch if relatedIds < 8. Even if we don't strictly "need" to parallelize if relatedIds are enough,
+  // usually manual related products are few. So parallel fetching is safer for speed.
+  // Exception: if relatedIds.length >= 8, we might skip category fetch to save resources, 
+  // but the user wants speed. Let's assume if >= 8, we skip category.
+  if (categorySlug && relatedIds.length < TARGET_COUNT) {
+     tasks.push(resolveCategoryId(categorySlug).then(catId => {
+       if (catId) {
+         // Fetch enough to cover the gap + buffer
+         return fetchFallbackProducts(String(catId), mainProductId, TARGET_COUNT + 2)
+       }
+       return []
+     }))
+  } else {
+    tasks.push(Promise.resolve([]))
+  }
+  
+  const [relatedResults, categoryResults] = await Promise.all(tasks)
+  
+  // Merge: related first, then category
+  const combined = [...relatedResults]
+  const existingIds = new Set(combined.map(p => p.id))
+  
+  for (const p of categoryResults) {
+    if (combined.length >= TARGET_COUNT) break
+    if (!existingIds.has(p.id) && p.id !== String(mainProductId)) {
+      combined.push(p)
+      existingIds.add(p.id)
+    }
+  }
+  
+  return combined.slice(0, TARGET_COUNT)
 }
 
 export async function fetchProductDetail(slug: string, includeRelated: boolean = true): Promise<ProductDetailResult> {

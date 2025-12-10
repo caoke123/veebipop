@@ -8,6 +8,7 @@ import 'swiper/css/effect-fade'
 import { useState, useEffect, useRef } from 'react'
 import BlurImage from '@/components/common/BlurImage'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 interface Slide {
   id: number
@@ -20,6 +21,8 @@ interface Slide {
 }
 
 export default function HeroSlider({ slides }: { slides: Slide[] }) {
+  const router = useRouter()
+
   // 预加载关键图片
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -106,7 +109,7 @@ export default function HeroSlider({ slides }: { slides: Slide[] }) {
         
         {/* 右侧广告区块 - 保持原有设计 */}
         <div className="banner-ads-block lg:w-1/3 lg:pl-[15px] w-full max-lg:grid sm:grid-cols-2 gap-5">
-          <div className="banner-ads-item bg-linear rounded-2xl relative overflow-hidden cursor-pointer" onClick={() => window.location.href = '/shop?type=charms'}>
+          <div className="banner-ads-item bg-linear rounded-2xl relative overflow-hidden cursor-pointer" onClick={() => router.push('/shop?category=charms')}>
             <div className="text-content relative z-[1] py-12 pl-8">
               <div className="text-button-uppercase text-white bg-red px-2 py-0.5 inline-block rounded-sm">China Direct</div>
               <div className="heading6 mt-2">Direct Sourcing   <br />for Charms</div>
@@ -123,7 +126,7 @@ export default function HeroSlider({ slides }: { slides: Slide[] }) {
               className='basis-1/3 absolute right-0 top-0'
             />
           </div>
-          <div className="banner-ads-item bg-linear rounded-2xl relative overflow-hidden cursor-pointer lg:mt-8" onClick={() => window.location.href = '/shop?type=in-car-accessories'}>
+          <div className="banner-ads-item bg-linear rounded-2xl relative overflow-hidden cursor-pointer lg:mt-8" onClick={() => router.push('/shop?category=in-car-accessories')}>
             <div className="text-content relative z-[1] py-12 pl-8">
               <div className="text-button-uppercase text-white bg-red px-2 py-0.5 inline-block rounded-sm">China Direct</div>
               <div className="heading6 mt-2"> Premium Accessories<br/>For Driver</div>

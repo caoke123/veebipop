@@ -12,6 +12,9 @@ import { ProductType } from '@/type/ProductType'
 import { headers } from 'next/headers'
 // Removed Product.json import - no fallback data
 
+import { fetchCategories } from '@/lib/data/categories'
+import { fetchBrands } from '@/lib/data/brands'
+
 export const metadata: Metadata = {
   title: 'Wholesale Trendy Plush Toys, Doll Outfits, Car Charms | VeebiPop Factory-Direct Manufacturer',
   description: 'Bulk buy from factory-direct manufacturer: Labubu, plush dolls, fashion accessories, seatbelt covers. 50pcs MOQ · Free samples · Custom logo welcome.',
@@ -24,7 +27,9 @@ export default async function ShopIndex({
 }) {
   const type = searchParams?.type ?? null
   const gender = searchParams?.gender ?? null
-  const category = searchParams?.category ?? null
+  const categoryParam = searchParams?.category ?? null
+  // Support legacy 'type' param as fallback for category
+  const category = categoryParam || type || null
   const on_sale = searchParams?.on_sale ?? null
   const price_min = searchParams?.price_min ?? null
   const price_max = searchParams?.price_max ?? null
@@ -58,17 +63,10 @@ export default async function ShopIndex({
     host = forwardedHost ?? hostHdr ?? 'localhost:3000'
     protocol = forwardedProto ?? 'http'
     
-    const catUrl = `${protocol}://${host}/api/woocommerce/categories?per_page=100&hide_empty=false`
-    const brandsUrl = `${protocol}://${host}/api/woocommerce/brands`
-
     const [productResult, catResult, brandResult] = await Promise.allSettled([
       productPromise,
-      fetch(catUrl, {
-        next: { revalidate: 600, tags: ['categories:all'] }
-      }),
-      fetch(brandsUrl, {
-        next: { revalidate: 600, tags: ['brands:all'] }
-      })
+      fetchCategories({ per_page: 100, hide_empty: false }),
+      fetchBrands()
     ])
 
     // Process Product Result
@@ -87,16 +85,13 @@ export default async function ShopIndex({
     }
 
     // Process Categories Result
-    if (catResult.status === 'fulfilled' && catResult.value.ok) {
-      const cats = await catResult.value.json()
-      initialCategories = Array.isArray(cats) ? cats : []
+    if (catResult.status === 'fulfilled') {
+      initialCategories = catResult.value
     }
     
     // Process Brands Result
-    if (brandResult.status === 'fulfilled' && brandResult.value.ok) {
-      const brands = await brandResult.value.json()
-
-      initialBrands = Array.isArray(brands) ? brands : []
+    if (brandResult.status === 'fulfilled') {
+      initialBrands = brandResult.value
     }
   } catch (e) {
     console.error('Failed to load products from WooCommerce API', e)

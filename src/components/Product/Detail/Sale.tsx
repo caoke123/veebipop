@@ -221,42 +221,41 @@ const Sale: React.FC<Props> = ({ data, productKey }) => {
         console.log('productMain.related_ids:', productMain?.related_ids)
     }, [productMain, data, relatedProducts])
     
-    // Enhanced fallback strategy: If no related products, fetch fallback products from same category
+    // Enhanced fallback strategy: If no related products, fetch related products (by ID or category) client-side
     const [fallbackProducts, setFallbackProducts] = useState<ProductType[]>([])
     
     useEffect(() => {
-        const fetchFallbackProducts = async () => {
-            if (relatedProducts.length === 0 && productMain?.category) {
-                try {
-                    console.log('No related products found, fetching fallback products from category:', productMain.category)
-                    const params = new URLSearchParams()
-                    params.set('category', productMain.category)
-                    params.set('per_page', '8')
-                    params.set('_fields', 'id,name,slug,price,regular_price,sale_price,average_rating,stock_quantity,manage_stock,images,short_description,description,categories,attributes,tags,date_created,meta_data')
-                    
-                    const res = await fetch(`/api/woocommerce/products?${params.toString()}`)
-                    if (res.ok) {
-                        const list = await res.json()
-                        const filteredList = Array.isArray(list)
-                            ? list.filter((product: any) => product.id !== parseInt(productMain?.id || '0')).slice(0, 8)
-                            : []
-                        
-                        const convertedProducts = await Promise.all(
-                            filteredList.map((product: any) => import('@/utils/wcAdapter').then(({ wcToProductType }) => wcToProductType(product)))
-                        )
-                        
-                        console.log(`获取到 ${convertedProducts.length} 个同类目兜底产品`)
-                        setFallbackProducts(convertedProducts)
-                    }
-                } catch (error) {
-                    console.error('Error fetching fallback products:', error)
+        const fetchClientRelatedProducts = async () => {
+            // If we already have related products passed from props/server, do nothing
+            if (relatedProducts.length > 0) return;
+
+            // Avoid fetching if no main product
+            if (!productMain) return;
+
+            try {
+                // Use the optimized API endpoint that handles merging and parallel fetching server-side
+                const params = new URLSearchParams()
+                if (productMain.id) params.set('id', productMain.id)
+                if (productMain.category) params.set('category', productMain.category)
+                if (productMain.related_ids && productMain.related_ids.length > 0) {
+                    params.set('related_ids', productMain.related_ids.join(','))
                 }
-            } else {
-                setFallbackProducts([])
+                
+                const res = await fetch(`/api/woocommerce/related-products?${params.toString()}`)
+                if (res.ok) {
+                    const fetched = await res.json()
+                    if (Array.isArray(fetched) && fetched.length > 0) {
+                        console.log(`Client-side loaded ${fetched.length} related products`)
+                        // Ensure strict limit of 8
+                        setFallbackProducts(fetched.slice(0, 8))
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching client-side related products:', error);
             }
         }
         
-        fetchFallbackProducts()
+        fetchClientRelatedProducts()
     }, [productMain, relatedProducts.length])
     
     // Use related products if available, otherwise use fallback products

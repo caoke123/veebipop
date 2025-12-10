@@ -61,7 +61,9 @@ export default async function ProductDetailBySlug({ params }: { params: { slug: 
 
   try {
     // Use direct function call instead of internal API fetch
-    const result = await fetchProductDetail(productSlug, true)
+    // Use includeRelated=false to skip server-side fetching of related products
+    // They will be fetched client-side to improve initial load performance
+    const result = await fetchProductDetail(productSlug, false)
     mainProduct = result.mainProduct
     relatedProducts = result.relatedProducts || []
     fallbackProducts = result.fallbackProducts || []
